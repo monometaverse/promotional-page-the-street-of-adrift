@@ -35,7 +35,7 @@ const switchLang = () => {
   <button type="button" @click="switchLang">{{ i18n.t('switchLang') }}</button>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 a {
   color: #42b983;
 }
