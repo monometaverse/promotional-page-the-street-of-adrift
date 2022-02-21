@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import WebGLBackground from './components/WebGLBackground.vue'
 </script>
-
 <template>
-  <img
-    alt="Vue logo"
-    src="./assets/logo.png"
-  >
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite + ESLint + vue-i18n + three.js" />
+  <div class="static-framework">
+    <h1 class="title">
+      彷徨之街宣传页
+    </h1>
+  </div>
+  <WebGLBackground />
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="less">
+  @static-z-index: 1000;
+  html, body, #app {
+    margin: 0;
+    height: 100%;
+  }
+  #app {
+    background: black;
+    color: white;
+    .static-framework {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: @static-z-index;
+      .title {
+        width: 100%;
+        text-align: center;
+        top: 20px;
+      }
+    }
+  }
 </style>

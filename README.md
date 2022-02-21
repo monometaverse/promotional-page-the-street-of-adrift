@@ -9,7 +9,7 @@
 - 本地化： [vue-i18n](https://vue-i18n.intlify.dev/)
 - 代码格式化： [ESLint](https://eslint.org/) 
 - CSS 预处理器： [Less](https://lesscss.org/)
-- 3D 模型显示和其它 3D 效果： [Three.js](https://threejs.org/) （尚未配置完成）
+- 3D 模型显示和其它 3D 效果： [Three.js](https://threejs.org/) 
 - 静态网站部署： [Azure Static Web Apps](https://azure.microsoft.com/en-us/services/app-service/static/#overview) （尚未配置完成）
 - 自动构建系统： [GitHub Actions](https://github.com/features/actions) （尚未配置完成）
 
