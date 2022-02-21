@@ -1,5 +1,8 @@
 module.exports = {
     root: true,
+    plugins: [
+        '@typescript-eslint'
+    ],
     extends: [
         'plugin:vue/vue3-strongly-recommended'
     ],
@@ -12,6 +15,8 @@ module.exports = {
     ],
     rules: {
         'eol-last': 'error',
-        'no-trailing-spaces': 'error'
+        'no-trailing-spaces': 'error',
+        semi: 'off',
+        '@typescript-eslint/semi': ['error', 'never']
     }
 }
