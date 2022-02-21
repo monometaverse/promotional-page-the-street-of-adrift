@@ -1,5 +1,5 @@
-import {zh} from './zh'
-import {en} from './en'
+import zh from './zh.json'
+import en from './en.json'
 import { createI18n, I18nOptions } from 'vue-i18n'
 
 export type MessageSchema = {
