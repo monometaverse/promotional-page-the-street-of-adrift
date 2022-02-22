@@ -18,8 +18,11 @@ const switchLang = () => {
 }
 // 显示或隐藏辅助 canvas
 const toggleHelper = () => {
+  if (!webGlBackground.value) {
+    return
+  }
   showHelper.value = !showHelper.value
-  webGlBackground.value?.showOrHidePic(showHelper.value)
+  webGlBackground.value.showOrHidePic(showHelper.value)
 }
 
 onMounted(() => {
