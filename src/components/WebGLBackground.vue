@@ -11,7 +11,7 @@ const canvasRef = ref<HTMLCanvasElement | null>(null)
 const threeApp = ref<ThreeApp | null>(null)
 // 当页面挂载时
 onMounted(() => {
-    threeApp.value = new ThreeApp(canvasRef.value!)
+  threeApp.value = new ThreeApp(canvasRef.value!)
 })
 </script>
 <style lang="less" scoped>

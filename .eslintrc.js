@@ -17,6 +17,7 @@ module.exports = {
         'eol-last': 'error',
         'no-trailing-spaces': 'error',
         semi: 'off',
-        '@typescript-eslint/semi': ['error', 'never']
+        '@typescript-eslint/semi': ['error', 'never'],
+        'vue/script-indent': ['error', 2]
     }
 }
