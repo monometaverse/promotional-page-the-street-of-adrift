@@ -1,4 +1,9 @@
 {
-    "switchLang": "切换到英文",
-    "hello": "你好"
+  "switchLang": "切换到英文",
+  "helperCanvas": "辅助画布",
+  "hide": "隐藏",
+  "nextPic": "下一张图片",
+  "prevPic": "上一张图片",
+  "show": "显示",
+  "underDevelopment": "《彷徨之街》宣传页正在开发中"
 }

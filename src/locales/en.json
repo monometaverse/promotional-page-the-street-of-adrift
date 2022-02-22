@@ -1,4 +1,9 @@
 {
     "switchLang": "Switch To Chinese",
-    "hello": "hello"
+    "show": "Show",
+    "hide": "Hide",
+    "helperCanvas": "Helper Canvas",
+    "nextPic": "Next Picture",
+    "prevPic": "Prev Picture",
+    "underDevelopment": "The Street Of Adrift"
 }
