@@ -5,7 +5,7 @@
   />
 </template>
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onUnmounted, ref, watch } from 'vue'
 import { LoadedResources } from '../../Resources'
 import { ThreeApp } from './ThreeApp'
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -37,6 +37,10 @@ const showOrHidePic = (show: boolean) => {
   if (!threeApp.value) return
   threeApp.value.showOrHideHelper(show)
 }
+// 当页面解除挂载时，销毁 Three 实例
+onUnmounted(() => {
+  threeApp.value?.destroy()
+})
 // 把图片切换方法暴露给父组件
 defineExpose({ nextPic, prevPic, showOrHidePic })
 </script>

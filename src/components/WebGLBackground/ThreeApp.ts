@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Float32BufferAttribute, IcosahedronBufferGeometry, MeshBasicMaterial, Vector3 } from 'three'
 import { LoadedResources } from '../../Resources'
+import { debounce } from '../../utils'
 
 export class ThreeApp {
   // 3D 上下文
@@ -8,7 +9,7 @@ export class ThreeApp {
   private $el2D: HTMLCanvasElement
   private renderer: THREE.WebGLRenderer
   private scene: THREE.Scene
-  private camera: THREE.Camera
+  private camera: THREE.PerspectiveCamera
   private res: LoadedResources
   // 目前正在显示的图片名称
   private showingPicIndex: number = -1
@@ -18,6 +19,8 @@ export class ThreeApp {
   private icosahedronSample: THREE.Mesh
   // 是否显示辅助 canvas 和辅助图片
   private showHelper: boolean = false
+  // 实例是否已经销毁，不再使用
+  private destroyed: boolean = false
   // 初始化 Three.js App
   constructor(canvasEl: HTMLCanvasElement, res: LoadedResources) {
     this.$el = canvasEl
@@ -69,8 +72,20 @@ export class ThreeApp {
   initScene = () => {
     // 移动摄像机
     this.camera.position.set(0, 0, 5)
+    // 添加临时正二十面体
     this.scene.add(this.icosahedronSample)
+    // 监听窗口大小变化事件
+    window.addEventListener('resize', this.onWindowResize)
   }
+
+  // 当窗口大小变化时触发
+  onWindowResize = debounce((event: UIEvent) => {
+    // 更新相机参数
+    this.camera.aspect = innerWidth / innerHeight
+    this.camera.updateProjectionMatrix()
+    // 更新渲染器高宽
+    this.renderer.setSize(innerWidth, innerHeight)
+  }, 200)
 
   // 显示下一张图片
   nextPic = () => {
@@ -171,10 +186,20 @@ export class ThreeApp {
 
   // 帧刷
   tick = () => {
+    // 如果实例已经被标记为销毁，就不再渲染
+    if (this.destroyed) return
     requestAnimationFrame(this.tick)
     this.icosahedronSample.rotateX(0.01)
     this.icosahedronSample.rotateY(0.01)
     this.icosahedronSample.rotateZ(0.01)
     this.renderer.render(this.scene, this.camera)
+  }
+
+  // 销毁
+  destroy = () => {
+    // 清除窗口变化监听事件
+    window.removeEventListener('resize', this.onWindowResize)
+    // 将实例标记为已销毁
+    this.destroyed = true
   }
 }
