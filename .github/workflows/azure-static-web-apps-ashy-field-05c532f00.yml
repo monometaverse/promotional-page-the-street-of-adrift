@@ -57,7 +57,7 @@ jobs:
       # 根据 dist 目录的存在情况来判断构建是否成功
       - name: Check Build State
         id: checkState
-        run: echo "::set-output name=isSuccess::$((test -f dist && echo 'true') || 'false')"
+        run: echo "::set-output name=isSuccess::$((test -f dist && echo 1) || echo 0)"
       # 发布到 Azure 静态网站容器
       - name: Deploy
         id: builddeploy
