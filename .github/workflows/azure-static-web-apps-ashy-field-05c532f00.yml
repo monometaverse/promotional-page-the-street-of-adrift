@@ -18,10 +18,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      # 导出触发此次构建的提交的信息
-      - name: Export commit info
+      # 导出触发此次构建的提交的信息和构建开始时间
+      - name: Export commit info and start time
         id: commit
         run: |
+          echo "::set-output name=startTime::$(date +%s)"
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=msg::$(git log -1 --format=%s)"
           echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
@@ -45,10 +46,25 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      - name: Build And Deploy
+      # 安装依赖
+      - name: Install Dependencies
+        id: instDep
+        run: yarn
+      # 开始构建
+      - name: Build
+        id: build
+        run: yarn build
+      # 根据 dist 目录的存在情况来判断构建是否成功
+      - name: Check Build State
+        id: checkState
+        run: echo "::set-output name=isSuccess::$((test -f dist && echo 'true') || 'false')"
+      # 发布到 Azure 静态网站容器
+      - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
+        if: ${{ steps.checkState.outputs.isSuccess }}
         with:
+          skip_app_build: true # 跳过构建步骤直接发布
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ASHY_FIELD_05C532F00 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
@@ -58,10 +74,14 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+      # 导出构建完成的时间
+      - name: Export end time
+        id: endTime
+        run: echo "::set-output name=time::$(date +%s)"
       # 发送构建成功的消息到 Slack
-      - name: Send Build End Message to Slack Channel
+      - name: Send Build Success Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ success() }}
+        if: ${{ steps.builddeploy.outputs.static_web_app_url }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -72,7 +92,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页构建成功\n===================\n\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})\n当前静态页面的地址: ${{ steps.builddeploy.outputs.static_web_app_url }}"
+                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 成功\n花费时间: ${{ steps.commit.outputs.startTime - steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})\n当前静态页面的地址: ${{ steps.builddeploy.outputs.static_web_app_url }}"
                   }
                 }
               ]
@@ -80,9 +100,9 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
       # 发送构建失败的消息到 Slack
-      - name: Send Build End Message to Slack Channel
+      - name: Send Build Failed Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ failure() }}
+        if: ${{ !steps.builddeploy.outputs.static_web_app_url }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -93,7 +113,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页构建失败\n===================\n\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})"
+                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 失败\n花费时间: ${{ steps.commit.outputs.startTime - steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})"
                   }
                 }
               ]
