@@ -29,6 +29,7 @@ jobs:
       # 发送开始构建的消息到 Slack
       - name: Send Build Start Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
+        if: github.event_name != 'pull_request'
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -81,7 +82,7 @@ jobs:
       # 发送构建成功的消息到 Slack
       - name: Send Build Success Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ steps.checkState.outputs.isSuccess }}
+        if: ${{ steps.checkState.outputs.isSuccess && github.event_name != 'pull_request' }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -102,7 +103,7 @@ jobs:
       # 发送构建失败的消息到 Slack
       - name: Send Build Failed Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ !steps.builddeploy.outputs.static_web_app_url }}
+        if: ${{ !steps.checkState.outputs.isSuccess && github.event_name != 'pull_request' }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
