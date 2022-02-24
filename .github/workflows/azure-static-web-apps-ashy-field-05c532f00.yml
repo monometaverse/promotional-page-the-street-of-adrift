@@ -47,25 +47,12 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      # 安装依赖
-      - name: Install Dependencies
-        id: instDep
-        run: yarn
-      # 开始构建
-      - name: Build
-        id: build
-        run: yarn build
-      # 根据 dist 目录的存在情况来判断构建是否成功
-      - name: Check Build State
-        id: checkState
-        run: echo "::set-output name=isSuccess::$((test -f dist && echo 1) || echo 0)"
-      # 发布到 Azure 静态网站容器
-      - name: Deploy
+      # 通过 Azure 静态网站构建和部署
+      - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         if: ${{ steps.checkState.outputs.isSuccess }}
         with:
-          skip_app_build: true # 跳过构建步骤直接发布
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ASHY_FIELD_05C532F00 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
@@ -82,7 +69,7 @@ jobs:
       # 发送构建成功的消息到 Slack
       - name: Send Build Success Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ steps.checkState.outputs.isSuccess && github.event_name != 'pull_request' }}
+        if: ${{ steps.builddeploy.outputs.static_web_app_url && github.event_name != 'pull_request' }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -103,7 +90,7 @@ jobs:
       # 发送构建失败的消息到 Slack
       - name: Send Build Failed Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ !steps.checkState.outputs.isSuccess && github.event_name != 'pull_request' }}
+        if: ${{ !steps.builddeploy.outputs.static_web_app_url && github.event_name != 'pull_request' }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
