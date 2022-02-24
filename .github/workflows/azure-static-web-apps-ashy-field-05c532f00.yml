@@ -77,7 +77,7 @@ jobs:
       # 导出构建完成的时间
       - name: Export end time
         id: endTime
-        run: echo "::set-output name=time::$(date +%s)"
+        run: echo "::set-output name=time::$(nowtime=$(date +%s);echo $(expr $nowtime - ${{ steps.commit.outputs.startTime }}))"
       # 发送构建成功的消息到 Slack
       - name: Send Build Success Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
@@ -92,7 +92,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 成功\n花费时间: ${{ steps.commit.outputs.startTime - steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})\n当前静态页面的地址: ${{ steps.builddeploy.outputs.static_web_app_url }}"
+                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 成功\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})\n当前静态页面的地址: ${{ steps.builddeploy.outputs.static_web_app_url }}"
                   }
                 }
               ]
@@ -113,7 +113,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 失败\n花费时间: ${{ steps.commit.outputs.startTime - steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})"
+                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 失败\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})"
                   }
                 }
               ]
