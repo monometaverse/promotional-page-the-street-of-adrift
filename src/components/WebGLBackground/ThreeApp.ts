@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { Float32BufferAttribute, IcosahedronBufferGeometry, MeshBasicMaterial, Vector3 } from 'three'
 import { LoadedResources } from '../../Resources'
 import { debounce } from '../../utils'
+import { gsap, Power2 } from 'gsap'
 
 export class ThreeApp {
   // 3D 上下文
@@ -21,6 +22,10 @@ export class ThreeApp {
   private showHelper: boolean = false
   // 实例是否已经销毁，不再使用
   private destroyed: boolean = false
+  // 当前正在显示的视图
+  private _viewNo: number = 0
+  // 目前已经有的所有的视图
+  readonly allViews = 2
   // 初始化 Three.js App
   constructor(canvasEl: HTMLCanvasElement, res: LoadedResources) {
     this.$el = canvasEl
@@ -114,6 +119,45 @@ export class ThreeApp {
       return null
     }
     return this.res[this.showingPicIndex].value
+  }
+
+  // 切换到下一个视图
+  nextView = () => {
+    // 如果是最后一个视图，切换到第一个视图
+    if (this.isLastView) {
+      this._viewNo = 0
+    } else {
+      this._viewNo ++
+    }
+    gsap.killTweensOf(this.camera.position, 'x', true)
+    gsap.to(this.camera.position, { duration: 0.5, x: this._viewNo * 5, ease: Power2.easeOut })
+  }
+
+  // 切换到上一个视图
+  prevView = () => {
+    // 如果是第一个视图，切换到最后一个视图
+    if (this.isFirstView) {
+      this._viewNo = this.allViews - 1
+    } else {
+      this._viewNo --
+    }
+    gsap.killTweensOf(this.camera.position, 'x', true)
+    gsap.to(this.camera.position, { duration: 0.5, x: this._viewNo * 5, ease: Power2.easeOut })
+  }
+
+  // 获取当前正在显示的视图
+  get currentView(): number {
+    return this._viewNo + 1
+  }
+
+  // 是否正在显示最后一个视图
+  get isLastView(): boolean {
+    return this.currentView === this.allViews
+  }
+
+  // 是否正在显示第一个视图
+  get isFirstView(): boolean {
+    return this.currentView === 1
   }
 
   // 显示上一张图片

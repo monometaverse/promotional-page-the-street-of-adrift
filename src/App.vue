@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WebGLBackground from './components/WebGLBackground/index.vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { LoadedResources, LoadingResources, Resources, resources } from './Resources'
 import { useI18n } from 'vue-i18n'
 
@@ -99,6 +99,20 @@ onMounted(() => {
         @click="switchLang"
       >
         {{ i18n.t('switchLang') }}
+      </button>
+      <button
+        v-if="!webGlBackground?.isFirstView"
+        class="btn"
+        @click="webGlBackground?.prevView"
+      >
+        {{ i18n.t('prevView') }}
+      </button>
+      <button
+        v-if="!webGlBackground?.isLastView"
+        class="btn"
+        @click="webGlBackground?.nextView"
+      >
+        {{ i18n.t('nextView') }}
       </button>
     </div>
   </div>
