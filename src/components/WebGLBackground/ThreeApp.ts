@@ -5,6 +5,7 @@ import { debounce } from '../../utils'
 import { gsap, Power2 } from 'gsap'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { toRaw } from 'vue'
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
 
 export class ThreeApp {
   // 3D 上下文
@@ -28,6 +29,10 @@ export class ThreeApp {
   private _viewNo: number = 0
   // 目前正在显示的金币
   private currentCoin: THREE.Mesh | undefined = undefined
+  // 手动拖动助手
+  private transformHelper: TransformControls | undefined = undefined
+  // 金币是否被手动拖动过
+  private manualRotated: boolean = false
   // 目前已经有的所有的视图
   readonly allViews = 2
   // 初始化 Three.js App
@@ -141,8 +146,24 @@ export class ThreeApp {
         material.roughness = 0.2
         coinModel.position.set(5, 0, 0)
         coinModel.scale.set(5, 5, 5)
+        // 添加手动拖动助手
+        const transformHelper = new TransformControls(this.camera, this.$el)
+        transformHelper.attach(coinModel)
+        transformHelper.setMode('rotate')
+        transformHelper.enabled = true
+        transformHelper.showZ = false
+        transformHelper.showX = false
+        // transformHelper.showY = false
+        // 当手动拖动过就不再自动旋转
+        transformHelper.addEventListener('objectChange', (args) => {
+          this.manualRotated = true
+        })
+        // 把这个变量暴露到整体环境中
         this.currentCoin = coinModel
+        // 把手动拖动助手暴露到整体环境中
+        this.transformHelper = transformHelper
         this.scene.add(coinModel)
+        this.scene.add(transformHelper)
       }
     }
   }
@@ -323,7 +344,7 @@ export class ThreeApp {
     this.icosahedronSample.rotateX(0.01)
     this.icosahedronSample.rotateY(0.01)
     this.icosahedronSample.rotateZ(0.01)
-    if (this.currentCoin) {
+    if (this.currentCoin && !this.manualRotated) {
       this.currentCoin.rotateZ(-0.005)
     }
     this.renderer.render(this.scene, this.camera)

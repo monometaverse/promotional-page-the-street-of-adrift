@@ -177,6 +177,7 @@ onMounted(() => {
     background: black;
     color: white;
     .static-framework {
+      pointer-events: none;
       width: 100%;
       height: 100%;
       position: absolute;
@@ -191,6 +192,7 @@ onMounted(() => {
         justify-content: center;
       }
       .btn {
+        pointer-events: auto;
         transition: all 250ms ease-out;
         border: 2px white solid;
         color: white;
