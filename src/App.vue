@@ -5,12 +5,15 @@ import { LoadedResources, LoadingResources, Resources, resources } from './Resou
 import { useI18n } from 'vue-i18n'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { RGBE, RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
-import './assets/draco/draco_decoder.js'
-import './assets/draco/draco_encoder.js'
-import './assets/draco/gltf/draco_decoder.js'
-import './assets/draco/gltf/draco_encoder.js'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import draco0Decoder from './assets/draco/draco_decoder.js?url'
+import draco0Encoder from './assets/draco/draco_encoder.js?url'
+import draco1Decoder from './assets/draco/gltf/draco_decoder.js?url'
+import draco1Encoder from './assets/draco/gltf/draco_encoder.js?url'
 import { CubeTexture, DataTexture } from 'three'
+
+// 手动保持引用
+[draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
 
 // 已经加载好的资源
 const loadedRes = ref<LoadedResources>([])
@@ -43,7 +46,7 @@ onMounted(() => {
     const loader = new GLTFLoader()
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderConfig({ type: 'js' })
-    dracoLoader.setDecoderPath('/src/assets/draco/')
+    dracoLoader.setDecoderPath(draco0Decoder.substring(0, draco0Decoder.lastIndexOf('/') + 1))
     dracoLoader.preload()
     loader.setDRACOLoader(dracoLoader)
     return loader
