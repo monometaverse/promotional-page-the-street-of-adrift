@@ -8,9 +8,9 @@ export const debounce: DebounceFunc = <T extends (...args: any[]) => any = () =>
   return (...args: Parameters<T>) => {
     if (timer) {
       // 如果计时器存在，清除计时器
-      clearTimeout(timer)
+      window.clearTimeout(timer)
     }
     // 设置计时器
-    timer = setTimeout(func, time, ...args)
+    timer = window.setTimeout(func, time, ...args)
   }
 }
