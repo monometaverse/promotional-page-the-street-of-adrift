@@ -22,6 +22,8 @@ module.exports = {
     '@typescript-eslint/semi': ['error', 'never'],
     'indent': 'off',
     '@typescript-eslint/indent': ['error', 2],
-    'vue/script-indent': ['error', 2]
+    'vue/script-indent': ['error', 2, {
+      switchCase: 1
+    }]
   }
 }
