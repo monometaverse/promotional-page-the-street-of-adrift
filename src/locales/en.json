@@ -5,5 +5,7 @@
   "helperCanvas": "Helper Canvas",
   "nextPic": "Next Picture",
   "prevPic": "Prev Picture",
-  "underDevelopment": "The Street Of Adrift"
+  "underDevelopment": "The Street Of Adrift",
+  "prevView": "Show Prev View",
+  "nextView": "Show Next View"
 }

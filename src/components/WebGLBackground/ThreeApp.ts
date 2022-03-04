@@ -1,7 +1,11 @@
 import * as THREE from 'three'
-import { Float32BufferAttribute, IcosahedronBufferGeometry, MeshBasicMaterial, Vector3 } from 'three'
+import { DataTexture, Float32BufferAttribute, IcosahedronBufferGeometry, MeshBasicMaterial, MeshStandardMaterial, Object3D, Vector3 } from 'three'
 import { LoadedResources } from '../../Resources'
 import { debounce } from '../../utils'
+import { gsap, Power2 } from 'gsap'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+import { toRaw } from 'vue'
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
 
 export class ThreeApp {
   // 3D 上下文
@@ -21,6 +25,16 @@ export class ThreeApp {
   private showHelper: boolean = false
   // 实例是否已经销毁，不再使用
   private destroyed: boolean = false
+  // 当前正在显示的视图
+  private _viewNo: number = 0
+  // 目前正在显示的金币
+  private currentCoin: THREE.Mesh | undefined = undefined
+  // 手动拖动助手
+  private transformHelper: TransformControls | undefined = undefined
+  // 金币是否被手动拖动过
+  private manualRotated: boolean = false
+  // 目前已经有的所有的视图
+  readonly allViews = 2
   // 初始化 Three.js App
   constructor(canvasEl: HTMLCanvasElement, res: LoadedResources) {
     this.$el = canvasEl
@@ -70,12 +84,88 @@ export class ThreeApp {
 
   // 初始化场景
   initScene = () => {
+    // 设置环境贴图
+    const env = this.res.find(it => it.name === 'coinEnviroment')
+    if (env) {
+      const v = env.value as DataTexture
+      v.mapping = THREE.EquirectangularReflectionMapping
+      this.scene.environment = v
+    }
     // 移动摄像机
     this.camera.position.set(0, 0, 5)
-    // 添加临时正二十面体
-    this.scene.add(this.icosahedronSample)
     // 监听窗口大小变化事件
     window.addEventListener('resize', this.onWindowResize)
+    this.initParticleView()
+    this.initCoinModelView()
+  }
+
+  // 初始化粒子效果演示场景
+  initParticleView = () => {
+    // 添加临时正二十面体
+    this.scene.add(this.icosahedronSample)
+  }
+
+  // 根据名称获取到指定的物体
+  getChildByName: (name: string, children: Object3D | Object3D[]) => Object3D | undefined = (name: string, children: Object3D | Object3D[]) => {
+    // 当传入的值是一个物体数组时
+    if (Array.isArray(children)) {
+      let objGot: Object3D | undefined
+      // 检查数组中的每一个物体
+      for (let obj of children) {
+        objGot = this.getChildByName(name, obj)
+        if (objGot) {
+          return objGot
+        }
+      }
+      return undefined
+    } else {
+      // 不是数组，检查名称
+      if (children.name === name) {
+        return children
+      } else {
+        // 如果没有找到，从子物体中找
+        if (children.children.length) {
+          return this.getChildByName(name, children.children)
+        }
+        return undefined
+      }
+    }
+  }
+
+  // 初始化金币模型视图
+  initCoinModelView = () => {
+    // 添加金币模型
+    const coin = this.res.find(it => it.name === 'jiuxiaoCoin')
+    if (coin) {
+      // 从模型文件中寻找真正的金币 Mesh
+      const coinContainer = this.getChildByName('YX_Gold', toRaw((coin.value as GLTF).scene))
+      if (coinContainer) {
+        const coinModel = coinContainer as THREE.Mesh
+        // 调整金币的参数
+        const material = coinModel.material as MeshStandardMaterial
+        material.roughness = 0.2
+        coinModel.position.set(5, 0, 0)
+        coinModel.scale.set(5, 5, 5)
+        // 添加手动拖动助手
+        const transformHelper = new TransformControls(this.camera, this.$el)
+        transformHelper.attach(coinModel)
+        transformHelper.setMode('rotate')
+        transformHelper.enabled = true
+        transformHelper.showZ = false
+        transformHelper.showX = false
+        // transformHelper.showY = false
+        // 当手动拖动过就不再自动旋转
+        transformHelper.addEventListener('objectChange', (args) => {
+          this.manualRotated = true
+        })
+        // 把这个变量暴露到整体环境中
+        this.currentCoin = coinModel
+        // 把手动拖动助手暴露到整体环境中
+        this.transformHelper = transformHelper
+        this.scene.add(coinModel)
+        this.scene.add(transformHelper)
+      }
+    }
   }
 
   // 当窗口大小变化时触发
@@ -97,8 +187,17 @@ export class ThreeApp {
     if (this.showingPicIndex === -1 || this.showingPicIndex === this.res.length - 1) {
       // 如果没有正在显示的图片，或者已经是最后一张图片，使用第一张
       this.showingPicIndex = 0
-    } else {
+      // 跳转到下一个为粒子效果制作的图片
       this.showingPicIndex++
+      while(this.res[this.showingPicIndex] !instanceof Image || this.res[this.showingPicIndex].for !== 'particle') {
+        this.showingPicIndex++
+      }
+    } else {
+      // 跳转到下一个为粒子效果制作的图片
+      this.showingPicIndex++
+      while(this.res[this.showingPicIndex] !instanceof Image || this.res[this.showingPicIndex].for !== 'particle') {
+        this.showingPicIndex++
+      }
     }
     this.applyPic()
   }
@@ -113,7 +212,46 @@ export class ThreeApp {
     if (!this.res) {
       return null
     }
-    return this.res[this.showingPicIndex].value
+    return this.res[this.showingPicIndex].value as HTMLImageElement
+  }
+
+  // 切换到下一个视图
+  nextView = () => {
+    // 如果是最后一个视图，切换到第一个视图
+    if (this.isLastView) {
+      this._viewNo = 0
+    } else {
+      this._viewNo ++
+    }
+    gsap.killTweensOf(this.camera.position, 'x', true)
+    gsap.to(this.camera.position, { duration: 0.5, x: this._viewNo * 5, ease: Power2.easeOut })
+  }
+
+  // 切换到上一个视图
+  prevView = () => {
+    // 如果是第一个视图，切换到最后一个视图
+    if (this.isFirstView) {
+      this._viewNo = this.allViews - 1
+    } else {
+      this._viewNo --
+    }
+    gsap.killTweensOf(this.camera.position, 'x', true)
+    gsap.to(this.camera.position, { duration: 0.5, x: this._viewNo * 5, ease: Power2.easeOut })
+  }
+
+  // 获取当前正在显示的视图
+  get currentView(): number {
+    return this._viewNo + 1
+  }
+
+  // 是否正在显示最后一个视图
+  get isLastView(): boolean {
+    return this.currentView === this.allViews
+  }
+
+  // 是否正在显示第一个视图
+  get isFirstView(): boolean {
+    return this.currentView === 1
   }
 
   // 显示上一张图片
@@ -126,11 +264,25 @@ export class ThreeApp {
     if (this.showingPicIndex === -1) {
       // 如果没有正在显示的图片，使用第一张
       this.showingPicIndex = 0
+      // 跳转到下一个为粒子效果制作的图片
+      this.showingPicIndex++
+      while(this.res[this.showingPicIndex] !instanceof Image || this.res[this.showingPicIndex].for !== 'particle') {
+        this.showingPicIndex++
+      }
     } else if (this.showingPicIndex === 0){
       // 如果已经在显示第一张图片，使用最后一张
       this.showingPicIndex = this.res.length - 1
-    } else {
+      // 跳转到上一个为粒子效果制作的图片
       this.showingPicIndex--
+      while(this.res[this.showingPicIndex] !instanceof Image || this.res[this.showingPicIndex].for !== 'particle') {
+        this.showingPicIndex--
+      }
+    } else {
+      // 跳转到上一个为粒子效果制作的图片
+      this.showingPicIndex--
+      while(this.res[this.showingPicIndex] !instanceof Image || this.res[this.showingPicIndex].for !== 'particle') {
+        this.showingPicIndex--
+      }
     }
     this.applyPic()
   }
@@ -192,6 +344,9 @@ export class ThreeApp {
     this.icosahedronSample.rotateX(0.01)
     this.icosahedronSample.rotateY(0.01)
     this.icosahedronSample.rotateZ(0.01)
+    if (this.currentCoin && !this.manualRotated) {
+      this.currentCoin.rotateZ(-0.005)
+    }
     this.renderer.render(this.scene, this.camera)
   }
 

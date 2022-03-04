@@ -3,6 +3,17 @@ import WebGLBackground from './components/WebGLBackground/index.vue'
 import { onMounted, ref } from 'vue'
 import { LoadedResources, LoadingResources, Resources, resources } from './Resources'
 import { useI18n } from 'vue-i18n'
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import draco0Decoder from './assets/draco/draco_decoder.js?url'
+import draco0Encoder from './assets/draco/draco_encoder.js?url'
+import draco1Decoder from './assets/draco/gltf/draco_decoder.js?url'
+import draco1Encoder from './assets/draco/gltf/draco_encoder.js?url'
+import { CubeTexture, DataTexture } from 'three'
+
+// 手动保持引用
+[draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
 
 // 已经加载好的资源
 const loadedRes = ref<LoadedResources>([])
@@ -30,40 +41,77 @@ onMounted(() => {
   const all = resources.length
   // 加载过程中已经加载好的资源暂存
   const loadingResources: LoadingResources = []
+  // 实例化 three 提供的 gltf 加载器
+  const gltfLoader = (() => {
+    const loader = new GLTFLoader()
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderConfig({ type: 'js' })
+    dracoLoader.setDecoderPath(draco0Decoder.substring(0, draco0Decoder.lastIndexOf('/') + 1))
+    dracoLoader.preload()
+    loader.setDRACOLoader(dracoLoader)
+    return loader
+  })()
+  // 实例化 three 提供的 hdr 环境贴图加载器
+  const rgbeLoader = new RGBELoader()
   // 每一项加载结束时的回调
-  const onResLoadng = (nowProgress: number, all: number, name: Resources[number]['name'], target: HTMLImageElement) => {
-    loadingResources.push({ name, value: target })
-    console.log('资源加载进度: ' + (nowProgress / all * 100).toFixed(0))
+  const onResItemLoadEnd = (nowProgress: number, all: number, name: Resources[number]['name'], target: HTMLImageElement | GLTF | DataTexture, for0: Resources[number]['for']) => {
+    loadingResources.push({ name, value: target, for:  for0})
+    console.log(`资源加载进度:${name} ${nowProgress} / ${all}`)
     if (nowProgress === all) {
       // 加载完成
       loadedRes.value = loadingResources as LoadedResources
     }
   }
+  // 加载图片资源
+  const loadImageResource = (res: Resources[number]) => {
+    const img = new Image()
+    img.src = res.value
+    img.onload = () => {
+      // 处理图片大小
+      const width = Number(img.width)
+      img.width = picSize.value
+      img.height = img.height * picSize.value / width
+      if (img.height > 400) {
+        const height = Number(img.height)
+        img.height = picSize.value
+        img.width = img.width * picSize.value / height
+      }
+      img.style.background = 'black'
+      loaded++
+      onResItemLoadEnd(loaded, all, res.name, img, res.for)
+    }
+  }
+  // 加载 GLTF 模型
+  const loadGltfResource = async (res: Resources[number]) => {
+    try {
+      const gltf = await gltfLoader.loadAsync(res.value)
+      loaded++
+      onResItemLoadEnd(loaded, all, res.name, gltf, res.for)
+    } catch (e) {
+      const err = e as Error
+      console.log(`加载出错 [name: ${res.name}, value: ${res.value}, error: ${err.name}: ${err.message}]`)
+    }
+  }
+  // 加载 HDR 环境贴图
+  const loadHdrResource = (res: Resources[number]) => {
+    rgbeLoader.load(res.value, (texture) => {
+      loaded++
+      onResItemLoadEnd(loaded, all, res.name, texture, res.for)
+    }, undefined , (err) => {
+      console.log(`加载出错 [name: ${res.name}, value: ${res.value}, error: ${err.error.name}: ${err.error.message}]`)
+    })
+  }
   // 加载资源
-  const loadResources = (images: Resources) => {
+  const loadResources = () => {
     for (let res of resources) {
-      if (res.type === 'image') {
-        // 加载图片资源
-        const img = new Image()
-        img.src = res.value
-        img.onload = () => {
-          // 处理图片大小
-          const width = Number(img.width)
-          img.width = picSize.value
-          img.height = img.height * picSize.value / width
-          if (img.height > 400) {
-            const height = Number(img.height)
-            img.height = picSize.value
-            img.width = img.width * picSize.value / height
-          }
-          img.style.background = 'black'
-          loaded++
-          onResLoadng(loaded, all, res.name, img)
-        }
+      switch (res.type) {
+        case 'image': loadImageResource(res); break
+        case 'glb': loadGltfResource(res); break
+        case 'hdr': loadHdrResource(res); break
       }
     }
   }
-  loadResources(resources)
+  loadResources()
 })
 
 </script>
@@ -100,6 +148,20 @@ onMounted(() => {
       >
         {{ i18n.t('switchLang') }}
       </button>
+      <button
+        v-if="!webGlBackground?.isFirstView"
+        class="btn"
+        @click="webGlBackground?.prevView"
+      >
+        {{ i18n.t('prevView') }}
+      </button>
+      <button
+        v-if="!webGlBackground?.isLastView"
+        class="btn"
+        @click="webGlBackground?.nextView"
+      >
+        {{ i18n.t('nextView') }}
+      </button>
     </div>
   </div>
   <WebGLBackground
@@ -118,6 +180,7 @@ onMounted(() => {
     background: black;
     color: white;
     .static-framework {
+      pointer-events: none;
       width: 100%;
       height: 100%;
       position: absolute;
@@ -132,6 +195,7 @@ onMounted(() => {
         justify-content: center;
       }
       .btn {
+        pointer-events: auto;
         transition: all 250ms ease-out;
         border: 2px white solid;
         color: white;

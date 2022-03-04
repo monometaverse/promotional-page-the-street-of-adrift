@@ -5,5 +5,7 @@
   "nextPic": "下一张图片",
   "prevPic": "上一张图片",
   "show": "显示",
-  "underDevelopment": "《彷徨之街》宣传页正在开发中"
+  "underDevelopment": "《彷徨之街》宣传页正在开发中",
+  "prevView": "切换到上一个视图",
+  "nextView": "切换到下一个视图"
 }

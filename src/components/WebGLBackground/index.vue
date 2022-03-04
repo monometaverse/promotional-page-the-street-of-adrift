@@ -5,7 +5,7 @@
   />
 </template>
 <script lang="ts" setup>
-import { onUnmounted, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { LoadedResources } from '../../Resources'
 import { ThreeApp } from './ThreeApp'
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -14,9 +14,12 @@ const threeApp = ref<ThreeApp | null>(null)
 const props = defineProps<{
   res: LoadedResources
 }>()
+// 监听资源属性发生的变化，如果资源属性长度不为 0，就可以启动 three 实例
 watch(() => props.res, (after, before) => {
   if (after.length !== 0) {
     threeApp.value = new ThreeApp(canvasRef.value!, after)
+    // 手动同步 three 的数据
+    currentView.value = threeApp.value.currentView
   }
 })
 
@@ -41,8 +44,26 @@ const showOrHidePic = (show: boolean) => {
 onUnmounted(() => {
   threeApp.value?.destroy()
 })
+// 下一个视图
+const prevView = () => {
+  threeApp.value?.prevView()
+  // 手动同步 three 的数据
+  currentView.value = threeApp.value?.currentView
+}
+// 上一个视图
+const nextView = () => {
+  threeApp.value?.nextView()
+  // 手动同步 three 的数据
+  currentView.value = threeApp.value?.currentView
+}
+// 当前视图
+const currentView = ref<number | undefined>(0)
+// 是否是最后一个视图
+const isLastView = computed(() => currentView.value === threeApp.value?.allViews)
+// 是否是第一视图
+const isFirstView = computed(() => currentView.value === 1)
 // 把图片切换方法暴露给父组件
-defineExpose({ nextPic, prevPic, showOrHidePic })
+defineExpose({ nextPic, prevPic, showOrHidePic, prevView, nextView, currentView, isFirstView, isLastView })
 </script>
 <style lang="less" scoped>
 #three-host {
