@@ -13,7 +13,8 @@ module.exports = {
   ignorePatterns: [
     'node_modules',
     '*.png',
-    'dist'
+    'dist',
+    'src/assets'
   ],
   rules: {
     'eol-last': 'error',
