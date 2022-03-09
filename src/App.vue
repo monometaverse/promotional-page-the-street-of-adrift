@@ -1,32 +1,22 @@
 <script setup lang="ts">
 import WebGLBackground from './components/WebGLBackground/index.vue'
-import { onMounted, ref } from 'vue'
-import { LoadedResources, LoadingResources, Resources, resources } from './Resources'
+import ResourceLoader from './components/ResourceLoader/index.vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
-import draco0Decoder from './assets/draco/draco_decoder.js?url'
-import draco0Encoder from './assets/draco/draco_encoder.js?url'
-import draco1Decoder from './assets/draco/gltf/draco_decoder.js?url'
-import draco1Encoder from './assets/draco/gltf/draco_encoder.js?url'
-import { CubeTexture, DataTexture } from 'three'
-
-// 手动保持引用
-[draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
-
-// 已经加载好的资源
-const loadedRes = ref<LoadedResources>([])
-// 背景 canvas
-const webGlBackground = ref<InstanceType<typeof WebGLBackground> | null>(null)
-// 控制图片的最大高度或宽度
-const picSize = ref(400)
-const showHelper = ref(false)
+import { LoadedResources } from './components/ResourceLoader/Resources'
+// 资源引用
+const loadedRes = ref<LoadedResources | null>(null)
+// 当资源加载完成时
+const onResourceLoadComplete = (res: LoadedResources) => {
+  loadedRes.value = res
+}
+// i18n 切换语言
 const i18n = useI18n()
-// 切换语言
 const switchLang = () => {
   i18n.locale.value = i18n.locale.value === 'zh' ? 'en' : 'zh'
 }
+// 背景 canvas
+const webGlBackground = ref<InstanceType<typeof WebGLBackground> | null>(null)
 // 显示或隐藏辅助 canvas
 const toggleHelper = () => {
   if (!webGlBackground.value) {
@@ -35,88 +25,18 @@ const toggleHelper = () => {
   showHelper.value = !showHelper.value
   webGlBackground.value.showOrHidePic(showHelper.value)
 }
-
-onMounted(() => {
-  let loaded = 0
-  const all = resources.length
-  // 加载过程中已经加载好的资源暂存
-  const loadingResources: LoadingResources = []
-  // 实例化 three 提供的 gltf 加载器
-  const gltfLoader = (() => {
-    const loader = new GLTFLoader()
-    const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderConfig({ type: 'js' })
-    dracoLoader.setDecoderPath(draco0Decoder.substring(0, draco0Decoder.lastIndexOf('/') + 1))
-    dracoLoader.preload()
-    loader.setDRACOLoader(dracoLoader)
-    return loader
-  })()
-  // 实例化 three 提供的 hdr 环境贴图加载器
-  const rgbeLoader = new RGBELoader()
-  // 每一项加载结束时的回调
-  const onResItemLoadEnd = (nowProgress: number, all: number, name: Resources[number]['name'], target: HTMLImageElement | GLTF | DataTexture, for0: Resources[number]['for']) => {
-    loadingResources.push({ name, value: target, for:  for0})
-    console.log(`资源加载进度:${name} ${nowProgress} / ${all}`)
-    if (nowProgress === all) {
-      // 加载完成
-      loadedRes.value = loadingResources as LoadedResources
-    }
-  }
-  // 加载图片资源
-  const loadImageResource = (res: Resources[number]) => {
-    const img = new Image()
-    img.src = res.value
-    img.onload = () => {
-      // 处理图片大小
-      const width = Number(img.width)
-      img.width = picSize.value
-      img.height = img.height * picSize.value / width
-      if (img.height > 400) {
-        const height = Number(img.height)
-        img.height = picSize.value
-        img.width = img.width * picSize.value / height
-      }
-      img.style.background = 'black'
-      loaded++
-      onResItemLoadEnd(loaded, all, res.name, img, res.for)
-    }
-  }
-  // 加载 GLTF 模型
-  const loadGltfResource = async (res: Resources[number]) => {
-    try {
-      const gltf = await gltfLoader.loadAsync(res.value)
-      loaded++
-      onResItemLoadEnd(loaded, all, res.name, gltf, res.for)
-    } catch (e) {
-      const err = e as Error
-      console.log(`加载出错 [name: ${res.name}, value: ${res.value}, error: ${err.name}: ${err.message}]`)
-    }
-  }
-  // 加载 HDR 环境贴图
-  const loadHdrResource = (res: Resources[number]) => {
-    rgbeLoader.load(res.value, (texture) => {
-      loaded++
-      onResItemLoadEnd(loaded, all, res.name, texture, res.for)
-    }, undefined , (err) => {
-      console.log(`加载出错 [name: ${res.name}, value: ${res.value}, error: ${err.error.name}: ${err.error.message}]`)
-    })
-  }
-  // 加载资源
-  const loadResources = () => {
-    for (let res of resources) {
-      switch (res.type) {
-        case 'image': loadImageResource(res); break
-        case 'glb': loadGltfResource(res); break
-        case 'hdr': loadHdrResource(res); break
-      }
-    }
-  }
-  loadResources()
-})
+const showHelper = ref(false)
 
 </script>
 <template>
-  <div class="static-framework">
+  <ResourceLoader
+    @load-complete="onResourceLoadComplete"
+    v-if="!loadedRes"
+  />
+  <div
+    class="static-framework"
+    v-if="loadedRes"
+  >
     <h1 class="title">
       {{ i18n.t('underDevelopment') }}
     </h1>
@@ -165,7 +85,7 @@ onMounted(() => {
     </div>
   </div>
   <WebGLBackground
-    :res="loadedRes"
+    :res="loadedRes!"
     ref="webGlBackground"
   />
 </template>
