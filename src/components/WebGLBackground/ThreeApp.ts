@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { DataTexture, Float32BufferAttribute, IcosahedronBufferGeometry, MeshBasicMaterial, MeshStandardMaterial, Object3D, Vector3 } from 'three'
-import { LoadedResources } from '../../Resources'
+import { LoadedResources } from '../ResourceLoader/Resources'
 import { debounce } from '../../utils'
 import { gsap, Power2 } from 'gsap'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'

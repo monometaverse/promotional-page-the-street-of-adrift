@@ -6,7 +6,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { LoadedResources } from '../../Resources'
+import { LoadedResources } from '../ResourceLoader/Resources'
 import { ThreeApp } from './ThreeApp'
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const threeApp = ref<ThreeApp | null>(null)

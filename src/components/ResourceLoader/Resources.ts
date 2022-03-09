@@ -1,20 +1,20 @@
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // 阵营图片素材
-import dennisOrg from './assets/dennis-org.png'
-import ivanovaOrg from './assets/ivanova-org.png'
-import jonesOrg from './assets/jones-org.png'
-import linOrg from './assets/lin-org.png'
-import philipOrg from './assets/philip-org.png'
-import prajnaOrg from './assets/prajna-org.png'
-import rosettaOrg from './assets/rosetta-org.png'
-import tokugawaOrg from './assets/tokugawa-org.png'
-import touyamaOrg from './assets/touyama-org.png'
-import vue3Org from './assets/Vue3.png'
-import watanabeOrg from './assets/watanabe-org.png'
+import dennisOrg from '../../assets/dennis-org.png'
+import ivanovaOrg from '../../assets/ivanova-org.png'
+import jonesOrg from '../../assets/jones-org.png'
+import linOrg from '../../assets/lin-org.png'
+import philipOrg from '../../assets/philip-org.png'
+import prajnaOrg from '../../assets/prajna-org.png'
+import rosettaOrg from '../../assets/rosetta-org.png'
+import tokugawaOrg from '../../assets/tokugawa-org.png'
+import touyamaOrg from '../../assets/touyama-org.png'
+import vue3Org from '../../assets/Vue3.png'
+import watanabeOrg from '../../assets/watanabe-org.png'
 // 九霄金币
-import kusyouCoin from './assets/kusyouCoin.glb'
-import coinEnviroment from './assets/coinEnviroment.hdr'
+import kusyouCoin from '../../assets/kusyouCoin.glb'
+import coinEnviroment from '../../assets/coinEnviroment.hdr'
 import { DataTexture } from 'three'
 
 // 要加载的资源
