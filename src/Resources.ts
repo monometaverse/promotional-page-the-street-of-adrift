@@ -13,7 +13,7 @@ import touyamaOrg from './assets/touyama-org.png'
 import vue3Org from './assets/Vue3.png'
 import watanabeOrg from './assets/watanabe-org.png'
 // 九霄金币
-import jiuxiaoCoin from './assets/jiuxiaoCoin.glb'
+import kusyouCoin from './assets/kusyouCoin.glb'
 import coinEnviroment from './assets/coinEnviroment.hdr'
 import { DataTexture } from 'three'
 
@@ -30,7 +30,7 @@ export const resources = [
   { name: 'touyamaOrg', value: touyamaOrg, type: 'image', for: 'particle' },
   { name: 'vue3Org', value: vue3Org, type: 'image', for: 'particle' },
   { name: 'watanabeOrg', value: watanabeOrg, type: 'image', for: 'particle' },
-  { name: 'jiuxiaoCoin', value: jiuxiaoCoin, type: 'glb', for: 'NFT' },
+  { name: 'kusyouCoin', value: kusyouCoin, type: 'glb', for: 'NFT' },
   { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' }
 ] as const
 export type Resources = typeof resources

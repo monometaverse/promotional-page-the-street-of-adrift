@@ -135,7 +135,7 @@ export class ThreeApp {
   // 初始化金币模型视图
   initCoinModelView = () => {
     // 添加金币模型
-    const coin = this.res.find(it => it.name === 'jiuxiaoCoin')
+    const coin = this.res.find(it => it.name === 'kusyouCoin')
     if (coin) {
       // 从模型文件中寻找真正的金币 Mesh
       const coinContainer = this.getChildByName('YX_Gold', toRaw((coin.value as GLTF).scene))
