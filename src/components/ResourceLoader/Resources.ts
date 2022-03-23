@@ -14,6 +14,7 @@ import vue3Org from '../../assets/Vue3.png'
 import watanabeOrg from '../../assets/watanabe-org.png'
 // 九霄金币
 import kusyouCoin from '../../assets/kusyouCoin.glb'
+import gunForTest from '../../assets/gun-for-test.glb'
 import coinEnviroment from '../../assets/coinEnviroment.hdr'
 import { DataTexture } from 'three'
 
@@ -31,7 +32,8 @@ export const resources = [
   { name: 'vue3Org', value: vue3Org, type: 'image', for: 'particle' },
   { name: 'watanabeOrg', value: watanabeOrg, type: 'image', for: 'particle' },
   { name: 'kusyouCoin', value: kusyouCoin, type: 'glb', for: 'NFT' },
-  { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' }
+  { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' },
+  { name: 'gunForTest', value: gunForTest, type: 'glb', for: 'NFT' }
 ] as const
 export type Resources = typeof resources
 export type LoadingResources = { name: Resources[number]['name'], value: HTMLImageElement | GLTF | DataTexture, for: Resources[number]['for'] }[]

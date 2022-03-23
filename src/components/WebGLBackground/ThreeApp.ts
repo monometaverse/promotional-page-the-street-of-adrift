@@ -135,17 +135,18 @@ export class ThreeApp {
   // 初始化金币模型视图
   initCoinModelView = () => {
     // 添加金币模型
-    const coin = this.res.find(it => it.name === 'kusyouCoin')
+    const coin = this.res.find(it => it.name === 'gunForTest')
     if (coin) {
       // 从模型文件中寻找真正的金币 Mesh
-      const coinContainer = this.getChildByName('YX_Gold', toRaw((coin.value as GLTF).scene))
+      const coinContainer = this.getChildByName('polySurface159001', toRaw((coin.value as GLTF).scene))
       if (coinContainer) {
         const coinModel = coinContainer as THREE.Mesh
         // 调整金币的参数
         const material = coinModel.material as MeshStandardMaterial
         material.roughness = 0.2
         coinModel.position.set(5, 0, 0)
-        coinModel.scale.set(5, 5, 5)
+        coinModel.rotateX(Math.PI / 2)
+        coinModel.scale.set(0.05, 0.05, 0.05)
         // 添加手动拖动助手
         const transformHelper = new TransformControls(this.camera, this.$el)
         transformHelper.attach(coinModel)
