@@ -7,8 +7,9 @@ import draco0Decoder from '../../assets/draco/draco_decoder.js?url'
 import draco0Encoder from '../../assets/draco/draco_encoder.js?url'
 import draco1Decoder from '../../assets/draco/gltf/draco_decoder.js?url'
 import draco1Encoder from '../../assets/draco/gltf/draco_encoder.js?url'
-import { computed, onMounted, ref } from 'vue'
+import { computed, CSSProperties, onMounted, ref, watch } from 'vue'
 import { DataTexture } from 'three'
+import { gsap } from 'gsap'
 // 手动保持引用
 [draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
 // 控制图片的最大高度或宽度
@@ -17,21 +18,32 @@ const picSize = ref(400)
 const emits = defineEmits<{
   (events: 'loadComplete', loaded: LoadedResources): void
 }>()
+// 加载过程中已经加载好的资源暂存
+const loadingResources: LoadingResources = []
 // 加载进度
 const progress = ref(0)
-const progressBar = computed(() => { // 进度条
-  let text = 'I'
-  for (let i = 0; i <= progress.value / 10; i++) {
-    text += ' I'
-  }
-  return text
+// 进度条数量
+const progressCount = 20
+const showProgress = ref({ p: 0 })
+watch(progress, (newVal) => {
+  gsap.killTweensOf(showProgress)
+  gsap.fromTo(showProgress.value, { p: showProgress.value.p }, { p: newVal, duration: 1, onComplete: () => {
+    if (newVal === 100) {
+      emits('loadComplete', loadingResources)
+    }
+  } })
 })
+// 每个进度条的透明度
+const opacityForProgressItem = (index: number): CSSProperties => {
+  return {
+    opacity: showProgress.value.p / 100 * progressCount - index,
+    transition: 'opacity 250ms'
+  }
+}
 
 onMounted(() => {
   let loaded = 0
   const all = resources.length
-  // 加载过程中已经加载好的资源暂存
-  const loadingResources: LoadingResources = []
   // 实例化 three 提供的 gltf 加载器
   const gltfLoader = (() => {
     const loader = new GLTFLoader()
@@ -48,10 +60,6 @@ onMounted(() => {
   const onResItemLoadEnd = (nowProgress: number, all: number, name: Resources[number]['name'], target: HTMLImageElement | GLTF | DataTexture, for0: Resources[number]['for']) => {
     loadingResources.push({ name, value: target, for:  for0})
     progress.value = Math.floor(nowProgress / all * 100)
-    if (nowProgress === all) {
-      // 加载完成
-      emits('loadComplete', loadingResources as LoadedResources)
-    }
   }
   // 加载图片资源
   const loadImageResource = (res: Resources[number]) => {
@@ -107,10 +115,46 @@ onMounted(() => {
 </script>
 <template>
   <div class="res-loader-layer">
-    {{ progressBar }} {{ progress }} {{ progressBar }}
+    <div class="game-logo cover-no-repeat-center" />
+    <!--加载条-->
+    <div class="progress-bar cover-no-repeat-center">
+      <div class="progress-bar-inner cover-no-repeat-center">
+        <!--左侧斜杠-->
+        <div class="progress-bar-left">
+          <div
+            class="progress-item"
+            v-for="v in progressCount"
+            :key="v"
+            :style="opacityForProgressItem(progressCount - v)"
+          />
+        </div>
+        <!--进度数字-->
+        <div class="progress-bar-center">
+          {{ showProgress.p.toFixed() }}%
+        </div>
+        <!--右侧斜杠-->
+        <div class="progress-bar-right">
+          <div
+            class="progress-item"
+            v-for="v in progressCount"
+            :key="v"
+            :style="opacityForProgressItem(v - 1)"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <style lang="less" scoped>
+// 游戏 logo，需要特意向右边偏移一段距离
+.game-logo {
+  @width: 640px;
+  @height: calc(@width / 480 * 112);
+  width: @width;
+  height: @height;
+  background-image: url('../../assets/home-page/tsoa-logo.svg');
+  transform: translateX(70px);
+}
 .res-loader-layer {
   position: absolute;
   width: 100%;
@@ -118,5 +162,48 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+}
+// 加载条
+.progress-bar {
+  @width: 505px;
+  @height: 40px;
+  width: @width;
+  height: @height;
+  margin-top: 24px;
+  transform: skewX(-30deg);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+  // 内部背景
+  &-inner {
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../assets/loading-page/progress-background-inner.png');
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  // 加载数字
+  &-center {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    text-shadow: 0px 0px 24px #FFFFFF;
+    height: 100%;
+    width: 100px;
+  }
+  &-left, &-right {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+  }
+}
+.progress-item {
+  height: 20px;
+  width: 2px;
+  background: white;
+  box-shadow: 0px 0px 24px #FFFFFF;
 }
 </style>
