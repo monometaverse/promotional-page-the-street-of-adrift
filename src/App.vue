@@ -29,61 +29,66 @@ const showHelper = ref(false)
 
 </script>
 <template>
-  <ResourceLoader
-    @load-complete="onResourceLoadComplete"
-    v-if="!loadedRes"
-  />
-  <div
-    class="static-framework"
-    v-if="loadedRes"
-  >
-    <h1 class="title">
-      {{ i18n.t('underDevelopment') }}
-    </h1>
-    <h2 class="title">
-      Vue3+TypeScript+vue-i18n+Three.js
-    </h2>
-    <div class="particles-control-btns">
-      <button
-        class="btn"
-        @click="webGlBackground?.nextPic"
-      >
-        {{ i18n.t('nextPic') }}
-      </button>
-      <button
-        class="btn"
-        @click="webGlBackground?.prevPic"
-      >
-        {{ i18n.t('prevPic') }}
-      </button>
-      <button
-        class="btn"
-        @click="toggleHelper"
-      >
-        {{ showHelper? i18n.t('hide') : i18n.t('show') }}{{ i18n.t('helperCanvas') }}
-      </button>
-      <button
-        class="btn"
-        @click="switchLang"
-      >
-        {{ i18n.t('switchLang') }}
-      </button>
-      <button
-        v-if="!webGlBackground?.isFirstView"
-        class="btn"
-        @click="webGlBackground?.prevView"
-      >
-        {{ i18n.t('prevView') }}
-      </button>
-      <button
-        v-if="!webGlBackground?.isLastView"
-        class="btn"
-        @click="webGlBackground?.nextView"
-      >
-        {{ i18n.t('nextView') }}
-      </button>
+  <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
+  <transition name="fade">
+    <ResourceLoader
+      @load-complete="onResourceLoadComplete"
+      v-if="!loadedRes"
+    />
+  </transition>
+  <transition name="fade">
+    <div
+      class="static-framework"
+      v-if="loadedRes"
+    >
+      <h1 class="title">
+        {{ i18n.t('underDevelopment') }}
+      </h1>
+      <h2 class="title">
+        Vue3+TypeScript+vue-i18n+Three.js
+      </h2>
+      <div class="particles-control-btns">
+        <button
+          class="btn"
+          @click="webGlBackground?.nextPic"
+        >
+          {{ i18n.t('nextPic') }}
+        </button>
+        <button
+          class="btn"
+          @click="webGlBackground?.prevPic"
+        >
+          {{ i18n.t('prevPic') }}
+        </button>
+        <button
+          class="btn"
+          @click="toggleHelper"
+        >
+          {{ showHelper? i18n.t('hide') : i18n.t('show') }}{{ i18n.t('helperCanvas') }}
+        </button>
+        <button
+          class="btn"
+          @click="switchLang"
+        >
+          {{ i18n.t('switchLang') }}
+        </button>
+        <button
+          v-if="!webGlBackground?.isFirstView"
+          class="btn"
+          @click="webGlBackground?.prevView"
+        >
+          {{ i18n.t('prevView') }}
+        </button>
+        <button
+          v-if="!webGlBackground?.isLastView"
+          class="btn"
+          @click="webGlBackground?.nextView"
+        >
+          {{ i18n.t('nextView') }}
+        </button>
+      </div>
     </div>
-  </div>
+  </transition>
   <WebGLBackground
     :res="loadedRes!"
     ref="webGlBackground"
@@ -91,10 +96,24 @@ const showHelper = ref(false)
 </template>
 
 <style lang="less">
+  // 给动画系统使用的类名
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.5s ease;
+  }
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
   @static-z-index: 1000;
   html, body, #app {
     margin: 0;
     height: 100%;
+  }
+  .cover-no-repeat-center {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
   #app {
     background: black;

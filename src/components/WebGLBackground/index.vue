@@ -16,6 +16,7 @@ const props = defineProps<{
 }>()
 // 监听资源属性发生的变化，如果资源属性长度不为 0，就可以启动 three 实例
 watch(() => props.res, (after, before) => {
+  console.log(after)
   if (after.length !== 0) {
     threeApp.value = new ThreeApp(canvasRef.value!, after)
     // 手动同步 three 的数据
