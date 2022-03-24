@@ -26,6 +26,14 @@ const toggleHelper = () => {
   webGlBackground.value.showOrHidePic(showHelper.value)
 }
 const showHelper = ref(false)
+// 路由，等英文文案准备好之后改用 i18n
+const routes = ref([
+  { to: '/', name: '首页' },
+  { to: '/items', name: '物品' },
+  { to: '/characters', name: '角色' },
+  { to: '/settings', name: '设定' },
+  { to: '/archives', name: '档案' },
+])
 
 </script>
 <template>
@@ -36,14 +44,35 @@ const showHelper = ref(false)
       v-if="!loadedRes"
     />
   </transition>
-  <transition name="fade">
-    <div
-      class="static-framework"
-      v-if="loadedRes"
-    >
-      <router-view />
-    </div>
-  </transition>
+  <router-view v-slot="{ Component }">
+    <transition name="fade">
+      <div
+        class="static-framework"
+        v-if="loadedRes"
+      >
+        <div class="navigation">
+          <div class="navigation-content">
+            <!--TODO：替换成 i18n 文案-->
+            <router-link
+              v-for="theRoute of routes"
+              class="navigation-item"
+              :to="theRoute.to"
+              :key="theRoute.name"
+            >
+              <div class="navigation-item-text">
+                {{ theRoute.name }}
+              </div>
+              <div class="navigation-item-icon" />
+            </router-link>
+          </div>
+          <div class="navigation-line" />
+        </div>
+        <transition name="fade">
+          <component :is="Component" />
+        </transition>
+      </div>
+    </transition>
+  </router-view>
 </template>
 
 <style lang="less">
@@ -70,7 +99,6 @@ const showHelper = ref(false)
     background: black;
     color: white;
     .static-framework {
-      pointer-events: none;
       width: 100%;
       height: 100%;
       position: absolute;
@@ -101,4 +129,67 @@ const showHelper = ref(false)
       }
     }
   }
+  // 导航
+.navigation {
+  @line-height: 800px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: calc(50% - @line-height / 2);
+  right: 64px;
+  // 导航中的左侧部分
+  &-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 500px;
+    margin-right: 24px;
+  }
+  // 导航中的每一项
+  &-item {
+    padding: 10px;
+    display: flex;
+    transition: opacity 250ms ease-out;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 20px;
+    color: white;
+    opacity: 0.5;
+    text-decoration: none;
+    align-items: center;
+    column-gap: 16px;
+    &:hover {
+      opacity: 1;
+    }
+    &-text {
+      transition: transform 250ms ease-out;
+      transform: translateX(34px);
+    }
+    &-icon {
+      transition: opacity 250ms ease-out;
+      opacity: 0;
+      width: 12px;
+      height: 18px;
+      background-image: url('./assets/static-framework/navigation-item-active.png');
+      .cover-no-repeat-center();
+      background-size: contain;
+    }
+  }
+
+  // 导航右侧的线
+  &-line {
+    height: @line-height;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 25.52%, rgba(255, 255, 255, 0.5) 49.63%, rgba(255, 255, 255, 0.5) 75.52%, rgba(255, 255, 255, 0) 100%);
+  }
+  // 正在显示的导航页面
+  .router-link-active {
+    opacity: 1;
+    .navigation-item-text {
+      transform: none;
+    }
+    .navigation-item-icon {
+      opacity: 1;
+    }
+  }
+}
 </style>

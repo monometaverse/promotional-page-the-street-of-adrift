@@ -2,5 +2,5 @@
 <script lang="ts" setup>
 </script>
 <template>
-  这里是道具页
+  <h1>这里是物品页</h1>
 </template>
