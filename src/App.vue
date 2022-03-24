@@ -47,7 +47,6 @@ router.beforeEach(() => {
 const indexOfRoute = (to: string): number => {
   for (let index in routes.value) {
     if (routes.value[index].to === to) {
-      console.log(parseInt(index))
       return parseInt(index)
     }
   }
