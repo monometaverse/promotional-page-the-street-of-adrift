@@ -24,10 +24,15 @@ const loadingResources: LoadingResources = []
 const progress = ref(0)
 // 进度条数量
 const progressCount = 20
+// 将显示在界面上的进度，由于 GSAP 只能操作对象，使用了一个对象把数值包裹了起来
 const showProgress = ref({ p: 0 })
+// 当进度变化时，使用 GSAP 对要显示的进度进行缓动
 watch(progress, (newVal) => {
+  // 取消上一个缓动效果
   gsap.killTweensOf(showProgress)
+  // 进行新的缓动
   gsap.fromTo(showProgress.value, { p: showProgress.value.p }, { p: newVal, duration: 1, onComplete: () => {
+    // 当缓动结束，且新的值为 100 时，触发资源加载结束事件
     if (newVal === 100) {
       emits('loadComplete', loadingResources)
     }
@@ -115,31 +120,33 @@ onMounted(() => {
 </script>
 <template>
   <div class="res-loader-layer">
-    <div class="game-logo cover-no-repeat-center" />
-    <!--加载条-->
-    <div class="progress-bar cover-no-repeat-center">
-      <div class="progress-bar-inner cover-no-repeat-center">
-        <!--左侧斜杠-->
-        <div class="progress-bar-left">
-          <div
-            class="progress-item"
-            v-for="v in progressCount"
-            :key="v"
-            :style="opacityForProgressItem(progressCount - v)"
-          />
-        </div>
-        <!--进度数字-->
-        <div class="progress-bar-center">
-          {{ showProgress.p.toFixed() }}%
-        </div>
-        <!--右侧斜杠-->
-        <div class="progress-bar-right">
-          <div
-            class="progress-item"
-            v-for="v in progressCount"
-            :key="v"
-            :style="opacityForProgressItem(v - 1)"
-          />
+    <div class="loading-block">
+      <div class="game-logo cover-no-repeat-center" />
+      <!--加载条-->
+      <div class="progress-bar cover-no-repeat-center">
+        <div class="progress-bar-inner cover-no-repeat-center">
+          <!--左侧斜杠-->
+          <div class="progress-bar-left">
+            <div
+              class="progress-item"
+              v-for="v in progressCount"
+              :key="v"
+              :style="opacityForProgressItem(progressCount - v)"
+            />
+          </div>
+          <!--进度数字-->
+          <div class="progress-bar-center">
+            {{ showProgress.p.toFixed() }}%
+          </div>
+          <!--右侧斜杠-->
+          <div class="progress-bar-right">
+            <div
+              class="progress-item"
+              v-for="v in progressCount"
+              :key="v"
+              :style="opacityForProgressItem(v - 1)"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -148,13 +155,14 @@ onMounted(() => {
 <style lang="less" scoped>
 // 游戏 logo，需要特意向右边偏移一段距离
 .game-logo {
-  @width: 640px;
+  @width: 480px;
   @height: calc(@width / 480 * 112);
   width: @width;
   height: @height;
+  margin-left: 20px;
   background-image: url('../../assets/home-page/tsoa-logo.svg');
-  transform: translateX(70px);
 }
+// 加载层
 .res-loader-layer {
   position: absolute;
   width: 100%;
@@ -166,8 +174,8 @@ onMounted(() => {
 }
 // 加载条
 .progress-bar {
-  @width: 505px;
-  @height: 40px;
+  @width: 405px;
+  @height: 32px;
   width: @width;
   height: @height;
   margin-top: 24px;
@@ -188,20 +196,23 @@ onMounted(() => {
   &-center {
     text-align: center;
     font-family: 'Montserrat', sans-serif;
-    font-size: 32px;
+    font-size: 20px;
     font-weight: 500;
     text-shadow: 0px 0px 24px #FFFFFF;
     height: 100%;
-    width: 100px;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   &-left, &-right {
     display: flex;
-    column-gap: 8px;
+    column-gap: 6px;
     align-items: center;
   }
 }
 .progress-item {
-  height: 20px;
+  height: 16px;
   width: 2px;
   background: white;
   box-shadow: 0px 0px 24px #FFFFFF;
