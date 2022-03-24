@@ -25,6 +25,7 @@ module.exports = {
     '@typescript-eslint/indent': ['error', 2],
     'vue/script-indent': ['error', 2, {
       switchCase: 1
-    }]
+    }],
+    'vue/multi-word-component-names': 'off'
   }
 }
