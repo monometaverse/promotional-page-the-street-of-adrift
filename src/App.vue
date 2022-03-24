@@ -41,58 +41,9 @@ const showHelper = ref(false)
       class="static-framework"
       v-if="loadedRes"
     >
-      <h1 class="title">
-        {{ i18n.t('underDevelopment') }}
-      </h1>
-      <h2 class="title">
-        Vue3+TypeScript+vue-i18n+Three.js
-      </h2>
-      <div class="particles-control-btns">
-        <button
-          class="btn"
-          @click="webGlBackground?.nextPic"
-        >
-          {{ i18n.t('nextPic') }}
-        </button>
-        <button
-          class="btn"
-          @click="webGlBackground?.prevPic"
-        >
-          {{ i18n.t('prevPic') }}
-        </button>
-        <button
-          class="btn"
-          @click="toggleHelper"
-        >
-          {{ showHelper? i18n.t('hide') : i18n.t('show') }}{{ i18n.t('helperCanvas') }}
-        </button>
-        <button
-          class="btn"
-          @click="switchLang"
-        >
-          {{ i18n.t('switchLang') }}
-        </button>
-        <button
-          v-if="!webGlBackground?.isFirstView"
-          class="btn"
-          @click="webGlBackground?.prevView"
-        >
-          {{ i18n.t('prevView') }}
-        </button>
-        <button
-          v-if="!webGlBackground?.isLastView"
-          class="btn"
-          @click="webGlBackground?.nextView"
-        >
-          {{ i18n.t('nextView') }}
-        </button>
-      </div>
+      <router-view />
     </div>
   </transition>
-  <WebGLBackground
-    :res="loadedRes!"
-    ref="webGlBackground"
-  />
 </template>
 
 <style lang="less">
