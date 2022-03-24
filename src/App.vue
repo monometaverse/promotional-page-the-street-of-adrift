@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import WebGLBackground from './components/WebGLBackground/index.vue'
 import ResourceLoader from './components/ResourceLoader/index.vue'
-import { ref } from 'vue'
+import { CSSProperties, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { useRoute, useRouter } from 'vue-router'
+import { gsap } from 'gsap'
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
+  router.push('/')
 }
 // i18n 切换语言
 const i18n = useI18n()
@@ -38,10 +40,46 @@ const routes = ref([
 // 当前路由
 const currentRoute = useRoute()
 const router = useRouter()
-const prevRoute = ref('')
-// 在每次路由切换后，记录当前路由的路径
-router.beforeEach(() => {
-  prevRoute.value = currentRoute.path
+// 当前显示的路由路径
+const currentRoutePath = ref('')
+// 上一个路由路径
+const prevRoutePath = ref('')
+// 在每次路由切换之前进行操作
+router.beforeEach((to, from, next) => {
+  // 获取要前往的路由的背景
+  let routeName = ''
+  if (to.path === '/') {
+    routeName = 'home'
+  } else {
+    routeName = to.path.substring(1)
+  }
+  // 资源尚未加载完成，不进入页面
+  if (!loadedRes.value) {
+    next(false)
+    return
+  }
+  const backgroundFound = loadedRes.value.find((it) => it.name === routeName + 'Background')
+  if (!backgroundFound) {
+    throw new Error('未找到需要的背景图片，这种情况不应该出现，需要找的是: ' + routeName + 'Background')
+  }
+  // 取消正在进行的动画
+  gsap.killTweensOf(backgroundCss.value)
+  if (backgroundCss.value['background-image']) {
+    // 如果已经设置背景，把背景渐隐
+    gsap.to(backgroundCss.value, { opacity: 0, duration: 0.25, onComplete: () => {
+      // 在渐隐完成之后设置新的背景，并渐显
+      backgroundCss.value['background-image'] = `url('${(backgroundFound.value as HTMLImageElement).src}')`
+      gsap.to(backgroundCss.value, { opacity: 1, duration: 0.25 })
+    } })
+  } else {
+    // 在渐隐完成之后设置新的背景，并渐显
+    backgroundCss.value['background-image'] = `url('${(backgroundFound.value as HTMLImageElement).src}')`
+    gsap.to(backgroundCss.value, { opacity: 1, duration: 0.25 })
+  }
+  // 设置目前的路由和上一个路由
+  prevRoutePath.value = currentRoutePath.value
+  currentRoutePath.value = currentRoute.path
+  next()
 })
 // 获取路由的索引
 const indexOfRoute = (to: string): number => {
@@ -52,10 +90,18 @@ const indexOfRoute = (to: string): number => {
   }
   return -1
 }
-// 返回传入的路由是否在当前路由上方
-const isBefore = (to: string, from: string): boolean => {
-  return indexOfRoute(to) < indexOfRoute(from)
+/**
+ * 获取路由切换时使用的动画名称
+ */
+const getTransitionName = (to: string, from: string): 'translate-down-page' | 'translate-up-page' | '' => {
+  // 没有上一个路由，不需要动画
+  if (!prevRoutePath.value) return ''
+  return indexOfRoute(to) < indexOfRoute(from) ? 'translate-down-page' : 'translate-up-page'
 }
+// 背景图片块的 CSS 样式
+const backgroundCss = ref<CSSProperties>({
+  opacity: 0
+})
 </script>
 <template>
   <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
@@ -71,6 +117,10 @@ const isBefore = (to: string, from: string): boolean => {
         class="static-framework"
         v-if="loadedRes"
       >
+        <div
+          class="background"
+          :style="backgroundCss"
+        />
         <div class="navigation">
           <div class="navigation-content">
             <!--TODO：替换成 i18n 文案-->
@@ -88,7 +138,7 @@ const isBefore = (to: string, from: string): boolean => {
           </div>
           <div class="navigation-line" />
         </div>
-        <transition :name="isBefore(prevRoute, route.path) ? 'translate-up-page' : 'translate-down-page'">
+        <transition :name="getTransitionName(route.path, currentRoutePath)">
           <component :is="Component" />
         </transition>
       </div>
@@ -247,5 +297,12 @@ const isBefore = (to: string, from: string): boolean => {
   width: 100%;
   height: 100%;
   position: absolute;
+}
+// 背景图片块
+.background {
+  .cover-no-repeat-center();
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 </style>
