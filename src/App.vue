@@ -4,6 +4,7 @@ import ResourceLoader from './components/ResourceLoader/index.vue'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
+import { useRoute, useRouter } from 'vue-router'
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
@@ -33,8 +34,29 @@ const routes = ref([
   { to: '/characters', name: '角色' },
   { to: '/settings', name: '设定' },
   { to: '/archives', name: '档案' },
-])
-
+] as const)
+// 当前路由
+const currentRoute = useRoute()
+const router = useRouter()
+const prevRoute = ref('')
+// 在每次路由切换后，记录当前路由的路径
+router.beforeEach(() => {
+  prevRoute.value = currentRoute.path
+})
+// 获取路由的索引
+const indexOfRoute = (to: string): number => {
+  for (let index in routes.value) {
+    if (routes.value[index].to === to) {
+      console.log(parseInt(index))
+      return parseInt(index)
+    }
+  }
+  return -1
+}
+// 返回传入的路由是否在当前路由上方
+const isBefore = (to: string, from: string): boolean => {
+  return indexOfRoute(to) < indexOfRoute(from)
+}
 </script>
 <template>
   <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
@@ -44,7 +66,7 @@ const routes = ref([
       v-if="!loadedRes"
     />
   </transition>
-  <router-view v-slot="{ Component }">
+  <router-view v-slot="{ Component, route }">
     <transition name="fade">
       <div
         class="static-framework"
@@ -67,7 +89,7 @@ const routes = ref([
           </div>
           <div class="navigation-line" />
         </div>
-        <transition name="fade">
+        <transition :name="isBefore(prevRoute, route.path) ? 'translate-up-page' : 'translate-down-page'">
           <component :is="Component" />
         </transition>
       </div>
@@ -76,7 +98,7 @@ const routes = ref([
 </template>
 
 <style lang="less">
-  // 给动画系统使用的类名
+  // 给动画系统使用的类名，渐变
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.5s ease;
@@ -84,6 +106,34 @@ const routes = ref([
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;
+  }
+  // 给动画系统使用的类名，向上路由
+  .translate-up-page-enter-active,
+  .translate-up-page-leave-active {
+    transition: transform 0.5s ease;
+  }
+  .translate-up-page-enter-from {
+    transform: translateY(100%);
+  }
+  .translate-up-page-enter-to, .translate-up-page-leave-from {
+    transform: translateY(0);
+  }
+  .translate-up-page-leave-to {
+    transform: translateY(-100%);
+  }
+  // 给动画系统使用的类名，向下路由
+  .translate-down-page-enter-active,
+  .translate-down-page-leave-active {
+    transition: transform 0.5s ease;
+  }
+  .translate-down-page-enter-from {
+    transform: translateY(-100%);
+  }
+  .translate-down-page-enter-to, .translate-down-page-leave-from {
+    transform: translateY(0);
+  }
+  .translate-down-page-leave-to {
+    transform: translateY(100%);
   }
   @static-z-index: 1000;
   html, body, #app {
@@ -131,6 +181,7 @@ const routes = ref([
   }
   // 导航
 .navigation {
+  z-index: 20;
   @line-height: 800px;
   position: absolute;
   display: flex;
@@ -191,5 +242,11 @@ const routes = ref([
       opacity: 1;
     }
   }
+}
+// 页面
+.route-page {
+  width: 100%;
+  height: 100%;
+  position: absolute;
 }
 </style>

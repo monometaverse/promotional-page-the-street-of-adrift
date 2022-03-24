@@ -2,5 +2,7 @@
 <script lang="ts" setup>
 </script>
 <template>
-  <h1>这里是角色页</h1>
+  <div class="route-page">
+    这里是角色页
+  </div>
 </template>
