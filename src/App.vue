@@ -246,6 +246,38 @@ const backgroundCss = ref<CSSProperties>({
             {{ 'NEED TEXT' }}
           </div>
         </div>
+        <!-- 右上角操作部分 -->
+        <div class="actions">
+          <div class="actions-text">
+            登录
+          </div>
+          <div class="actions-divider" />
+          <div class="actions-text">
+            注册
+          </div>
+          <!-- 语言切换菜单 -->
+          <el-dropdown>
+            <div class="actions-text actions-dropdown">
+              <span>EN</span>
+              <img
+                src="./assets/static-framework/dropdown.svg"
+                class="actions-dropdown-icon"
+              >
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>English</el-dropdown-item>
+                <el-dropdown-item>中文</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <img
+            src="./assets/static-framework/share.svg"
+            class="actions-share"
+            width="16"
+            height="16"
+          >
+        </div>
         <transition :name="getTransitionName(route.path, currentRoutePath)">
           <component :is="Component" />
         </transition>
@@ -463,11 +495,51 @@ const backgroundCss = ref<CSSProperties>({
     opacity: 0.5;
   }
 }
+// 右上角操作部分
+.actions {
+  position: absolute;
+  right: 64px;
+  top: 64px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  &-text {
+    color: white;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    &:nth-child(3) {
+      margin-right: 48px;
+    }
+  }
+  &-divider {
+    width: 2px;
+    height: 16px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 0 16px;
+  }
+  &-share {
+    display: block;
+    margin-left: 48px;
+  }
+  &-dropdown-icon {
+    margin-left: 10px;
+  }
+}
 // 背景图片块
 .background {
   .cover-no-repeat-center();
   position: absolute;
   width: 100%;
   height: 100%;
+}
+@media screen and (max-height: 1080px) {
+  // 当屏幕高度小于 1080px 时，缩小导航大小至 700px
+  .navigation-line {
+    height: 700px;
+  }
+  .navigation {
+    top: calc(50% - 350px);
+  }
 }
 </style>
