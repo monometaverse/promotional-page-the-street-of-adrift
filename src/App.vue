@@ -37,6 +37,17 @@ const routes = ref([
   { to: '/settings', name: '设定' },
   { to: '/archives', name: '档案' },
 ] as const)
+// 获取路由名称
+const getRouteName = (path: string): string => {
+  for (let r of routes.value) {
+    if (r.to === path) {
+      return r.name
+    }
+  }
+  return ''
+}
+// 正在显示的页面名称
+const pageName = ref('')
 // 当前路由
 const currentRoute = useRoute()
 const router = useRouter()
@@ -90,6 +101,23 @@ router.beforeEach((to, from, next) => {
     // 消失之后重新显示
     gsap.fromTo(pageNumberAnimateObj.value, { opacity: 0, transform: pageNumberActualDistance }, { opacity: 1, transform: 0, duration: 0.25 })
   }})
+  // 取消左上角标题正在进行的动画
+  gsap.killTweensOf('.page-title')
+  if (to.path === '/') {
+    // 隐藏标题
+    gsap.to('.page-title', { opacity: 0, duration: 0.5 })
+  } else if (from.path === '/') {
+    // 显示标题
+    pageName.value = getRouteName(to.path)
+    gsap.to('.page-title', { opacity: 1, duration: 0.5 })
+  } else {
+    // 隐藏标题
+    gsap.to('.page-title', { opacity: 0, duration: 0.25, onComplete: () => {
+      // 显示标题
+      pageName.value = getRouteName(to.path)
+      gsap.to('.page-title', { opacity: 1, duration: 0.25 })
+    }})
+  }
   next()
 })
 // 获取路由的索引
@@ -177,7 +205,7 @@ const backgroundCss = ref<CSSProperties>({
         />
         <div class="navigation">
           <div class="navigation-content">
-            <!--TODO：替换成 i18n 文案-->
+            <!--TODO:替换成 i18n 文案-->
             <router-link
               v-for="theRoute of routes"
               class="navigation-item"
@@ -203,6 +231,19 @@ const backgroundCss = ref<CSSProperties>({
           <div class="page-number-divider" />
           <div class="page-number-all">
             05
+          </div>
+        </div>
+        <!-- 左上角页面标题，在首页时不显示 -->
+        <div
+          class="page-title"
+        >
+          <!-- TODO: 当 i18n 文案填充好之后，改用 i18n 文案 -->
+          <div class="page-title-main">
+            {{ pageName }}
+          </div>
+          <!-- TODO: 当 i18n 文案填充好之后，检查是否是英文状态，并决定要不要隐藏 -->
+          <div class="page-title-small">
+            {{ 'NEED TEXT' }}
           </div>
         </div>
         <transition :name="getTransitionName(route.path, currentRoutePath)">
@@ -389,6 +430,37 @@ const backgroundCss = ref<CSSProperties>({
   &-all {
     opacity: 0.5;
     font-size: 20px;
+  }
+}
+// 页面标题
+.page-title {
+  left: 64px;
+  top: 64px;
+  box-sizing: border-box;
+  text-align: center;
+  position: absolute;
+  padding: 0 10px 10px;
+  background-image:
+    url('./assets/static-framework/page-title-dot.png'),
+    url('./assets/static-framework/page-title-dot.png'),
+    url('./assets/static-framework/page-title-dot.png'),
+    url('./assets/static-framework/page-title-dot.png');
+  background-repeat: no-repeat;
+  background-position:
+    top left,
+    top right,
+    bottom left,
+    bottom right;
+  &-main {
+    font-size: 64px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    text-shadow: 4px 8px 4px rgba(0, 0, 0, 0.25);
+  }
+  &-small {
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    opacity: 0.5;
   }
 }
 // 背景图片块
