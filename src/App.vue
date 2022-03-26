@@ -331,6 +331,9 @@ const backgroundCss = ref<CSSProperties>({
     margin: 0;
     height: 100%;
   }
+  body {
+    overflow: hidden;
+  }
   .cover-no-repeat-center {
     background-position: center;
     background-size: cover;
