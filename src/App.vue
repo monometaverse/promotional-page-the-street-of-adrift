@@ -440,6 +440,9 @@ const backgroundCss = ref<CSSProperties>({
   height: 100%;
   position: absolute;
 }
+.delay-0_25s {
+  animation-delay: 0.25s!important;
+}
 // 页码
 .page-number {
   color: white;
@@ -450,6 +453,7 @@ const backgroundCss = ref<CSSProperties>({
   align-items: baseline;
   bottom: 64px;
   right: 64px;
+  font-weight: 500;
   &-current {
     font-size: 32px;
   }
