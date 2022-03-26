@@ -9,7 +9,16 @@ export default defineConfig({
     vue(),
     fonts({
       google: {
-        families: ['Noto Sans SC', 'Montserrat', 'Noto Serif SC', 'Poppins']
+        families: ['Noto Sans SC', {
+          name: 'Montserrat',
+          styles: 'wght@400;600'
+        }, {
+          name: 'Noto Serif SC',
+          styles: 'wght@900'
+        }, {
+          name: 'Poppins',
+          styles: 'wght@500;700'
+        }]
       }
     }),
     pages()
