@@ -5,6 +5,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import routes from '~pages'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import { createPinia } from 'pinia'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -15,4 +16,5 @@ createApp(App)
   .use(i18n)
   .use(router)
   .use(ElementPlus)
+  .use(createPinia())
   .mount('#app')

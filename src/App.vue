@@ -373,6 +373,9 @@ const backgroundCss = ref<CSSProperties>({
       }
     }
   }
+  .opacity-0 {
+    opacity: 0;
+  }
   // 导航
 .navigation {
   z-index: 20;

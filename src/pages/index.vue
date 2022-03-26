@@ -1,13 +1,51 @@
 <!--主页-->
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { CSSProperties, onMounted, ref } from 'vue'
+import { useStore } from '../store'
+import { useWindowSize } from '@vueuse/core'
+import { gsap } from 'gsap'
+
+// states
+const store = useStore()
+const { firstEnter } = storeToRefs(store)
+
+// logo 图标的引用
+const logoRef = ref<HTMLDivElement | null>(null)
+// logo 图标复制体的样式
+const logoCopyStyle = ref<CSSProperties>({})
+// 使用并监听屏幕宽度变化
+const { width: windowWidth } = useWindowSize()
+// 定义挂载的时候执行的操作
+onMounted(() => {
+  if (firstEnter.value) {
+    // 第一次进入首页，展示动画
+    setTimeout(() => {
+      gsap.fromTo('.logo-copy.cover-no-repeat-center', { left: windowWidth.value / 2 - logoRef.value!.clientWidth / 2 + 20 + 'px' },  { left: '64px', duration: 0.75, ease: 'power4', onComplete: () => {
+        // 更改值，表示已经不是第一次进入首页了
+        firstEnter.value = false
+      }})
+    }, 500)
+  }
+})
+</script>
 <template>
   <div class="route-page">
+    <div
+      class="logo-copy cover-no-repeat-center"
+      :style="logoCopyStyle"
+      v-if="firstEnter"
+    />
     <div class="community-btns">
       <div class="community-btn community-btn-discord" />
       <div class="community-btn community-btn-twitter" />
     </div>
     <div class="logo-and-play">
-      <div class="logo cover-no-repeat-center" />
+      <div
+        class="logo cover-no-repeat-center"
+        :class="firstEnter ? 'opacity-0' : ''"
+        ref="logoRef"
+      />
       <div class="play-btn cover-no-repeat-center" />
     </div>
     <div class="description">
@@ -41,6 +79,15 @@
   20% {
     opacity: 0.5;
   }
+}
+// logo 的复制体
+.logo-copy {
+  width: @logo-width;
+  height: @logo-height;
+  position: absolute;
+  top: calc(50% - @logo-height / 2);
+  left: calc(50% - @logo-width / 2 + 20px);
+  background-image: url("../assets/home-page/tsoa-logo.svg");
 }
 .scroll-hint {
   position: absolute;
