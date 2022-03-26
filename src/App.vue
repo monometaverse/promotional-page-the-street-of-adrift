@@ -331,6 +331,9 @@ const backgroundCss = ref<CSSProperties>({
     margin: 0;
     height: 100%;
   }
+  body {
+    overflow: hidden;
+  }
   .cover-no-repeat-center {
     background-position: center;
     background-size: cover;
@@ -440,6 +443,9 @@ const backgroundCss = ref<CSSProperties>({
   height: 100%;
   position: absolute;
 }
+.delay-0_25s {
+  animation-delay: 0.25s!important;
+}
 // 页码
 .page-number {
   color: white;
@@ -450,6 +456,7 @@ const backgroundCss = ref<CSSProperties>({
   align-items: baseline;
   bottom: 64px;
   right: 64px;
+  font-weight: 500;
   &-current {
     font-size: 32px;
   }
