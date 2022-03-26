@@ -11,12 +11,12 @@
   "dependencies": {
     "element-plus": "^2.1.4",
     "gsap": "^3.9.1",
+    "pinia": "^2.0.12",
     "three": "^0.137.5",
     "vite-plugin-pages": "^0.22.0",
     "vue": "^3.2.25",
     "vue-i18n": "9",
-    "vue-router": "^4.0.14",
-    "vuex": "^4.0.2"
+    "vue-router": "^4.0.14"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.6",
