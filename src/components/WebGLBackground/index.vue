@@ -68,7 +68,7 @@ defineExpose({ nextPic, prevPic, showOrHidePic, prevView, nextView, currentView,
 </script>
 <style lang="less" scoped>
 #three-host {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 </style>
