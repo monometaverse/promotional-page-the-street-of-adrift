@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
 import { useWindowSize } from '@vueuse/core'
-import { gsap } from 'gsap'
 
 // states
 const store = useStore()
@@ -46,17 +45,6 @@ const animationDurationAll = computed(() => {
   Object.keys(animationDuration.value).forEach(it => durationAndDelay.push((animationDuration.value as any)[it] + (animationDelay.value as any)[it]))
   return Math.max(...durationAndDelay)
 })
-// 动画类
-const animationClasses = computed<{ [P in keyof typeof animationDelay.value]: string }>(() => {
-  return {
-    // 当元素从动画开始的状态转移回原本状态时，显示动画效果
-    logo: animationActive.value ? animationFrom.value ? 'logo-copy-center' : `duration-${animationDuration.value.logo} delay-${animationDelay.value.logo} transition-all` : '', // 游戏 logo 的动画类
-    playBtn: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.playBtn} delay-${animationDelay.value.playBtn} transition-all` : '', // 播放按钮和边框 4 个点的动画类
-    descTextLine1: animationActive.value ? animationFrom.value ? 'text-hide' : `duration-${animationDuration.value.descTextLine1} delay-${animationDelay.value.descTextLine1} transition-all` : '', // 标题下方描述文字的动画类
-    descTextLine2: animationActive.value ? animationFrom.value ? 'text-hide' : `duration-${animationDuration.value.descTextLine2} delay-${animationDelay.value.descTextLine2} transition-all` : '', // 标题下方描述文字第二行的动画类
-    socialBtns: animationActive.value ? animationFrom.value ? 'social-btns-hide': `!duration-${animationDuration.value.socialBtns} !delay-${animationDelay.value.socialBtns} !transition-all` : '' // 社交媒体按钮的动画类
-  }
-})
 // 滚动提示的 css 类
 const scrollHintAnimationClass = computed<string>(() => {
   if (!firstEnter.value) {
@@ -80,7 +68,7 @@ onMounted(() => {
         animationActive.value = false
         staticFrameworkAnimationStart.value = true
       }, animationDurationAll.value)
-    }, 500)
+    }, 250)
   } else {
     showDescriptionText.value = true
   }
@@ -92,23 +80,35 @@ onMounted(() => {
     <div
       class="logo-copy cover-no-repeat-center"
       :style="logoCopyStyle"
-      :class="animationClasses.logo"
+      :class="{
+        'logo-copy-center': animationFrom && animationActive,
+        'duration-500 delay-0 transition-all': animationActive
+      }"
     />
     <div
       class="community-btns"
     >
       <div
         class="community-btn community-btn-discord"
-        :class="animationClasses.socialBtns"
+        :class="{
+          'social-btns-hide': animationFrom && animationActive,
+          '!duration-500 !delay-1000 !transition-all': animationActive
+        }"
       />
       <div
         class="community-btn community-btn-twitter"
-        :class="animationClasses.socialBtns"
+        :class="{
+          'social-btns-hide': animationFrom && animationActive,
+          '!duration-500 !delay-1000 !transition-all': animationActive
+        }"
       />
     </div>
     <div
       class="logo-and-play"
-      :class="animationClasses.playBtn"
+      :class="{
+        'opacity-0': animationFrom && animationActive,
+        'duration-500 delay-500 transition-all': animationActive
+      }"
     >
       <div
         class="logo cover-no-repeat-center"
@@ -119,11 +119,17 @@ onMounted(() => {
     <div class="description">
       <span
         class="text"
-        :class="animationClasses.descTextLine1"
+        :class="{
+          'text-hide': animationFrom && animationActive,
+          'duration-500 delay-1500 transition-all': animationActive
+        }"
       >彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。</span>
       <span
         class="text"
-        :class="animationClasses.descTextLine2"
+        :class="{
+          'text-hide': animationFrom && animationActive,
+          'duration-500 delay-1750 transition-all': animationActive
+        }"
       >其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。</span>
     </div>
     <div
