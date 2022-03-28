@@ -638,8 +638,14 @@ body {
     margin-left: 48px;
   }
 
+  &-dropdown {
+    display: flex;
+  }
+
   &-dropdown-icon {
     margin-left: 10px;
+    object-fit: contain;
+    object-position: center;
   }
 }
 // 背景图片块
