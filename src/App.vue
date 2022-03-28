@@ -227,13 +227,6 @@ const animationDurationAll = computed(() => {
   Object.keys(animationDuration.value).forEach(it => durationAndDelay.push((animationDuration.value as any)[it] + (animationDelay.value as any)[it]))
   return Math.max(...durationAndDelay)
 })
-// 动画类
-const animationClasses = computed<{ [P in keyof typeof animationDelay.value]: string }>(() => ({
-  // 当元素从动画开始的状态转移回原本状态时，显示动画效果
-  nav: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.nav} delay-${animationDelay.value.nav} transition-all` : '', // 右侧导航的动画类
-  actions: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.actions} delay-${animationDelay.value.actions} transition-all` : '', // 右上角操作部分动画类
-  pageNumber: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.pageNumber} delay-${animationDelay.value.pageNumber} transition-all` : '', // 页码动画类
-}))
 // 当挂载时
 onMounted(() => {
   console.log(firstEnter.value, staticFrameworkAnimationStart.value)
@@ -260,7 +253,10 @@ onMounted(() => {
         />
         <div
           class="navigation"
-          :class="animationClasses.nav"
+          :class="{
+            'opacity-0': animationFrom && animationActive,
+            'duration-500 delay-0': animationActive
+          }"
         >
           <div class="navigation-content">
             <!--TODO:替换成 i18n 文案-->
@@ -281,7 +277,10 @@ onMounted(() => {
         <!-- 页码 -->
         <div
           class="page-number"
-          :class="animationClasses.pageNumber"
+          :class="{
+            'opacity-0': animationFrom && animationActive,
+            'duration-500 delay-1000': animationActive
+          }"
         >
           <div
             class="page-number-current"
@@ -310,7 +309,10 @@ onMounted(() => {
         <!-- 右上角操作部分 -->
         <div
           class="actions"
-          :class="animationClasses.actions"
+          :class="{
+            'opacity-0': animationFrom && animationActive,
+            'duration-500 delay-500': animationActive
+          }"
         >
           <div class="actions-text">
             登录
