@@ -183,6 +183,7 @@ onMounted(() => {
 // 加载条
 .progress-bar {
   @height: 32px;
+
   width: @progress-width;
   height: @height;
   position: absolute;
@@ -207,23 +208,26 @@ onMounted(() => {
     font-family: 'Montserrat', sans-serif;
     font-size: 20px;
     font-weight: 500;
-    text-shadow: 0px 0px 24px #FFFFFF;
+    text-shadow: 0 0 24px #fff;
     height: 100%;
     width: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  &-left, &-right {
+
+  &-left,
+  &-right {
     display: flex;
     column-gap: 6px;
     align-items: center;
   }
 }
+
 .progress-item {
   height: 16px;
   width: 2px;
   background: white;
-  box-shadow: 0px 0px 24px #FFFFFF;
+  box-shadow: 0 0 24px #fff;
 }
 </style>

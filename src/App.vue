@@ -287,103 +287,123 @@ const backgroundCss = ref<CSSProperties>({
 </template>
 
 <style lang="less">
-  // 给动画系统使用的类名，渐变
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.5s ease;
-  }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
-  // 给动画系统使用的类名，向上路由
-  .translate-up-page-enter-active,
-  .translate-up-page-leave-active {
-    transition: transform 0.5s ease;
-  }
-  .translate-up-page-enter-from {
-    transform: translateY(100%);
-  }
-  .translate-up-page-enter-to,
-  .translate-up-page-leave-from {
-    transform: translateY(0);
-  }
-  .translate-up-page-leave-to {
-    transform: translateY(-100%);
-  }
-  // 给动画系统使用的类名，向下路由
-  .translate-down-page-enter-active,
-  .translate-down-page-leave-active {
-    transition: transform 0.5s ease;
-  }
-  .translate-down-page-enter-from {
-    transform: translateY(-100%);
-  }
-  .translate-down-page-enter-to,
-  .translate-down-page-leave-from {
-    transform: translateY(0);
-  }
-  .translate-down-page-leave-to {
-    transform: translateY(100%);
-  }
-  @static-z-index: 1000;
-  html, body, #app {
-    margin: 0;
+// 给动画系统使用的类名，渐变
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+// 给动画系统使用的类名，向上路由
+.translate-up-page-enter-active,
+.translate-up-page-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.translate-up-page-enter-from {
+  transform: translateY(100%);
+}
+
+.translate-up-page-enter-to,
+.translate-up-page-leave-from {
+  transform: translateY(0);
+}
+
+.translate-up-page-leave-to {
+  transform: translateY(-100%);
+}
+// 给动画系统使用的类名，向下路由
+.translate-down-page-enter-active,
+.translate-down-page-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.translate-down-page-enter-from {
+  transform: translateY(-100%);
+}
+
+.translate-down-page-enter-to,
+.translate-down-page-leave-from {
+  transform: translateY(0);
+}
+
+.translate-down-page-leave-to {
+  transform: translateY(100%);
+}
+@static-z-index: 1000;
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.cover-no-repeat-center {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+* {
+  user-select: none;
+}
+
+#app {
+  background: black;
+  color: white;
+
+  .static-framework {
+    width: 100%;
     height: 100%;
-  }
-  body {
-    overflow: hidden;
-  }
-  .cover-no-repeat-center {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
-  * {
-    user-select: none;
-  }
-  #app {
-    background: black;
-    color: white;
-    .static-framework {
+    position: absolute;
+    z-index: @static-z-index;
+
+    .title {
       width: 100%;
-      height: 100%;
-      position: absolute;
-      z-index: @static-z-index;
-      .title {
-        width: 100%;
-        text-align: center;
-        top: 20px;
-      }
-      .particles-control-btns {
-        display: flex;
-        justify-content: center;
-      }
-      .btn {
-        pointer-events: auto;
-        transition: all 250ms ease-out;
-        border: 2px white solid;
-        color: white;
-        background: black;
-        font-size: 16px;
-        font-weight: 600;
-        padding: 8px 15px;
-        margin: 5px;
-        &:hover {
-          color: black;
-          background: white;
-        }
+      text-align: center;
+      top: 20px;
+    }
+
+    .particles-control-btns {
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn {
+      pointer-events: auto;
+      transition: all 250ms ease-out;
+      border: 2px white solid;
+      color: white;
+      background: black;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 8px 15px;
+      margin: 5px;
+
+      &:hover {
+        color: black;
+        background: white;
       }
     }
   }
-  // 使不透明度变为 0
-  .opacity-0 {
-    opacity: 0;
-  }
-  // 导航
+}
+// 使不透明度变为 0
+.opacity-0 {
+  opacity: 0;
+}
+// 导航
 .navigation {
   z-index: 20;
   @line-height: 800px;
+
   position: absolute;
   display: flex;
   align-items: center;
@@ -409,13 +429,16 @@ const backgroundCss = ref<CSSProperties>({
     text-decoration: none;
     align-items: center;
     column-gap: 16px;
+
     &:hover {
       opacity: 1;
     }
+
     &-text {
       transition: transform 250ms ease-out;
       transform: translateX(34px);
     }
+
     &-icon {
       transition: opacity 250ms ease-out;
       opacity: 0;
@@ -423,6 +446,7 @@ const backgroundCss = ref<CSSProperties>({
       height: 18px;
       background-image: url('./assets/static-framework/navigation-item-active.png');
       .cover-no-repeat-center();
+
       background-size: contain;
     }
   }
@@ -436,9 +460,11 @@ const backgroundCss = ref<CSSProperties>({
   // 正在显示的导航页面
   .router-link-active {
     opacity: 1;
+
     .navigation-item-text {
       transform: none;
     }
+
     .navigation-item-icon {
       opacity: 1;
     }
@@ -450,9 +476,10 @@ const backgroundCss = ref<CSSProperties>({
   height: 100%;
   position: absolute;
 }
+
 .delay-0_25s {
-  animation-delay: 0.25s!important;
-  transition-delay: 0.25s!important;
+  animation-delay: 0.25s !important;
+  transition-delay: 0.25s !important;
 }
 // 页码
 .page-number {
@@ -465,15 +492,18 @@ const backgroundCss = ref<CSSProperties>({
   bottom: 64px;
   right: 64px;
   font-weight: 500;
+
   &-current {
     font-size: 32px;
   }
+
   &-divider {
     width: 2px;
     height: 32px;
     background-color: rgba(255, 255, 255, 0.5);
     transform: translateY(5px) rotate(45deg);
   }
+
   &-all {
     opacity: 0.5;
     font-size: 20px;
@@ -498,12 +528,14 @@ const backgroundCss = ref<CSSProperties>({
     top right,
     bottom left,
     bottom right;
+
   &-main {
     font-size: 64px;
     font-family: 'Noto Sans SC', sans-serif;
     font-weight: 700;
     text-shadow: 4px 8px 4px rgba(0, 0, 0, 0.25);
   }
+
   &-small {
     font-size: 12px;
     font-family: 'Montserrat', sans-serif;
@@ -518,25 +550,30 @@ const backgroundCss = ref<CSSProperties>({
   z-index: 20;
   display: flex;
   align-items: center;
+
   &-text {
     color: white;
     font-family: 'Noto Sans SC', sans-serif;
     font-size: 16px;
     font-weight: bold;
+
     &:nth-child(3) {
       margin-right: 48px;
     }
   }
+
   &-divider {
     width: 2px;
     height: 16px;
     background-color: rgba(255, 255, 255, 0.5);
     margin: 0 16px;
   }
+
   &-share {
     display: block;
     margin-left: 48px;
   }
+
   &-dropdown-icon {
     margin-left: 10px;
   }
@@ -544,15 +581,18 @@ const backgroundCss = ref<CSSProperties>({
 // 背景图片块
 .background {
   .cover-no-repeat-center();
+
   position: absolute;
   width: 100%;
   height: 100%;
 }
+
 @media screen and (max-height: 1080px) {
   // 当屏幕高度小于 1080px 时，缩小导航大小至 700px
   .navigation-line {
     height: 700px;
   }
+
   .navigation {
     top: calc(50% - 350px);
   }

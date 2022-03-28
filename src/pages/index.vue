@@ -107,9 +107,11 @@ onMounted(() => {
   0% {
     opacity: 0.5;
   }
+
   10% {
     opacity: 1;
   }
+
   20% {
     opacity: 0.5;
   }
@@ -123,12 +125,15 @@ onMounted(() => {
   left: 64px;
   background-image: url("../assets/home-page/tsoa-logo.svg");
 }
+
 .logo-copy-center {
   left: calc(50% - @logo-width / 2 + 20px);
 }
+
 .transition-active {
-  transition: all 250ms ease!important;
+  transition: all 250ms ease !important;
 }
+
 .scroll-hint {
   position: absolute;
   bottom: 24px;
@@ -137,24 +142,28 @@ onMounted(() => {
   display: flex;
   align-items: center;
   flex-direction: column;
+
   &-text {
     font-family: "Poppins", sans-serif;
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 8px;
   }
+
   &-icon {
     width: 25px;
     height: 37px;
     background-image: url("../assets/home-page/mouse-icon.svg");
     margin-bottom: 8px;
   }
+
   &-indicator {
     opacity: 0.5;
     width: 18px;
     height: 7px;
     background-image: url("../assets/home-page/scroll-indicator.svg");
     animation: 5s for-scroll infinite;
+
     &:first-child {
       margin-bottom: 8px;
     }
@@ -169,10 +178,12 @@ onMounted(() => {
   top: calc(50% + @logo-height / 2 + 64px);
   width: calc(@logo-width + @logo-margin-right + @play-btn-size);
   line-height: 32px;
+
   .text {
     display: block;
     transition: all 500ms ease;
   }
+
   .text-hide {
     opacity: 0;
     transform: translateY(20px);
@@ -187,6 +198,7 @@ onMounted(() => {
   top: calc(@logo-and-play-top - 32px - 24px);
   overflow: hidden;
 }
+
 .social-btns-hide {
   transform: translateY(40px);
 }
@@ -202,12 +214,15 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.2);
   border: 1px solid white;
   opacity: 0.5;
+
   &:hover {
     opacity: 1;
   }
+
   &-discord {
     background-image: url("../assets/home-page/discord-icon.svg");
   }
+
   &-twitter {
     background-image: url("../assets/home-page/twitter-icon.svg");
   }
@@ -220,17 +235,20 @@ onMounted(() => {
   left: 64px;
   padding: 32px 0;
   align-items: center;
-  background-image: url("../assets/static-framework/page-title-dot.png"),
+  background-image:
+    url("../assets/static-framework/page-title-dot.png"),
     url("../assets/static-framework/page-title-dot.png"),
     url("../assets/static-framework/page-title-dot.png"),
     url("../assets/static-framework/page-title-dot.png");
   background-repeat: no-repeat;
   background-position: top left, top right, bottom left, bottom right;
+
   .logo {
     width: @logo-width;
     height: @logo-height;
     margin-right: @logo-margin-right;
   }
+
   .play-btn {
     transition: opacity 250ms ease;
     cursor: pointer;
@@ -238,6 +256,7 @@ onMounted(() => {
     height: @play-btn-size;
     background-image: url("../assets/home-page/play-btn.svg");
     opacity: 0.5;
+
     &:hover {
       opacity: 1;
     }
