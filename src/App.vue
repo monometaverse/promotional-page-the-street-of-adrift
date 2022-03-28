@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import WebGLBackground from './components/WebGLBackground/index.vue'
 import ResourceLoader from './components/ResourceLoader/index.vue'
-import { computed, CSSProperties, ref } from 'vue'
+import { computed, CSSProperties, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
+import { useStore } from './store'
+import { storeToRefs } from 'pinia'
+// pinia
+const store = useStore()
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart } = storeToRefs(store)
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
@@ -184,6 +189,55 @@ const getTransitionName = (to: string, from: string): 'translate-down-page' | 't
 const backgroundCss = ref<CSSProperties>({
   opacity: 0
 })
+// 是否将元素转移到动画开始的状态
+const animationFrom = computed(() => {
+  if (!firstEnter.value) {
+    return false
+  }
+  return !staticFrameworkAnimationStart.value
+})
+// 等待动画结束，告诉滚动提示部分显示动画
+watch(animationFrom, (newVal) => {
+  if (!newVal) {
+    setTimeout(() => {
+      scrollHintAnimationStart.value = true
+    }, animationDurationAll.value)
+  }
+})
+// 是否激活动画
+const animationActive = ref(false)
+// 各个元素的动画延迟
+// 修改以调整各个元素动画开始的时间和顺序
+const animationDelay = ref({
+  nav: 0, // 导航
+  actions: 500, // 右上角操作部分
+  pageNumber: 1000, // 页码
+})
+// 各个元素动画的时长
+const animationDuration = ref<typeof animationDelay.value>({
+  nav: 500, // 导航
+  actions: 500, // 右上角操作部分
+  pageNumber: 500, // 页码
+})
+// 所有元素完成动画所需的时间
+// 所有元素的动画时间总时长 - 所有元素的动画延迟总和
+const animationDurationAll = computed(() => {
+  let durationAndDelay: number[] = []
+  Object.keys(animationDuration.value).forEach(it => durationAndDelay.push((animationDuration.value as any)[it] + (animationDelay.value as any)[it]))
+  return Math.max(...durationAndDelay)
+})
+// 动画类
+const animationClasses = computed<{ [P in keyof typeof animationDelay.value]: string }>(() => ({
+  // 当元素从动画开始的状态转移回原本状态时，显示动画效果
+  nav: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.nav} delay-${animationDelay.value.nav} transition-all` : '', // 右侧导航的动画类
+  actions: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.actions} delay-${animationDelay.value.actions} transition-all` : '', // 右上角操作部分动画类
+  pageNumber: animationActive.value ? animationFrom.value ? 'opacity-0' : `duration-${animationDuration.value.pageNumber} delay-${animationDelay.value.pageNumber} transition-all` : '', // 页码动画类
+}))
+// 当挂载时
+onMounted(() => {
+  console.log(firstEnter.value, staticFrameworkAnimationStart.value)
+  animationActive.value = true
+})
 </script>
 <template>
   <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
@@ -203,7 +257,10 @@ const backgroundCss = ref<CSSProperties>({
           class="background"
           :style="backgroundCss"
         />
-        <div class="navigation">
+        <div
+          class="navigation"
+          :class="animationClasses.nav"
+        >
           <div class="navigation-content">
             <!--TODO:替换成 i18n 文案-->
             <router-link
@@ -221,7 +278,10 @@ const backgroundCss = ref<CSSProperties>({
           <div class="navigation-line" />
         </div>
         <!-- 页码 -->
-        <div class="page-number">
+        <div
+          class="page-number"
+          :class="animationClasses.pageNumber"
+        >
           <div
             class="page-number-current"
             :style="pageNumberAnimateStyle"
@@ -247,7 +307,10 @@ const backgroundCss = ref<CSSProperties>({
           </div>
         </div>
         <!-- 右上角操作部分 -->
-        <div class="actions">
+        <div
+          class="actions"
+          :class="animationClasses.actions"
+        >
           <div class="actions-text">
             登录
           </div>

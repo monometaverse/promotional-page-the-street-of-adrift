@@ -26,7 +26,9 @@ export default defineConfig({
     }),
     pages(),
     eslint(),
-    stylelint(),
+    stylelint({
+      include: 'src/**/*.vue'
+    }),
     windiCss()
   ],
   assetsInclude: [/glb/, /hdr/],

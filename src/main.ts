@@ -6,6 +6,7 @@ import routes from '~pages'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import { createPinia } from 'pinia'
+import 'virtual:windi.css'
 
 const router = createRouter({
   history: createWebHashHistory(),
