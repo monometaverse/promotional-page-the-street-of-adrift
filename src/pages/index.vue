@@ -77,6 +77,7 @@ onMounted(() => {
     setTimeout(() => {
       animationFrom.value = false
       setTimeout(() => {
+        animationActive.value = false
         staticFrameworkAnimationStart.value = true
       }, animationDurationAll.value)
     }, 500)

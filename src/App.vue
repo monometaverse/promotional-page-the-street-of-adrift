@@ -200,6 +200,7 @@ const animationFrom = computed(() => {
 watch(animationFrom, (newVal) => {
   if (!newVal) {
     setTimeout(() => {
+      animationActive.value = false
       scrollHintAnimationStart.value = true
     }, animationDurationAll.value)
   }
