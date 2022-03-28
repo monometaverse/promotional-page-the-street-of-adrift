@@ -339,6 +339,9 @@ const backgroundCss = ref<CSSProperties>({
     background-size: cover;
     background-repeat: no-repeat;
   }
+  * {
+    user-select: none;
+  }
   #app {
     background: black;
     color: white;
@@ -373,6 +376,7 @@ const backgroundCss = ref<CSSProperties>({
       }
     }
   }
+  // 使不透明度变为 0
   .opacity-0 {
     opacity: 0;
   }
@@ -448,6 +452,7 @@ const backgroundCss = ref<CSSProperties>({
 }
 .delay-0_25s {
   animation-delay: 0.25s!important;
+  transition-delay: 0.25s!important;
 }
 // 页码
 .page-number {

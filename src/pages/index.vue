@@ -1,7 +1,7 @@
 <!--主页-->
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { CSSProperties, onMounted, ref } from 'vue'
+import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
 import { useWindowSize } from '@vueuse/core'
 import { gsap } from 'gsap'
@@ -16,16 +16,34 @@ const logoRef = ref<HTMLDivElement | null>(null)
 const logoCopyStyle = ref<CSSProperties>({})
 // 使用并监听屏幕宽度变化
 const { width: windowWidth } = useWindowSize()
+// 标题下方描述文字是否显示
+const showDescriptionText = ref(false)
+// 是否将元素转移到动画开始的状态
+const animationFrom = ref(false)
+// 是否激活动画
+const animationActive = ref(false)
+// 动画类
+const animationClasses = computed(() => {
+  return {
+    // 当元素从动画开始的状态转移回原本状态时，显示动画效果
+    logo: animationActive.value ? animationFrom.value ? 'logo-copy-center' : 'transition-active' : '', // 游戏 logo 的动画类
+    playBtn: animationActive.value ? animationFrom.value ? 'opacity-0' : 'transition-active' : '', // 播放按钮和边框 4 个点的动画类
+    descText: animationActive.value ? animationFrom.value ? 'text-hide' : 'transition-active' : '', // 标题下方描述文字的动画类
+    socialBtns: animationActive.value ? animationFrom.value ? 'social-btns-hide': 'transition-active' : '' // 社交媒体按钮的动画类
+  }
+})
 // 定义挂载的时候执行的操作
 onMounted(() => {
   if (firstEnter.value) {
-    // 第一次进入首页，展示动画
+    // 重载后第一次进入首页，展示动画
+    animationFrom.value = true
+    animationActive.value = true
     setTimeout(() => {
-      gsap.fromTo('.logo-copy.cover-no-repeat-center', { left: windowWidth.value / 2 - logoRef.value!.clientWidth / 2 + 20 + 'px' },  { left: '64px', duration: 0.75, ease: 'power4', onComplete: () => {
-        // 更改值，表示已经不是第一次进入首页了
-        firstEnter.value = false
-      }})
+      animationFrom.value = false
+      firstEnter.value = false
     }, 500)
+  } else {
+    showDescriptionText.value = true
   }
 })
 </script>
@@ -34,23 +52,39 @@ onMounted(() => {
     <div
       class="logo-copy cover-no-repeat-center"
       :style="logoCopyStyle"
-      v-if="firstEnter"
+      :class="animationClasses.logo"
     />
-    <div class="community-btns">
-      <div class="community-btn community-btn-discord" />
-      <div class="community-btn community-btn-twitter" />
+    <div
+      class="community-btns"
+    >
+      <div
+        class="community-btn community-btn-discord"
+        :class="animationClasses.socialBtns"
+      />
+      <div
+        class="community-btn community-btn-twitter"
+        :class="animationClasses.socialBtns"
+      />
     </div>
-    <div class="logo-and-play">
+    <div
+      class="logo-and-play"
+      :class="animationClasses.playBtn"
+    >
       <div
         class="logo cover-no-repeat-center"
-        :class="firstEnter ? 'opacity-0' : ''"
         ref="logoRef"
       />
       <div class="play-btn cover-no-repeat-center" />
     </div>
     <div class="description">
-      彷徨之街本名艾德里夫特街（Street of
-      Adrift），它并非街道而是商业大楼。其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。
+      <span
+        class="text"
+        :class="animationClasses.descText"
+      >彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。</span>
+      <span
+        class="text delay-0_25s"
+        :class="animationClasses.descText"
+      >其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。</span>
     </div>
     <div class="scroll-hint">
       <div class="scroll-hint-text">
@@ -86,8 +120,14 @@ onMounted(() => {
   height: @logo-height;
   position: absolute;
   top: calc(50% - @logo-height / 2);
-  left: calc(50% - @logo-width / 2 + 20px);
+  left: 64px;
   background-image: url("../assets/home-page/tsoa-logo.svg");
+}
+.logo-copy-center {
+  left: calc(50% - @logo-width / 2 + 20px);
+}
+.transition-active {
+  transition: all 250ms ease!important;
 }
 .scroll-hint {
   position: absolute;
@@ -129,6 +169,14 @@ onMounted(() => {
   top: calc(50% + @logo-height / 2 + 64px);
   width: calc(@logo-width + @logo-margin-right + @play-btn-size);
   line-height: 32px;
+  .text {
+    display: block;
+    transition: all 500ms ease;
+  }
+  .text-hide {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 }
 // 社交页面按钮部分
 .community-btns {
@@ -137,6 +185,10 @@ onMounted(() => {
   position: absolute;
   left: 64px;
   top: calc(@logo-and-play-top - 32px - 24px);
+  overflow: hidden;
+}
+.social-btns-hide {
+  transform: translateY(40px);
 }
 // 社交页面按钮
 .community-btn {
@@ -177,7 +229,6 @@ onMounted(() => {
   .logo {
     width: @logo-width;
     height: @logo-height;
-    background-image: url("../assets/home-page/tsoa-logo.svg");
     margin-right: @logo-margin-right;
   }
   .play-btn {
