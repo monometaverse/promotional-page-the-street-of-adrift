@@ -285,11 +285,14 @@ useEventListener(document, 'wheel', (() => {
     // 如果允许切换，继续切换步骤
     if (canScroll && allowScroll.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
+      // 避免获取到的上一页或下一页的索引超出边界
+      const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
+      const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
       // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
       if (event.deltaY > 0) {
-        router.push(routes.value[currentRouteIndex + 1].to)
+        router.push(routes.value[prevIndex].to)
       } else {
-        router.push(routes.value[currentRouteIndex - 1].to)
+        router.push(routes.value[nextIndex].to)
       }
       // 禁止切换
       canScroll = false
