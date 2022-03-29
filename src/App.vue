@@ -9,6 +9,7 @@ import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
 import { useEventListener } from '@vueuse/core'
+import { useSwipe } from '@vueuse/core'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll} = storeToRefs(store)
@@ -289,7 +290,7 @@ useEventListener(document, 'wheel', (() => {
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
       const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
       // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
-      if (event.deltaY > 0) {
+      if (event.deltaY < 0) {
         router.push(routes.value[prevIndex].to)
       } else {
         router.push(routes.value[nextIndex].to)
@@ -306,6 +307,31 @@ onMounted(() => {
   console.log(firstEnter.value, staticFrameworkAnimationStart.value)
   animationActive.value = true
 })
+// 静态框架的引用
+const staticFramworkEl = ref<HTMLDivElement | null>(null)
+// 检测是否在静态框架上滑动
+useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
+  let canScroll = true
+  return (e, direction) => {
+    // 如果允许切换，继续切换步骤
+    if (canScroll && allowScroll.value) {
+      const currentRouteIndex = indexOfRoute(currentRoute.path)
+      // 避免获取到的上一页或下一页的索引超出边界
+      const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
+      const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
+      // 如果向下滑动，就切换到上一个页面，否则切换到下一个页面
+      if (direction === 'DOWN') {
+        router.push(routes.value[prevIndex].to)
+      } else if (direction === 'UP') {
+        router.push(routes.value[nextIndex].to)
+      }
+      // 禁止切换
+      canScroll = false
+      // 500 毫秒后再允许切换，防止切换过于频繁
+      setTimeout(() => canScroll = true, 500)
+    }
+  }
+})() })
 </script>
 <template>
   <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
@@ -320,6 +346,7 @@ onMounted(() => {
       <div
         class="static-framework"
         v-if="loadedRes"
+        ref="staticFramworkEl"
       >
         <div
           class="background"
