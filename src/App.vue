@@ -8,9 +8,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
+import { useEventListener } from '@vueuse/core'
+import { useSwipe } from '@vueuse/core'
+import { useWindowSize } from '@vueuse/core'
+import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll} = storeToRefs(store)
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
@@ -227,10 +231,117 @@ const animationDurationAll = computed(() => {
   Object.keys(animationDuration.value).forEach(it => durationAndDelay.push((animationDuration.value as any)[it] + (animationDelay.value as any)[it]))
   return Math.max(...durationAndDelay)
 })
+// 鼠标跟随圈的样式
+const mouseOuterStyle = ref<CSSProperties>({
+  left: `${innerWidth / 2 - 18}px`,
+  top: `${innerHeight / 2 - 18}px`
+})
+// 鼠标跟随十字的样式
+const mouseInnerStyle = ref<CSSProperties>({
+  left: `${innerWidth / 2}px`,
+  top: `${innerHeight / 2}px`
+})
+// 鼠标扩散圈的样式
+const mouseClickStyle = ref<CSSProperties>({})
+// 鼠标是否在可点击的物体上
+const isMouseOverClickable = ref(false)
+// 监听屏幕内部鼠标移动事件
+useEventListener(window, 'mousemove', (event: MouseEvent) => {
+  // 取消正在进行的动画
+  gsap.killTweensOf(mouseOuterStyle.value)
+  // 把鼠标跟随圈移动到鼠标所在位置
+  gsap.fromTo(mouseOuterStyle.value, {
+    left: mouseOuterStyle.value.left,
+    top: mouseOuterStyle.value.top
+  }, {
+    left: event.x + 'px',
+    top: event.y + 'px',
+    duration: 0.5,
+    ease: 'power4'
+  })
+  // 移动鼠标十字
+  mouseInnerStyle.value.left = event.x + 'px'
+  mouseInnerStyle.value.top = event.y + 'px'
+})
+// 监听鼠标点击事件
+useEventListener(window, 'click', (event) => {
+  mouseClickStyle.value.left = (event.x - 24) + 'px'
+  mouseClickStyle.value.top = (event.y - 24) + 'px'
+  gsap.killTweensOf(mouseClickStyle.value)
+  gsap.fromTo(mouseClickStyle.value, {
+    opacity: 1,
+    transform: 'scale(0)'
+  }, {
+    opacity: 0,
+    transform: 'scale(2)',
+    duration: 0.5
+  })
+})
+// 监听鼠标移入事件
+useEventListener(window, 'mouseover', (event) => {
+  isMouseOverClickable.value = (event.target as HTMLElement).classList.contains('clickble')
+})
+// 监听鼠标滚动事件以切换页面
+useEventListener(document, 'wheel', (() => {
+  let canScroll = true
+  return (event: WheelEvent) => {
+    // 如果允许切换，继续切换步骤
+    if (canScroll && allowScroll.value) {
+      const currentRouteIndex = indexOfRoute(currentRoute.path)
+      // 避免获取到的上一页或下一页的索引超出边界
+      const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
+      const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
+      // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
+      if (event.deltaY < 0) {
+        router.push(routes.value[prevIndex].to)
+      } else {
+        router.push(routes.value[nextIndex].to)
+      }
+      // 禁止切换
+      canScroll = false
+      // 500 毫秒后再允许切换，防止切换过于频繁
+      setTimeout(() => canScroll = true, 500)
+    }
+  }
+})())
 // 当挂载时
 onMounted(() => {
   console.log(firstEnter.value, staticFrameworkAnimationStart.value)
   animationActive.value = true
+})
+// 静态框架的引用
+const staticFramworkEl = ref<HTMLDivElement | null>(null)
+// 检测是否在静态框架上滑动
+useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
+  let canScroll = true
+  return (e, direction) => {
+    // 如果允许切换，继续切换步骤
+    if (canScroll && allowScroll.value) {
+      const currentRouteIndex = indexOfRoute(currentRoute.path)
+      // 避免获取到的上一页或下一页的索引超出边界
+      const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
+      const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
+      // 如果向下滑动，就切换到上一个页面，否则切换到下一个页面
+      if (direction === 'DOWN') {
+        router.push(routes.value[prevIndex].to)
+      } else if (direction === 'UP') {
+        router.push(routes.value[nextIndex].to)
+      }
+      // 禁止切换
+      canScroll = false
+      // 500 毫秒后再允许切换，防止切换过于频繁
+      setTimeout(() => canScroll = true, 500)
+    }
+  }
+})() })
+// 获取响应式的屏幕高宽
+const { width: windowWidth, height: windowHeight } = useWindowSize()
+// 检测是否在移动设备上，使用 user-agent 方式
+// 当宽度发生变化时再检测一次，这样 DevTools 切换视图时也能收到变化，不需要刷新页面
+const isOnMobileByUserAgent = computed(() => {
+  windowWidth.value, windowHeight.value
+  const device = new UAParser(navigator.userAgent).getDevice()
+  return device.type === 'mobile' || device.type === 'tablet'
 })
 </script>
 <template>
@@ -246,11 +357,50 @@ onMounted(() => {
       <div
         class="static-framework"
         v-if="loadedRes"
+        ref="staticFramworkEl"
       >
         <div
           class="background"
           :style="backgroundCss"
         />
+        <div
+          class="mouse-container"
+          v-if="!isOnMobileByUserAgent"
+        >
+          <div
+            class="mouse-outer"
+            :class="isMouseOverClickable ? 'mouse-outer-hovered' : ''"
+            :style="mouseOuterStyle"
+          />
+          <div
+            class="mouse-click mouse-outer"
+            :style="mouseClickStyle"
+          />
+          <div
+            class="mouse-inner"
+          >
+            <div
+              class="mouse-inner-line mouse-inner-line-1"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-1' : ''"
+              :style="mouseInnerStyle"
+            />
+            <div
+              class="mouse-inner-line mouse-inner-line-2"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-2' : ''"
+              :style="mouseInnerStyle"
+            />
+            <div
+              class="mouse-inner-line mouse-inner-line-3"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-3' : ''"
+              :style="mouseInnerStyle"
+            />
+            <div
+              class="mouse-inner-line mouse-inner-line-4"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-4' : ''"
+              :style="mouseInnerStyle"
+            />
+          </div>
+        </div>
         <div
           class="navigation"
           :class="{
@@ -262,11 +412,11 @@ onMounted(() => {
             <!--TODO:替换成 i18n 文案-->
             <router-link
               v-for="theRoute of routes"
-              class="navigation-item"
+              class="navigation-item clickble"
               :to="theRoute.to"
               :key="theRoute.name"
             >
-              <div class="navigation-item-text">
+              <div class="navigation-item-text clickble">
                 {{ theRoute.name }}
               </div>
               <div class="navigation-item-icon" />
@@ -420,6 +570,7 @@ body {
 
 * {
   user-select: none;
+  cursor: none !important;
 }
 
 #app {
@@ -573,6 +724,66 @@ body {
   &-all {
     opacity: 0.5;
     font-size: 20px;
+  }
+}
+// 鼠标跟随层
+.mouse-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+// 鼠标跟随框
+.mouse-outer {
+  transition-property: width, height, background;
+  transition-timing-function: ease;
+  transition-duration: 250ms;
+  pointer-events: none;
+  position: absolute;
+  transform: translate3d(-50%, -50%, 0);
+  height: 48px;
+  width: 48px;
+  border-radius: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  &-hovered {
+    height: 32px;
+    width: 32px;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+// 鼠标点击时的扩散圈
+.mouse-click {
+  opacity: 0;
+  border-color: white;
+}
+// 鼠标跟随十字
+.mouse-inner {
+  .mouse-inner-line {
+    position: absolute;
+    pointer-events: none;
+    width: 6px;
+    height: 1px;
+    background: white;
+    transition: transform 250ms ease;
+
+    &-2,
+    &-4 {
+      height: 6px;
+      width: 1px;
+    }
+
+    &-1 { transform: translateX(-10px); } // 需要偏移 10 px，其中 6px 是本身的长度，4px 是本来就要偏移的长度
+    &-2 { transform: translateY(-10px); }
+    &-3 { transform: translateX(4px); }
+    &-4 { transform: translateY(4px); }
+  }
+
+  .mouse-inner-line-hovered {
+    &-1 { transform: translateX(-8px); } // 需要偏移 16 px，其中 10px 是本身的长度，6px 是本来就要偏移的长度
+    &-2 { transform: translateY(-8px); }
+    &-3 { transform: translateX(2px); }
+    &-4 { transform: translateY(2px); }
   }
 }
 // 页面标题

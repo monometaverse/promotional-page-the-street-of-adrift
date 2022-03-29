@@ -13,6 +13,7 @@
     "gsap": "^3.9.1",
     "pinia": "^2.0.12",
     "three": "^0.137.5",
+    "ua-parser-js": "^1.0.2",
     "vite-plugin-pages": "^0.22.0",
     "vue": "^3.2.25",
     "vue-i18n": "9",
@@ -37,6 +38,7 @@
     "vite-plugin-stylelint": "^2.0.1",
     "vite-plugin-windicss": "^1.8.3",
     "vue-tsc": "^0.31.4",
-    "windicss": "^3.5.1"
+    "windicss": "^3.5.1",
+    "@types/ua-parser-js": "^0.7.36"
   }
 }

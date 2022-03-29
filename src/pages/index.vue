@@ -7,7 +7,7 @@ import { useWindowSize } from '@vueuse/core'
 
 // states
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll } = storeToRefs(store)
 
 // logo 图标的引用
 const logoRef = ref<HTMLDivElement | null>(null)
@@ -55,6 +55,7 @@ const scrollHintAnimationClass = computed<string>(() => {
 // 当滚动提示的动画结束，把刷新后首次进入的旗标置为 false
 const onScrollHintTransitionEnd = () => {
   firstEnter.value = false
+  allowScroll.value = true
 }
 // 定义挂载的时候执行的操作
 onMounted(() => {
@@ -89,14 +90,14 @@ onMounted(() => {
       class="community-btns"
     >
       <div
-        class="community-btn community-btn-discord"
+        class="community-btn community-btn-discord clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
       />
       <div
-        class="community-btn community-btn-twitter"
+        class="community-btn community-btn-twitter clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
@@ -114,7 +115,7 @@ onMounted(() => {
         class="logo cover-no-repeat-center"
         ref="logoRef"
       />
-      <div class="play-btn cover-no-repeat-center" />
+      <div class="play-btn cover-no-repeat-center clickble" />
     </div>
     <div class="description">
       <span
