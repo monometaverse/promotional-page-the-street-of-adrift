@@ -11,7 +11,7 @@ import { storeToRefs } from 'pinia'
 import { useEventListener } from '@vueuse/core'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll} = storeToRefs(store)
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
@@ -278,6 +278,26 @@ useEventListener(window, 'click', (event) => {
 useEventListener(window, 'mouseover', (event) => {
   isMouseOverClickable.value = (event.target as HTMLElement).classList.contains('clickble')
 })
+// 监听鼠标滚动事件以切换页面
+useEventListener(document, 'wheel', (() => {
+  let canScroll = true
+  return (event: WheelEvent) => {
+    // 如果允许切换，继续切换步骤
+    if (canScroll && allowScroll.value) {
+      const currentRouteIndex = indexOfRoute(currentRoute.path)
+      // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
+      if (event.deltaY > 0) {
+        router.push(routes.value[currentRouteIndex + 1].to)
+      } else {
+        router.push(routes.value[currentRouteIndex - 1].to)
+      }
+      // 禁止切换
+      canScroll = false
+      // 500 毫秒后再允许切换，防止切换过于频繁
+      setTimeout(() => canScroll = true, 500)
+    }
+  }
+})())
 // 当挂载时
 onMounted(() => {
   console.log(firstEnter.value, staticFrameworkAnimationStart.value)
