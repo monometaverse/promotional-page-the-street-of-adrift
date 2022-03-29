@@ -8,6 +8,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
+import { useEventListener } from '@vueuse/core'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart } = storeToRefs(store)
@@ -227,6 +228,56 @@ const animationDurationAll = computed(() => {
   Object.keys(animationDuration.value).forEach(it => durationAndDelay.push((animationDuration.value as any)[it] + (animationDelay.value as any)[it]))
   return Math.max(...durationAndDelay)
 })
+// 鼠标跟随圈的样式
+const mouseOuterStyle = ref<CSSProperties>({
+  left: `${innerWidth / 2 - 18}px`,
+  top: `${innerHeight / 2 - 18}px`
+})
+// 鼠标跟随十字的样式
+const mouseInnerStyle = ref<CSSProperties>({
+  left: `${innerWidth / 2}px`,
+  top: `${innerHeight / 2}px`
+})
+// 鼠标扩散圈的样式
+const mouseClickStyle = ref<CSSProperties>({})
+// 鼠标是否在可点击的物体上
+const isMouseOverClickable = ref(false)
+// 监听屏幕内部鼠标移动事件
+useEventListener(window, 'mousemove', (event: MouseEvent) => {
+  // 取消正在进行的动画
+  gsap.killTweensOf(mouseOuterStyle.value)
+  // 把鼠标跟随圈移动到鼠标所在位置
+  gsap.fromTo(mouseOuterStyle.value, {
+    left: mouseOuterStyle.value.left,
+    top: mouseOuterStyle.value.top
+  }, {
+    left: event.x + 'px',
+    top: event.y + 'px',
+    duration: 0.5,
+    ease: 'power4'
+  })
+  // 移动鼠标十字
+  mouseInnerStyle.value.left = event.x + 'px'
+  mouseInnerStyle.value.top = event.y + 'px'
+})
+// 监听鼠标点击事件
+useEventListener(window, 'click', (event) => {
+  mouseClickStyle.value.left = (event.x - 24) + 'px'
+  mouseClickStyle.value.top = (event.y - 24) + 'px'
+  gsap.killTweensOf(mouseClickStyle.value)
+  gsap.fromTo(mouseClickStyle.value, {
+    opacity: 1,
+    transform: 'scale(0)'
+  }, {
+    opacity: 0,
+    transform: 'scale(2)',
+    duration: 0.5
+  })
+})
+// 监听鼠标移入事件
+useEventListener(window, 'mouseover', (event) => {
+  isMouseOverClickable.value = (event.target as HTMLElement).classList.contains('clickble')
+})
 // 当挂载时
 onMounted(() => {
   console.log(firstEnter.value, staticFrameworkAnimationStart.value)
@@ -251,6 +302,41 @@ onMounted(() => {
           class="background"
           :style="backgroundCss"
         />
+        <div class="mouse-container">
+          <div
+            class="mouse-outer"
+            :class="isMouseOverClickable ? 'mouse-outer-hovered' : ''"
+            :style="mouseOuterStyle"
+          />
+          <div
+            class="mouse-click mouse-outer"
+            :style="mouseClickStyle"
+          />
+          <div
+            class="mouse-inner"
+          >
+            <div
+              class="mouse-inner-line mouse-inner-line-1"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-1' : ''"
+              :style="mouseInnerStyle"
+            />
+            <div
+              class="mouse-inner-line mouse-inner-line-2"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-2' : ''"
+              :style="mouseInnerStyle"
+            />
+            <div
+              class="mouse-inner-line mouse-inner-line-3"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-3' : ''"
+              :style="mouseInnerStyle"
+            />
+            <div
+              class="mouse-inner-line mouse-inner-line-4"
+              :class="isMouseOverClickable ? 'mouse-inner-line-hovered-4' : ''"
+              :style="mouseInnerStyle"
+            />
+          </div>
+        </div>
         <div
           class="navigation"
           :class="{
@@ -262,11 +348,11 @@ onMounted(() => {
             <!--TODO:替换成 i18n 文案-->
             <router-link
               v-for="theRoute of routes"
-              class="navigation-item"
+              class="navigation-item clickble"
               :to="theRoute.to"
               :key="theRoute.name"
             >
-              <div class="navigation-item-text">
+              <div class="navigation-item-text clickble">
                 {{ theRoute.name }}
               </div>
               <div class="navigation-item-icon" />
@@ -420,6 +506,7 @@ body {
 
 * {
   user-select: none;
+  cursor: none !important;
 }
 
 #app {
@@ -573,6 +660,66 @@ body {
   &-all {
     opacity: 0.5;
     font-size: 20px;
+  }
+}
+// 鼠标跟随层
+.mouse-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+// 鼠标跟随框
+.mouse-outer {
+  transition-property: width, height, background;
+  transition-timing-function: ease;
+  transition-duration: 250ms;
+  pointer-events: none;
+  position: absolute;
+  transform: translate3d(-50%, -50%, 0);
+  height: 48px;
+  width: 48px;
+  border-radius: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  &-hovered {
+    height: 32px;
+    width: 32px;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+// 鼠标点击时的扩散圈
+.mouse-click {
+  opacity: 0;
+  border-color: white;
+}
+// 鼠标跟随十字
+.mouse-inner {
+  .mouse-inner-line {
+    position: absolute;
+    pointer-events: none;
+    width: 6px;
+    height: 1px;
+    background: white;
+    transition: transform 250ms ease;
+
+    &-2,
+    &-4 {
+      height: 6px;
+      width: 1px;
+    }
+
+    &-1 { transform: translateX(-10px); } // 需要偏移 10 px，其中 6px 是本身的长度，4px 是本来就要偏移的长度
+    &-2 { transform: translateY(-10px); }
+    &-3 { transform: translateX(4px); }
+    &-4 { transform: translateY(4px); }
+  }
+
+  .mouse-inner-line-hovered {
+    &-1 { transform: translateX(-8px); } // 需要偏移 16 px，其中 10px 是本身的长度，6px 是本来就要偏移的长度
+    &-2 { transform: translateY(-8px); }
+    &-3 { transform: translateX(2px); }
+    &-4 { transform: translateY(2px); }
   }
 }
 // 页面标题

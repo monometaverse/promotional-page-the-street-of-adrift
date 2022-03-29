@@ -89,14 +89,14 @@ onMounted(() => {
       class="community-btns"
     >
       <div
-        class="community-btn community-btn-discord"
+        class="community-btn community-btn-discord clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
       />
       <div
-        class="community-btn community-btn-twitter"
+        class="community-btn community-btn-twitter clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
@@ -114,7 +114,7 @@ onMounted(() => {
         class="logo cover-no-repeat-center"
         ref="logoRef"
       />
-      <div class="play-btn cover-no-repeat-center" />
+      <div class="play-btn cover-no-repeat-center clickble" />
     </div>
     <div class="description">
       <span
