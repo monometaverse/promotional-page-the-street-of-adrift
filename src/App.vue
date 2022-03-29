@@ -10,6 +10,8 @@ import { useStore } from './store'
 import { storeToRefs } from 'pinia'
 import { useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
+import { useWindowSize } from '@vueuse/core'
+import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll} = storeToRefs(store)
@@ -332,6 +334,15 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
     }
   }
 })() })
+// 获取响应式的屏幕高宽
+const { width: windowWidth, height: windowHeight } = useWindowSize()
+// 检测是否在移动设备上，使用 user-agent 方式
+// 当宽度发生变化时再检测一次，这样 DevTools 切换视图时也能收到变化，不需要刷新页面
+const isOnMobileByUserAgent = computed(() => {
+  windowWidth.value, windowHeight.value
+  const device = new UAParser(navigator.userAgent).getDevice()
+  return device.type === 'mobile' || device.type === 'tablet'
+})
 </script>
 <template>
   <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
@@ -352,7 +363,10 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
           class="background"
           :style="backgroundCss"
         />
-        <div class="mouse-container">
+        <div
+          class="mouse-container"
+          v-if="!isOnMobileByUserAgent"
+        >
           <div
             class="mouse-outer"
             :class="isMouseOverClickable ? 'mouse-outer-hovered' : ''"
