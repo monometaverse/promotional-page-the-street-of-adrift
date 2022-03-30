@@ -1,0 +1,73 @@
+// 给动画系统使用的类名，渐变
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+// 给动画系统使用的类名，向上路由
+.translate-up-page-enter-active,
+.translate-up-page-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.translate-up-page-enter-from {
+  transform: translateY(100%);
+}
+
+.translate-up-page-enter-to,
+.translate-up-page-leave-from {
+  transform: translateY(0);
+}
+
+.translate-up-page-leave-to {
+  transform: translateY(-100%);
+}
+// 给动画系统使用的类名，向下路由
+.translate-down-page-enter-active,
+.translate-down-page-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.translate-down-page-enter-from {
+  transform: translateY(-100%);
+}
+
+.translate-down-page-enter-to,
+.translate-down-page-leave-from {
+  transform: translateY(0);
+}
+
+.translate-down-page-leave-to {
+  transform: translateY(100%);
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+}
+
+#app {
+  background: black;
+  color: white;
+}
+
+body {
+  overflow: hidden;
+}
+
+.cover-no-repeat-center {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+* {
+  user-select: none;
+  cursor: none !important;
+}

@@ -360,7 +360,7 @@ const isOnMobileByUserAgent = computed(() => {
         ref="staticFramworkEl"
       >
         <div
-          class="background"
+          class="background cover-no-repeat-center"
           :style="backgroundCss"
         />
         <div
@@ -419,7 +419,7 @@ const isOnMobileByUserAgent = computed(() => {
               <div class="navigation-item-text clickble">
                 {{ theRoute.name }}
               </div>
-              <div class="navigation-item-icon" />
+              <div class="navigation-item-icon cover-no-repeat-center" />
             </router-link>
           </div>
           <div class="navigation-line" />
@@ -502,81 +502,11 @@ const isOnMobileByUserAgent = computed(() => {
   </router-view>
 </template>
 
-<style lang="less">
-// 给动画系统使用的类名，渐变
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-// 给动画系统使用的类名，向上路由
-.translate-up-page-enter-active,
-.translate-up-page-leave-active {
-  transition: transform 0.5s ease;
-}
-
-.translate-up-page-enter-from {
-  transform: translateY(100%);
-}
-
-.translate-up-page-enter-to,
-.translate-up-page-leave-from {
-  transform: translateY(0);
-}
-
-.translate-up-page-leave-to {
-  transform: translateY(-100%);
-}
-// 给动画系统使用的类名，向下路由
-.translate-down-page-enter-active,
-.translate-down-page-leave-active {
-  transition: transform 0.5s ease;
-}
-
-.translate-down-page-enter-from {
-  transform: translateY(-100%);
-}
-
-.translate-down-page-enter-to,
-.translate-down-page-leave-from {
-  transform: translateY(0);
-}
-
-.translate-down-page-leave-to {
-  transform: translateY(100%);
-}
+<style lang="less" src="./index.less"></style>
+<style lang="less" scoped>
 @static-z-index: 1000;
 
-html,
-body,
 #app {
-  margin: 0;
-  height: 100%;
-}
-
-body {
-  overflow: hidden;
-}
-
-.cover-no-repeat-center {
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-* {
-  user-select: none;
-  cursor: none !important;
-}
-
-#app {
-  background: black;
-  color: white;
-
   .static-framework {
     width: 100%;
     height: 100%;
@@ -611,10 +541,6 @@ body {
       }
     }
   }
-}
-// 使不透明度变为 0
-.opacity-0 {
-  opacity: 0;
 }
 // 导航
 .navigation {
@@ -662,8 +588,6 @@ body {
       width: 12px;
       height: 18px;
       background-image: url('./assets/static-framework/navigation-item-active.png');
-      .cover-no-repeat-center();
-
       background-size: contain;
     }
   }
@@ -692,11 +616,6 @@ body {
   width: 100%;
   height: 100%;
   position: absolute;
-}
-
-.delay-0_25s {
-  animation-delay: 0.25s !important;
-  transition-delay: 0.25s !important;
 }
 // 页码
 .page-number {
@@ -863,8 +782,6 @@ body {
 }
 // 背景图片块
 .background {
-  .cover-no-repeat-center();
-
   position: absolute;
   width: 100%;
   height: 100%;
