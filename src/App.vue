@@ -360,7 +360,7 @@ const isOnMobileByUserAgent = computed(() => {
         ref="staticFramworkEl"
       >
         <div
-          class="background"
+          class="background cover-no-repeat-center"
           :style="backgroundCss"
         />
         <div
@@ -419,7 +419,7 @@ const isOnMobileByUserAgent = computed(() => {
               <div class="navigation-item-text clickble">
                 {{ theRoute.name }}
               </div>
-              <div class="navigation-item-icon" />
+              <div class="navigation-item-icon cover-no-repeat-center clickble" />
             </router-link>
           </div>
           <div class="navigation-line" />
@@ -502,81 +502,11 @@ const isOnMobileByUserAgent = computed(() => {
   </router-view>
 </template>
 
-<style lang="less">
-// 给动画系统使用的类名，渐变
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-// 给动画系统使用的类名，向上路由
-.translate-up-page-enter-active,
-.translate-up-page-leave-active {
-  transition: transform 0.5s ease;
-}
-
-.translate-up-page-enter-from {
-  transform: translateY(100%);
-}
-
-.translate-up-page-enter-to,
-.translate-up-page-leave-from {
-  transform: translateY(0);
-}
-
-.translate-up-page-leave-to {
-  transform: translateY(-100%);
-}
-// 给动画系统使用的类名，向下路由
-.translate-down-page-enter-active,
-.translate-down-page-leave-active {
-  transition: transform 0.5s ease;
-}
-
-.translate-down-page-enter-from {
-  transform: translateY(-100%);
-}
-
-.translate-down-page-enter-to,
-.translate-down-page-leave-from {
-  transform: translateY(0);
-}
-
-.translate-down-page-leave-to {
-  transform: translateY(100%);
-}
+<style lang="less" src="./index.less"></style>
+<style lang="less" scoped>
 @static-z-index: 1000;
 
-html,
-body,
 #app {
-  margin: 0;
-  height: 100%;
-}
-
-body {
-  overflow: hidden;
-}
-
-.cover-no-repeat-center {
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-* {
-  user-select: none;
-  cursor: none !important;
-}
-
-#app {
-  background: black;
-  color: white;
-
   .static-framework {
     width: 100%;
     height: 100%;
@@ -612,10 +542,6 @@ body {
     }
   }
 }
-// 使不透明度变为 0
-.opacity-0 {
-  opacity: 0;
-}
 // 导航
 .navigation {
   z-index: 20;
@@ -640,7 +566,7 @@ body {
     display: flex;
     transition: opacity 250ms ease-out;
     font-family: 'Noto Sans SC', sans-serif;
-    font-size: 20px;
+    font-size: 16px;
     color: white;
     opacity: 0.5;
     text-decoration: none;
@@ -662,8 +588,6 @@ body {
       width: 12px;
       height: 18px;
       background-image: url('./assets/static-framework/navigation-item-active.png');
-      .cover-no-repeat-center();
-
       background-size: contain;
     }
   }
@@ -671,7 +595,7 @@ body {
   // 导航右侧的线
   &-line {
     height: @line-height;
-    width: 2px;
+    width: 1px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 25.52%, rgba(255, 255, 255, 0.5) 49.63%, rgba(255, 255, 255, 0.5) 75.52%, rgba(255, 255, 255, 0) 100%);
   }
   // 正在显示的导航页面
@@ -680,6 +604,7 @@ body {
 
     .navigation-item-text {
       transform: none;
+      pointer-events: fill;
     }
 
     .navigation-item-icon {
@@ -693,37 +618,32 @@ body {
   height: 100%;
   position: absolute;
 }
-
-.delay-0_25s {
-  animation-delay: 0.25s !important;
-  transition-delay: 0.25s !important;
-}
 // 页码
 .page-number {
   color: white;
   position: absolute;
   font-family: 'Poppins', sans-serif;
   display: flex;
-  column-gap: 24px;
+  column-gap: 16px;
   align-items: baseline;
   bottom: 64px;
   right: 64px;
-  font-weight: 500;
+  font-weight: 400;
 
   &-current {
-    font-size: 32px;
+    font-size: 20px;
   }
 
   &-divider {
     width: 2px;
-    height: 32px;
+    height: 20px;
     background-color: rgba(255, 255, 255, 0.5);
     transform: translateY(5px) rotate(45deg);
   }
 
   &-all {
     opacity: 0.5;
-    font-size: 20px;
+    font-size: 14px;
   }
 }
 // 鼠标跟随层
@@ -863,8 +783,6 @@ body {
 }
 // 背景图片块
 .background {
-  .cover-no-repeat-center();
-
   position: absolute;
   width: 100%;
   height: 100%;

@@ -143,7 +143,7 @@ onMounted(() => {
       </div>
       <div class="scroll-hint-icon cover-no-repeat-center" />
       <div class="scroll-hint-indicator cover-no-repeat-center" />
-      <div class="scroll-hint-indicator delay-0_25s cover-no-repeat-center" />
+      <div class="scroll-hint-indicator delay-250 cover-no-repeat-center" />
     </div>
   </div>
 </template>

@@ -20,7 +20,7 @@ export default defineConfig({
           styles: 'wght@900'
         }, {
           name: 'Poppins',
-          styles: 'wght@500;700'
+          styles: 'wght@400;500;700'
         }]
       }
     }),
