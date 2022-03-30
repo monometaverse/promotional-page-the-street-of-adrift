@@ -566,7 +566,7 @@ const isOnMobileByUserAgent = computed(() => {
     display: flex;
     transition: opacity 250ms ease-out;
     font-family: 'Noto Sans SC', sans-serif;
-    font-size: 20px;
+    font-size: 16px;
     color: white;
     opacity: 0.5;
     text-decoration: none;
@@ -623,26 +623,26 @@ const isOnMobileByUserAgent = computed(() => {
   position: absolute;
   font-family: 'Poppins', sans-serif;
   display: flex;
-  column-gap: 24px;
+  column-gap: 16px;
   align-items: baseline;
   bottom: 64px;
   right: 64px;
-  font-weight: 500;
+  font-weight: 400;
 
   &-current {
-    font-size: 32px;
+    font-size: 20px;
   }
 
   &-divider {
     width: 2px;
-    height: 32px;
+    height: 20px;
     background-color: rgba(255, 255, 255, 0.5);
     transform: translateY(5px) rotate(45deg);
   }
 
   &-all {
     opacity: 0.5;
-    font-size: 20px;
+    font-size: 14px;
   }
 }
 // 鼠标跟随层
