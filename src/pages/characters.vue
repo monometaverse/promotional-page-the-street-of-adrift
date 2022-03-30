@@ -210,11 +210,6 @@ const currentShow = ref(0)
   right: calc(984px + 50vw - 960px);
   bottom: calc(261px + 50vh - 540px);
 }
-// 左下角矩阵
-.matrix-left-bottom {
-  left: 64px;
-  bottom: 64px;
-}
 // 像 x 一样的东西
 .element-x {
   background-image: url('../assets/characters-page/element-x.svg');
