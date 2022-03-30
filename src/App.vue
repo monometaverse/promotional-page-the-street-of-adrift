@@ -256,7 +256,7 @@ useEventListener(window, 'mousemove', (event: MouseEvent) => {
   }, {
     left: event.x + 'px',
     top: event.y + 'px',
-    duration: 0.5,
+    duration: 0.25,
     ease: 'power4'
   })
   // 移动鼠标十字
