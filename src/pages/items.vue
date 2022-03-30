@@ -43,7 +43,10 @@ const currentIndex = ref(0)
         {{ itemsList[currentIndex].description }}
       </div>
       <!-- 预约按钮 TODO: 从 i18n 获取文案 -->
-      <div class="info-reserve-btn clickble">
+      <div class="info-reserve-btn">
+        <div class="info-reserve-btn-inner clickble" />
+      </div>
+      <div class="info-reserve-btn-text">
         {{ itemsList[currentIndex].reserved ? '已预约' : '立即预约' }}
       </div>
     </div>
@@ -58,10 +61,11 @@ const currentIndex = ref(0)
 @desc-line-height: 32px;
 @reserve-btn-margin-top: 64px;
 @reserve-btn-height: 64px;
+@all-height: calc(@title-line-height + @title-en-line-height + @divider-margin-top + @desc-margin-top + @divider-height + @divider-height + @desc-line-height * 2 + @reserve-btn-height + @reserve-btn-margin-top);
 
 .info {
   position: absolute;
-  top: calc(50% - calc(@title-line-height + @title-en-line-height + @divider-margin-top + @desc-margin-top + @divider-height + @divider-height + @desc-line-height * 2 + @reserve-btn-height + @reserve-btn-margin-top) / 2);
+  top: calc(50% - @all-height / 2);
   left: 64px;
 
   &-title {
@@ -95,8 +99,7 @@ const currentIndex = ref(0)
     width: 480px;
   }
 
-  &-reserve-btn {
-    transition: opacity 250ms ease;
+  &-reserve-btn-text {
     margin-top: @reserve-btn-margin-top;
     height: 64px;
     font-family: 'Noto Serif SC', sans-serif;
@@ -106,13 +109,33 @@ const currentIndex = ref(0)
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url('../assets/nft-page/button-subscribe.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.5;
+  }
+
+  &-reserve-btn {
+    transition: all 250ms ease;
+    position: absolute;
+    top: calc(50% + @all-height / 2 - 64px);
+    height: 64px;
+    width: 192px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+
+    &-inner {
+      transition: opacity 250ms ease;
+      width: 100%;
+      height: 100%;
+      background-image: url('../assets/nft-page/reserve-btn-background.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      opacity: 0.5;
+    }
 
     &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:hover &-inner {
       opacity: 1;
     }
   }
