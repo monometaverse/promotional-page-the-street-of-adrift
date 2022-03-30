@@ -419,7 +419,7 @@ const isOnMobileByUserAgent = computed(() => {
               <div class="navigation-item-text clickble">
                 {{ theRoute.name }}
               </div>
-              <div class="navigation-item-icon cover-no-repeat-center" />
+              <div class="navigation-item-icon cover-no-repeat-center clickble" />
             </router-link>
           </div>
           <div class="navigation-line" />
@@ -595,7 +595,7 @@ const isOnMobileByUserAgent = computed(() => {
   // 导航右侧的线
   &-line {
     height: @line-height;
-    width: 2px;
+    width: 1px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 25.52%, rgba(255, 255, 255, 0.5) 49.63%, rgba(255, 255, 255, 0.5) 75.52%, rgba(255, 255, 255, 0) 100%);
   }
   // 正在显示的导航页面
@@ -604,6 +604,7 @@ const isOnMobileByUserAgent = computed(() => {
 
     .navigation-item-text {
       transform: none;
+      pointer-events: fill;
     }
 
     .navigation-item-icon {
