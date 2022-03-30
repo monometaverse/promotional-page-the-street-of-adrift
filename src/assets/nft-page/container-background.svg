@@ -1,0 +1,18 @@
+<svg width="710" height="709" viewBox="0 0 710 709" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.5">
+<rect x="707.846" width="1" height="1000" transform="rotate(45 707.846 0)" fill="url(#paint0_linear_375_1661)"/>
+</g>
+<circle cx="354" cy="354.26" r="280" fill="white" fill-opacity="0.1"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M506.075 158.345C464.08 125.7 411.31 106.26 354 106.26C217.033 106.26 106 217.294 106 354.26C106 411.57 125.44 464.34 158.085 506.335L160.936 503.484C129.003 462.231 110 410.465 110 354.26C110 219.503 219.243 110.26 354 110.26C410.205 110.26 461.971 129.264 503.224 161.196L506.075 158.345ZM204.776 547.325C246.029 579.257 297.795 598.26 354 598.26C488.757 598.26 598 489.018 598 354.26C598 298.056 578.997 246.289 547.065 205.036L549.916 202.185C582.561 244.181 602 296.95 602 354.26C602 491.227 490.967 602.26 354 602.26C296.69 602.26 243.92 582.821 201.925 550.176L204.776 547.325Z" fill="white" fill-opacity="0.25"/>
+<path d="M354 146.26L343.608 134.26L364.392 134.26L354 146.26Z" fill="white" fill-opacity="0.25"/>
+<path d="M354 562.26L343.608 574.26L364.392 574.26L354 562.26Z" fill="white" fill-opacity="0.25"/>
+<defs>
+<linearGradient id="paint0_linear_375_1661" x1="708.346" y1="0" x2="708.346" y2="1000" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" stop-opacity="0"/>
+<stop offset="0.255208" stop-color="white" stop-opacity="0.5"/>
+<stop offset="0.49625" stop-color="white" stop-opacity="0.5"/>
+<stop offset="0.755208" stop-color="white" stop-opacity="0.5"/>
+<stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>
