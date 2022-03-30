@@ -172,24 +172,14 @@ const currentIndex = ref(0)
   }
 }
 
-.matrix {
-  position: absolute;
-  height: 98px;
-  width: 98px;
-  background-image: url('../assets/nft-page/matrix.svg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+.matrix-left-bottom {
+  left: 64px;
+  bottom: 64px;
+}
 
-  &-left-bottom {
-    left: 64px;
-    bottom: 64px;
-  }
-
-  &-behind-models {
-    top: calc(335px + 50vh - 540px);
-    right: 411px;
-  }
+.matrix-behind-models {
+  top: calc(335px + 50vh - 540px);
+  right: 411px;
 }
 
 .models {

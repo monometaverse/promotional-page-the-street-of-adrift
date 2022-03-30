@@ -617,6 +617,7 @@ const isOnMobileByUserAgent = computed(() => {
   width: 100%;
   height: 100%;
   position: absolute;
+  overflow: hidden;
 }
 // 页码
 .page-number {
@@ -652,6 +653,7 @@ const isOnMobileByUserAgent = computed(() => {
   height: 100%;
   width: 100%;
   pointer-events: none;
+  z-index: 999;
 }
 // 鼠标跟随框
 .mouse-outer {
