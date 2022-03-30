@@ -1,11 +1,17 @@
 <!--角色页面-->
-<script lang="ts" setup>import { ref } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
+import rosetta from '../assets/characters-page/rosetta.png'
 // TODO: 从 i18n 获取
 const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里斯蒂娜 琼斯', '安娜 伊凡诺娃', '东山 抚子', '般若', '德川璃璃子'])
+const characterPaintings = ref([rosetta])
 const currentShow = ref(0)
 </script>
 <template>
   <div class="route-page">
+    <div class="element-x" />
+    <div class="matrix matrix-left-bottom" />
+    <div class="matrix matrix-behind-pic" />
     <!-- 角色选择器 -->
     <div class="selector">
       <div
@@ -21,6 +27,13 @@ const currentShow = ref(0)
         </div>
       </div>
     </div>
+    <!-- 角色立绘 -->
+    <div
+      class="character-painting"
+      :style="{
+        backgroundImage: `url('${characterPaintings[0]}')`
+      }"
+    />
     <!-- 角色介绍 -->
     <div class="info">
       <div class="info-title">
@@ -114,6 +127,17 @@ const currentShow = ref(0)
     }
   }
 }
+// 角色立绘
+.character-painting {
+  position: absolute;
+  width: 800px;
+  height: calc(800px / 900 * 1500);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  bottom: calc(-244px + 50vh - 540px);
+  right: calc(850px + 50vw - 960px);
+}
 // 角色介绍
 .info {
   position: absolute;
@@ -178,5 +202,29 @@ const currentShow = ref(0)
     font-family: 'Noto Sans SC', sans-serif;
     line-height: 28px;
   }
+}
+// 角色背后的矩阵
+.matrix-behind-pic {
+  width: 184px;
+  height: 184px;
+  right: calc(984px + 50vw - 960px);
+  bottom: calc(261px + 50vh - 540px);
+}
+// 左下角矩阵
+.matrix-left-bottom {
+  left: 64px;
+  bottom: 64px;
+}
+// 像 x 一样的东西
+.element-x {
+  background-image: url('../assets/characters-page/element-x.svg');
+  position: absolute;
+  top: calc(180px + 50vh - 540px);
+  right: calc(1432px + 50vw - 960px);
+  height: 64px;
+  width: 64px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 </style>
