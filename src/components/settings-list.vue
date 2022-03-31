@@ -31,7 +31,7 @@ const onItemClick = (index: number) => () => {
     <div
       class="settings-list-left"
       :class="{
-        'opacity-0': props.isOverlay
+        '!opacity-0': props.isOverlay
       }"
     />
     <!-- 中间部分 -->
@@ -160,7 +160,7 @@ const onItemClick = (index: number) => () => {
     <div
       class="settings-list-right"
       :class="{
-        'opacity-0': props.isOverlay
+        '!opacity-0': props.isOverlay
       }"
     />
   </div>
