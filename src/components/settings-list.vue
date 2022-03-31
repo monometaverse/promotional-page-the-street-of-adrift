@@ -91,7 +91,7 @@ const onItemClick = (index: number) => () => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text">{{ setting.name }}</span>
+          <span class="settings-item-text clickble">{{ setting.name }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"
@@ -132,7 +132,7 @@ const onItemClick = (index: number) => () => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text">{{ last.name }}</span>
+          <span class="settings-item-text clickble">{{ last.name }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"
