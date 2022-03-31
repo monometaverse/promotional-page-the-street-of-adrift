@@ -1,8 +1,10 @@
 <!--设定页面-->
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { ref, RendererElement } from 'vue'
 import settingsList from '../components/settings-list.vue'
+import settingsDetail from '../components/settings-detail.vue'
 import jiuxiao from '../assets/settings-page/jiuxiao-temp.png'
+import { gsap } from 'gsap'
 
 /**
  * 在 i18n 文件中的样子应该是
@@ -23,22 +25,36 @@ const settings = ref([
   { name: '灰墙城', smallPic: jiuxiao },
   { name: '福京币', smallPic: jiuxiao }
 ])
-const last = computed(() => settings.value[settings.value.length - 1])
+// 是否在显示详情页
+const showingDetails = ref(false)
 </script>
 <template>
   <div class="route-page">
     <!-- 左下角矩阵 -->
     <div class="matrix matrix-left-bottom" />
-    <!-- 正常显示层 -->
-    <settings-list
-      :is-overlay="false"
-      :items="settings"
-    />
-    <!-- 隐藏层 -->
-    <settings-list
-      :is-overlay="true"
-      :items="settings"
-    />
+    <transition name="scale-fade">
+      <!-- 隐藏层 -->
+      <settings-list
+        :is-overlay="true"
+        :items="settings"
+        v-show="!showingDetails"
+        @item-click="showingDetails = true"
+      />
+    </transition>
+    <transition name="scale-fade">
+      <!-- 正常显示层 -->
+      <settings-list
+        :is-overlay="false"
+        :items="settings"
+        v-show="!showingDetails"
+      />
+    </transition>
+    <transition name="scale-fade">
+      <settings-detail
+        v-show="showingDetails"
+        @close="showingDetails = false"
+      />
+    </transition>
     <!-- 页面四角的短横线 -->
     <div class="short-line short-line-top short-line-left" />
     <div class="short-line short-line-top short-line-right" />

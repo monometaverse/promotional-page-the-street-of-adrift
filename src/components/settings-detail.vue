@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // 定义会触发的事件
 const emits = defineEmits<{
-  close: () => void
+  (e: 'close'): void
 }>()
 </script>
 <template>
@@ -12,7 +12,7 @@ const emits = defineEmits<{
       </div>
       <div
         class="details-close"
-        @click="emits.close"
+        @click="emits('close')"
       >
         返回列表页
       </div>

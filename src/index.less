@@ -44,6 +44,29 @@
 .translate-down-page-leave-to {
   transform: translateY(100%);
 }
+// 给 Vue 的动画系统使用的类名，缩放并渐隐
+.scale-fade-enter-from {
+  transform: scale(1.2);
+  opacity: 0;
+}
+
+.scale-fade-enter-to,
+.scale-fade-leave-from {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scale-fade-leave-to {
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.scale-fade-leave-active,
+.scale-fade-enter-active {
+  transition-property: opacity, transform !important;
+  transition-timing-function: ease !important;
+  transition-duration: 0.4s !important;
+}
 
 html,
 body,
