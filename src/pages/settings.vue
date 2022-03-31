@@ -3,7 +3,9 @@
 </script>
 <template>
   <div class="route-page">
+    <!-- 左下角矩阵 -->
     <div class="matrix matrix-left-bottom" />
+    <!-- 设定列表 -->
     <div class="settings-list">
       <div class="settings-list-left" />
       <div class="settings-list-center">
@@ -28,6 +30,12 @@
           <div class="settings-item">
             <span class="settings-item-text">灰墙城</span>
           </div>
+          <div class="game-name-with-icon">
+            <div class="game-name-with-icon-icon" />
+            <div class="game-name-with-icon-name">
+              THE STREET OF ADRIFT
+            </div>
+          </div>
         </div>
         <div class="settings-list-line settings-list-line-2">
           <div class="settings-item">
@@ -39,6 +47,11 @@
       </div>
       <div class="settings-list-right" />
     </div>
+    <!-- 页面四角的短横线 -->
+    <div class="short-line short-line-top short-line-left" />
+    <div class="short-line short-line-top short-line-right" />
+    <div class="short-line short-line-bottom short-line-left" />
+    <div class="short-line short-line-bottom short-line-right" />
   </div>
 </template>
 <style lang="less" scoped>
@@ -99,6 +112,44 @@
     line-height: 57px;
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
+  }
+
+  &-empty {
+    &::after {
+      content: '';
+      width: 256px;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.5);
+      transform: rotate(-45deg);
+    }
+  }
+}
+
+.game-name-with-icon {
+  margin-left: 24px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: flex-start;
+
+  &-icon {
+    width: 24px;
+    height: 24px;
+    background-image: url('../assets/characters-page/character-active.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.5;
+  }
+
+  &-name {
+    margin-top: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    font-family: 'Montserrat', sans-serif;
+    opacity: 0.5;
   }
 }
 </style>
