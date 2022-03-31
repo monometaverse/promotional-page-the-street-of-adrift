@@ -9,12 +9,12 @@ const last = computed(() => {
 })
 // 定义要触发的事件
 const emit = defineEmits<{
-  onItemClick: (index: number) => void
+  (e: 'itemClick', index: number): void
 }>()
 // 当列表中的项被点击时
-const onItemClick = (index: number) => () => {
+const onItemClick = (index: number) => {
   if (props.isOverlay) {
-    emit.onItemClick(index)
+    emit('itemClick', index)
   }
 }
 
