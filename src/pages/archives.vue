@@ -1,11 +1,12 @@
 <!--档案页面-->
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, CSSProperties, ref, watch } from 'vue'
 import beauties from '../assets/archive-page/beauties.jpg'
 import haven from '../assets/archive-page/heaven.jpg'
 import anna from '../assets/archive-page/anna.jpg'
 import planning from '../assets/archive-page/planning-board.jpg'
 import { gsap } from 'gsap'
+import { useMouse, useWindowSize } from '@vueuse/core'
 
 // TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
 const picAndNameList = ref([
@@ -125,9 +126,57 @@ const switchPic = (next: boolean) => {
     }, 125)
   }
 }
+// 响应式屏幕宽高
+const { width: windowWidth, height: windowHeight } = useWindowSize()
+// 响应式鼠标位置
+const mousePos = useMouse({ touch: false })
+const combinedMousePos = computed(() => ({
+  x: mousePos.x.value,
+  y: mousePos.y.value
+}))
+// 最大倾斜角度
+const maxDeg = 5
+// 整个页面的倾斜样式，纯数字
+const pageStyleNums = ref({
+  x: 0,
+  y: 0
+})
+// 监听鼠标位置的变化
+watch(combinedMousePos, (val) => {
+  // 停止动画
+  gsap.killTweensOf(pageStyleNums.value)
+  // 开始新的动画
+  gsap.to(pageStyleNums.value, {
+    duration: 0.5,
+    x: (val.x - windowWidth.value / 2) / windowWidth.value * 2 * maxDeg,
+    y: -(val.y - windowHeight.value / 2) / windowHeight.value * 2 * maxDeg
+  })
+})
+// 整个页面的倾斜样式
+const pageStyle = computed<CSSProperties>(() => ({
+  willChange: 'transform',
+  transform: `perspective(1000px) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
+}))
+const layer1Style = computed<CSSProperties>(() => ({
+  willChange: 'transform',
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 2}px, -${pageStyleNums.value.y * 2}px, 50px)`
+}))
+const layer2Style = computed<CSSProperties>(() => ({
+  willChange: 'transform',
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 3}px, -${pageStyleNums.value.y * 3}px, 100px)`
+}))
+const layer3Style = computed<CSSProperties>(() => ({
+  willChange: 'transform',
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 4}px, -${-pageStyleNums.value.y * 4}px, 150px)`
+}))
 </script>
 <template>
-  <div class="route-page">
+  <div
+    class="route-page"
+    :style="pageStyle"
+  >
+    x: {{ pageStyleNums.x }}
+    y: {{ pageStyleNums.y }}
     <div class="matrix matrix-left-bottom" />
     <!-- 背景 -->
     <div class="background">
@@ -154,7 +203,10 @@ const switchPic = (next: boolean) => {
     <!-- 图片左侧矩阵 -->
     <div class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999" />
     <!-- 标题 -->
-    <div class="title">
+    <div
+      class="title"
+      :style="layer1Style"
+    >
       <div class="title-name">
         {{ showCurrentName }}
       </div>
@@ -168,6 +220,7 @@ const switchPic = (next: boolean) => {
       <div
         class="archives-prev clickble"
         @click="switchPic(false)"
+        :style="layer1Style"
       />
       <div class="archives-center">
         <!-- 图片 -->
@@ -179,15 +232,19 @@ const switchPic = (next: boolean) => {
           <a
             :href="picAndNameList[index - 1].pic"
             target="_blank"
-            class="archives-pic cover-no-repeat-center block clickble"
+            class="archives-pic cover-no-repeat-center block clickble will-change-transform"
             v-show="currentIndex === index - 1"
             :style="{
-              'background-image': `url(${picAndNameList[index - 1].pic})`
+              'background-image': `url(${picAndNameList[index - 1].pic})`,
+              ...layer2Style
             }"
           />
         </transition>
         <!-- 当前图片位置指示器 -->
-        <div class="archives-indicators">
+        <div
+          class="archives-indicators"
+          :style="layer3Style"
+        >
           <div
             class="archives-indicator clickble"
             v-for="index in picAndNameList.length"
@@ -200,6 +257,7 @@ const switchPic = (next: boolean) => {
       <div
         class="archives-next clickble"
         @click="switchPic(true)"
+        :style="layer1Style"
       />
     </div>
     <!-- 页面四角的短横线 -->
