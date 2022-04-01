@@ -5,6 +5,7 @@ import beauties from '../assets/archive-page/beauties.jpg'
 import haven from '../assets/archive-page/heaven.jpg'
 import anna from '../assets/archive-page/anna.jpg'
 import planning from '../assets/archive-page/planning-board.jpg'
+import { gsap } from 'gsap'
 
 // TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
 const picAndNameList = ref([
@@ -15,19 +16,20 @@ const picAndNameList = ref([
 ])
 // 当前正在显示的图片索引
 const currentIndex = ref(0)
-// 当前正在显示的图片
-const currentPicAndName = computed(() => {
-  return picAndNameList.value[currentIndex.value]
-})
 // 当前正在进行上一张还是下一张
 const isNext = ref(false)
 // 当前使用的动画类名
 const picAnimationName = computed(() => {
   return isNext.value ? 'pic-next' : 'pic-prev'
 })
-const titleAnimationName = computed(() => {
-  return isNext.value ? 'title-next' : 'title-prev'
+// 用来显示的图片索引
+const showCurrentIndex = ref(0)
+// 用来显示的图片名称
+const showCurrentName = computed(() => {
+  return picAndNameList.value[showCurrentIndex.value].name
 })
+let animationTimeout = -1
+const translateDistance = 100
 // 上一张或下一张
 const switchPic = (next: boolean) => {
   isNext.value = next
@@ -38,6 +40,43 @@ const switchPic = (next: boolean) => {
     } else {
       currentIndex.value = 0
     }
+    // 终止标题动画
+    window.clearTimeout(animationTimeout)
+    gsap.killTweensOf('.title-name')
+    gsap.killTweensOf('.title-number')
+    // 开始标题退出动画
+    gsap.to('.title-name', {
+      translateX: `${-translateDistance}px`,
+      opacity: '0',
+      duration: 0.25
+    })
+    animationTimeout = window.setTimeout(() => {
+      gsap.to('.title-number', {
+        translateX: `${-translateDistance}px`,
+        opacity: '0',
+        duration: 0.25,
+        onComplete: () => {
+          // 开始标题进入动画
+          showCurrentIndex.value = currentIndex.value
+          gsap.fromTo('.title-name', {
+            translateX: `${translateDistance}px`
+          }, {
+            translateX: '0',
+            opacity: '1',
+            duration: 0.25
+          })
+          setTimeout(() => {
+            gsap.fromTo('.title-number', {
+              translateX: `${translateDistance}px`
+            }, {
+              translateX: '0',
+              opacity: '0.5',
+              duration: 0.25
+            })
+          }, 125)
+        }
+      })
+    }, 125)
   } else {
     // 上一张，如果是第一张就跳到最后一张
     if (currentIndex.value === 0) {
@@ -45,6 +84,45 @@ const switchPic = (next: boolean) => {
     } else {
       currentIndex.value -= 1
     }
+    // 终止标题动画
+    window.clearTimeout(animationTimeout)
+    gsap.killTweensOf('.title-name')
+    gsap.killTweensOf('.title-number')
+    // 开始标题退出动画
+    gsap.to('.title-name', {
+      translateX: `${translateDistance}px`,
+      opacity: '0',
+      duration: 0.25
+    })
+    animationTimeout = window.setTimeout(() => {
+      gsap.to('.title-number', {
+        translateX: `${translateDistance}px`,
+        opacity: '0',
+        duration: 0.25,
+        onComplete: () => {
+          // 开始标题进入动画
+          showCurrentIndex.value = currentIndex.value
+          gsap.fromTo('.title-name', {
+            translateX: `${-translateDistance}px`,
+            opacity: '0',
+          }, {
+            translateX: '0',
+            opacity: '1',
+            duration: 0.25
+          })
+          setTimeout(() => {
+            gsap.fromTo('.title-number', {
+              translateX: `${-translateDistance}px`,
+              opacity: '0',
+            }, {
+              translateX: '0',
+              opacity: '0.5',
+              duration: 0.25
+            })
+          }, 125)
+        }
+      })
+    }, 125)
   }
 }
 </script>
@@ -78,10 +156,10 @@ const switchPic = (next: boolean) => {
     <!-- 标题 -->
     <div class="title">
       <div class="title-name">
-        {{ currentPicAndName.name }}
+        {{ showCurrentName }}
       </div>
       <div class="title-number">
-        0{{ currentIndex + 1 }}
+        0{{ showCurrentIndex + 1 }}
       </div>
     </div>
     <!-- 主要内容 -->
