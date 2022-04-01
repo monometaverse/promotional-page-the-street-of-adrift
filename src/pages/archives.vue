@@ -25,39 +25,41 @@ const currentPicAndName = computed(() => {
     <div class="matrix matrix-left-bottom" />
     <!-- 背景 -->
     <div class="background">
-      <div class="background-line">
-        <div class="background-item ml-178px" />
-        <div class="background-item" />
-        <div class="background-item" />
-      </div>
-      <div class="background-line">
-        <div class="background-item" />
-        <div class="background-item" />
-        <div class="background-item" />
-      </div>
-      <div class="background-line">
-        <div class="background-item ml-350px" />
-        <div class="background-item background-item-empty" />
-        <div class="background-item background-item-empty" />
+      <div class="flex flex-col">
+        <div class="background-line ml-178px">
+          <div class="background-item " />
+          <div class="background-item" />
+          <div class="background-item" />
+        </div>
+        <div class="background-line">
+          <div class="background-item" />
+          <div class="background-item" />
+          <div class="background-item" />
+        </div>
+        <div class="background-line ml-350px">
+          <div class="background-item" />
+          <div class="background-item background-item-empty" />
+          <div class="background-item background-item-empty" />
+        </div>
       </div>
     </div>
     <!-- 图片右侧矩阵 -->
-    <div class="matrix" />
+    <div class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100" />
     <!-- 图片左侧矩阵 -->
-    <div class="matrix" />
+    <div class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999" />
     <!-- 标题 -->
     <div class="title">
       <div class="title-name">
         {{ currentPicAndName.name }}
       </div>
       <div class="title-number">
-        0{{ currentIndex }}
+        0{{ currentIndex + 1 }}
       </div>
     </div>
     <!-- 主要内容 -->
     <div class="archives">
       <!-- 向左切换 -->
-      <div class="archives-prev" />
+      <div class="archives-prev clickble" />
       <div class="archives-center">
         <!-- 图片 -->
         <transition
@@ -65,8 +67,10 @@ const currentPicAndName = computed(() => {
           v-for="index in picAndNameList.length"
           :key="index"
         >
-          <div
-            class="archives-pic"
+          <a
+            :href="picAndNameList[index - 1].pic"
+            target="_blank"
+            class="archives-pic cover-no-repeat-center block clickble"
             v-show="currentIndex === index - 1"
             :style="{
               'background-image': `url(${picAndNameList[index - 1].pic})`
@@ -76,7 +80,7 @@ const currentPicAndName = computed(() => {
         <!-- 当前图片位置指示器 -->
         <div class="archives-indicators">
           <div
-            class="archives-indicator"
+            class="archives-indicator clickble"
             v-for="index in picAndNameList.length"
             :key="index"
             :class="index - 1 === currentIndex ? 'archives-indicator-active' : ''"
@@ -84,7 +88,7 @@ const currentPicAndName = computed(() => {
         </div>
       </div>
       <!-- 向右切换 -->
-      <div class="archives-next" />
+      <div class="archives-next clickble" />
     </div>
     <!-- 页面四角的短横线 -->
     <div class="short-line short-line-top short-line-left" />
@@ -96,8 +100,14 @@ const currentPicAndName = computed(() => {
 <style lang="less" scoped>
 // 主要内容
 .archives {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   position: absolute;
   display: flex;
+  justify-content: center;
+  align-items: center;
   // TODO: 把上一个下一个按钮抽离成组件
   &-prev {
     background-image: url('../assets/nft-page/models-prev.svg');
@@ -123,6 +133,64 @@ const currentPicAndName = computed(() => {
     &:hover {
       opacity: 1;
     }
+  }
+
+  &-center {
+    .archives-pic {
+      @height: 480px;
+      @width: calc(@height / 9 * 16);
+
+      height: @height;
+      width: @width;
+    }
+  }
+
+  &-indicators {
+    display: flex;
+    column-gap: 24px;
+    margin-top: 16px;
+    justify-content: end;
+  }
+
+  &-indicator {
+    transition: opacity 250ms ease;
+    width: 48px;
+    height: 4px;
+    opacity: 0.25;
+    background-color: white;
+
+    &:hover {
+      opacity: 0.5;
+    }
+
+    &-active {
+      opacity: 1;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+// 标题
+.title {
+  position: absolute;
+  top: calc(128px + 50vh - 540px);
+  left: calc(393px + 50vw - 960px);
+
+  &-name {
+    font-family: 'Noto Serif SC', sans-serif;
+    font-weight: 900;
+    font-size: 64px;
+    line-height: 92px;
+  }
+
+  &-number {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 72px;
+    font-size: 48px;
+    opacity: 0.5;
   }
 }
 // 背景
