@@ -11,6 +11,8 @@ import { storeToRefs } from 'pinia'
 import { useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useWindowSize } from '@vueuse/core'
+import { useStyleTag } from '@vueuse/core'
+import devTools, { DevToolsEvent } from 'devtools-detect'
 import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
@@ -343,6 +345,15 @@ const isOnMobileByUserAgent = computed(() => {
   const device = new UAParser(navigator.userAgent).getDevice()
   return device.type === 'mobile' || device.type === 'tablet'
 })
+// 如果开发者工具打开了，就显示鼠标
+const hideCursor = ref(false)
+const hideCursorStyle = computed(() => {
+  return hideCursor.value ? '* { cursor: none!important; }' : ''
+})
+useEventListener(window, 'resize', () => {
+  hideCursor.value = devTools.isOpen
+})
+useStyleTag(hideCursorStyle)
 </script>
 <template>
   <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
