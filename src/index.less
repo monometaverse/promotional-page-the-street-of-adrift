@@ -68,6 +68,46 @@
   transition-duration: 0.4s !important;
 }
 
+// 给 Vue 的动画系统用的类名，档案页的图片切换动画
+.pic-prev-enter-from,
+.pic-prev-leave-to,
+.pic-next-enter-from,
+.pic-next-leave-to {
+  transform: scale(0);
+}
+
+.pic-prev-enter-to,
+.pic-prev-leave-from,
+.pic-next-enter-to,
+.pic-next-leave-from {
+  transform: scale(1);
+}
+
+.pic-prev-enter-active,
+.pic-prev-leave-active,
+.pic-next-enter-active,
+.pic-next-leave-active {
+  transition: transform 350ms ease;
+}
+
+// 上一个切换动画
+.pic-prev-enter-active {
+  transform-origin: top left;
+}
+
+.pic-prev-leave-active {
+  transform-origin: bottom right;
+}
+// 下一个切换动画
+
+.pic-next-enter-active {
+  transform-origin: bottom right;
+}
+
+.pic-next-leave-active {
+  transform-origin: top left;
+}
+
 html,
 body,
 #app {
@@ -92,7 +132,6 @@ body {
 
 * {
   user-select: none;
-  cursor: none !important;
 }
 
 // 矩阵
