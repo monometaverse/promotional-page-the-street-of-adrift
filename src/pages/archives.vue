@@ -19,6 +19,34 @@ const currentIndex = ref(0)
 const currentPicAndName = computed(() => {
   return picAndNameList.value[currentIndex.value]
 })
+// 当前正在进行上一张还是下一张
+const isNext = ref(false)
+// 当前使用的动画类名
+const picAnimationName = computed(() => {
+  return isNext.value ? 'pic-next' : 'pic-prev'
+})
+const titleAnimationName = computed(() => {
+  return isNext.value ? 'title-next' : 'title-prev'
+})
+// 上一张或下一张
+const switchPic = (next: boolean) => {
+  isNext.value = next
+  if (next) {
+    // 下一张，如果是最后一张就跳到第一张
+    if (currentIndex.value < picAndNameList.value.length - 1) {
+      currentIndex.value += 1
+    } else {
+      currentIndex.value = 0
+    }
+  } else {
+    // 上一张，如果是第一张就跳到最后一张
+    if (currentIndex.value === 0) {
+      currentIndex.value = picAndNameList.value.length - 1
+    } else {
+      currentIndex.value -= 1
+    }
+  }
+}
 </script>
 <template>
   <div class="route-page">
@@ -59,11 +87,14 @@ const currentPicAndName = computed(() => {
     <!-- 主要内容 -->
     <div class="archives">
       <!-- 向左切换 -->
-      <div class="archives-prev clickble" />
+      <div
+        class="archives-prev clickble"
+        @click="switchPic(false)"
+      />
       <div class="archives-center">
         <!-- 图片 -->
         <transition
-          name="fade"
+          :name="picAnimationName"
           v-for="index in picAndNameList.length"
           :key="index"
         >
@@ -88,7 +119,10 @@ const currentPicAndName = computed(() => {
         </div>
       </div>
       <!-- 向右切换 -->
-      <div class="archives-next clickble" />
+      <div
+        class="archives-next clickble"
+        @click="switchPic(true)"
+      />
     </div>
     <!-- 页面四角的短横线 -->
     <div class="short-line short-line-top short-line-left" />
@@ -111,12 +145,17 @@ const currentPicAndName = computed(() => {
   // TODO: 把上一个下一个按钮抽离成组件
   &-prev {
     background-image: url('../assets/nft-page/models-prev.svg');
-    margin-right: 255px;
+    position: absolute;
+    left: calc(250px + 50vw - 960px);
+    top: calc(50vh - 34px);
   }
 
   &-next {
     background-image: url('../assets/nft-page/models-next.svg');
     margin-left: 204px;
+    position: absolute;
+    right: calc(250px + 50vw - 960px);
+    top: calc(50vh - 34px);
   }
 
   &-prev,
@@ -137,6 +176,9 @@ const currentPicAndName = computed(() => {
 
   &-center {
     .archives-pic {
+      top: calc(279px + 50vh - 540px);
+      left: calc(559px + 50vw - 960px);
+      position: absolute;
       @height: 480px;
       @width: calc(@height / 9 * 16);
 
@@ -146,6 +188,9 @@ const currentPicAndName = computed(() => {
   }
 
   &-indicators {
+    position: absolute;
+    bottom: calc(301px + 50vh - 540px);
+    right: calc(508px + 50vw - 960px);
     display: flex;
     column-gap: 24px;
     margin-top: 16px;
