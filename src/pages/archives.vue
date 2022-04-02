@@ -146,12 +146,12 @@ const pageStyleNums = ref({
 })
 // 监听鼠标位置的变化
 watch(store.mousePos, (val) => {
-  if (pageChanging.value) return
   // 停止动画
   gsap.killTweensOf(pageStyleNums.value)
   // 开始新的动画
   gsap.to(pageStyleNums.value, {
-    duration: 1,
+    duration: 1.5,
+    // 计算出倾斜角度
     x: (val.x - windowWidth.value / 2) / windowWidth.value * 2 * maxDeg,
     y: -(val.y - windowHeight.value / 2) / windowHeight.value * 2 * maxDeg,
     ease: 'power4'
@@ -159,142 +159,150 @@ watch(store.mousePos, (val) => {
 })
 // 整个页面的倾斜样式
 const pageStyle = computed<CSSProperties>(() => {
-  if (pageChanging.value) return {}
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x}px, ${-pageStyleNums.value.y}px, 50px) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x}px, ${-pageStyleNums.value.y}px, 0) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
   }
 })
 const layer1Style = computed<CSSProperties>(() => {
-  if (pageChanging.value) return {}
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 5}px, ${-pageStyleNums.value.y * 5}px, 50px)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 0)`
   }
 })
 const layer2Style = computed<CSSProperties>(() => {
-  if (pageChanging.value) return {}
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 50px)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 20}px, ${-pageStyleNums.value.y * 20}px, 0)`
   }
 })
 const layer3Style = computed<CSSProperties>(() => {
-  if (pageChanging.value) return {}
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 15}px, ${-pageStyleNums.value.y * 15}px, 50px)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 30}px, ${-pageStyleNums.value.y * 30}px, 0)`
   }
 })
 </script>
 <template>
   <div
     class="route-page"
-    :style="pageStyle"
   >
     <div class="matrix matrix-left-bottom" />
-    <!-- 背景 -->
-    <div class="background">
-      <div class="flex flex-col">
-        <div class="background-line ml-178px">
-          <div class="background-item " />
-          <div class="background-item" />
-          <div class="background-item" />
-        </div>
-        <div class="background-line">
-          <div class="background-item" />
-          <div class="background-item" />
-          <div class="background-item" />
-        </div>
-        <div class="background-line ml-350px">
-          <div class="background-item" />
-          <div class="background-item background-item-empty" />
-          <div class="background-item background-item-empty" />
-        </div>
-      </div>
-    </div>
-    <!-- 图片左侧矩阵 -->
+    <!-- 会被 3D 效果影响的区域 -->
     <div
-      class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100"
-      :style="layer1Style"
-    />
-    <!-- 图片右侧矩阵 -->
-    <div
-      class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999"
-      :style="layer3Style"
-    />
-    <!-- 标题 -->
-    <div
-      class="title"
-      :style="layer1Style"
+      class="effect"
+      :style="pageStyle"
     >
-      <div class="title-name">
-        {{ showCurrentName }}
-      </div>
-      <div class="title-number">
-        0{{ showCurrentNameIndex + 1 }}
-      </div>
-    </div>
-    <!-- 主要内容 -->
-    <div class="archives">
-      <!-- 向左切换 -->
-      <div
-        class="archives-prev clickble"
-        @click="switchPic(false)"
-        :style="layer1Style"
-      />
-      <div class="archives-center">
-        <!-- 图片 -->
-        <a
-          :href="picAndNameList[showCurrentNameIndex].pic"
-          target="_blank"
-          class="archives-pic cover-no-repeat-center block clickble"
-          :style="{
-            'background-image': `url(${picAndNameList[currentIndex].pic})`,
-            transform: layer2Style.transform + ' ' + picAnimationStyleNext.transform,
-            willChange: layer2Style.willChange,
-            transformOrigin: picAnimationStyleNext.transformOrigin
-          }"
-        />
-        <a
-          :href="picAndNameList[showCurrentNameIndex].pic"
-          target="_blank"
-          class="archives-pic cover-no-repeat-center block clickble"
-          :style="{
-            'background-image': `url(${picAndNameList[prevPic].pic})`,
-            transform: layer2Style.transform + ' ' + picAnimationStyle.transform,
-            willChange: layer2Style.willChange,
-            transformOrigin: picAnimationStyle.transformOrigin
-          }"
-        />
-        <!-- 当前图片位置指示器 -->
-        <div
-          class="archives-indicators"
-          :style="layer3Style"
-        >
-          <div
-            class="archives-indicator clickble"
-            v-for="index in picAndNameList.length"
-            :key="index"
-            :class="index - 1 === currentIndex ? 'archives-indicator-active' : ''"
-          />
+      <!-- 背景 -->
+      <div class="background">
+        <div class="flex flex-col gap-8px">
+          <div class="background-line ml-178px">
+            <div class="background-item " />
+            <div class="background-item" />
+            <div class="background-item" />
+          </div>
+          <div class="background-line">
+            <div class="background-item" />
+            <div class="background-item" />
+            <div class="background-item" />
+          </div>
+          <div class="background-line ml-350px">
+            <div class="background-item" />
+            <div class="background-item background-item-empty" />
+            <div class="background-item background-item-empty" />
+          </div>
         </div>
       </div>
-      <!-- 向右切换 -->
+      <!-- 图片左侧矩阵 -->
       <div
-        class="archives-next clickble"
-        @click="switchPic(true)"
+        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100"
         :style="layer1Style"
       />
+      <!-- 图片右侧矩阵 -->
+      <div
+        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999"
+        :style="layer3Style"
+      />
+      <!-- 标题 -->
+      <div
+        class="title"
+        :style="layer1Style"
+      >
+        <div class="title-name">
+          {{ showCurrentName }}
+        </div>
+        <div class="title-number">
+          0{{ showCurrentNameIndex + 1 }}
+        </div>
+      </div>
+      <!-- 主要内容 -->
+      <div class="archives">
+        <!-- 向左切换 -->
+        <div
+          class="archives-prev clickble"
+          @click="switchPic(false)"
+          :style="layer1Style"
+        />
+        <div class="archives-center">
+          <!-- 图片 -->
+          <a
+            :href="picAndNameList[showCurrentNameIndex].pic"
+            target="_blank"
+            class="archives-pic cover-no-repeat-center block clickble"
+            :style="{
+              'background-image': `url(${picAndNameList[currentIndex].pic})`,
+              transform: layer2Style.transform + ' ' + picAnimationStyleNext.transform,
+              willChange: layer2Style.willChange,
+              transformOrigin: picAnimationStyleNext.transformOrigin
+            }"
+          />
+          <a
+            :href="picAndNameList[showCurrentNameIndex].pic"
+            target="_blank"
+            class="archives-pic cover-no-repeat-center block clickble"
+            :style="{
+              'background-image': `url(${picAndNameList[prevPic].pic})`,
+              transform: layer2Style.transform + ' ' + picAnimationStyle.transform,
+              willChange: layer2Style.willChange,
+              transformOrigin: picAnimationStyle.transformOrigin
+            }"
+          />
+          <!-- 当前图片位置指示器 -->
+          <div
+            class="archives-indicators"
+            :style="layer3Style"
+          >
+            <div
+              class="archives-indicator clickble"
+              v-for="index in picAndNameList.length"
+              :key="index"
+              :class="index - 1 === currentIndex ? 'archives-indicator-active' : ''"
+            />
+          </div>
+        </div>
+        <!-- 向右切换 -->
+        <div
+          class="archives-next clickble"
+          @click="switchPic(true)"
+          :style="layer1Style"
+        />
+      </div>
+      <!-- 页面四角的短横线 -->
+      <div class="short-line short-line-top short-line-left" />
+      <div class="short-line short-line-top short-line-right" />
+      <div class="short-line short-line-bottom short-line-left" />
+      <div class="short-line short-line-bottom short-line-right" />
     </div>
-    <!-- 页面四角的短横线 -->
-    <div class="short-line short-line-top short-line-left" />
-    <div class="short-line short-line-top short-line-right" />
-    <div class="short-line short-line-bottom short-line-left" />
-    <div class="short-line short-line-bottom short-line-right" />
   </div>
 </template>
 <style lang="less" scoped>
+.effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 // 主要内容
 .archives {
   left: 0;
