@@ -143,27 +143,28 @@ watch(store.mousePos, (val) => {
   gsap.killTweensOf(pageStyleNums.value)
   // 开始新的动画
   gsap.to(pageStyleNums.value, {
-    duration: 0.5,
+    duration: 1,
     x: (val.x - windowWidth.value / 2) / windowWidth.value * 2 * maxDeg,
-    y: -(val.y - windowHeight.value / 2) / windowHeight.value * 2 * maxDeg
+    y: -(val.y - windowHeight.value / 2) / windowHeight.value * 2 * maxDeg,
+    ease: 'power4'
   })
 })
 // 整个页面的倾斜样式
 const pageStyle = computed<CSSProperties>(() => ({
   willChange: 'transform',
-  transform: `perspective(1000px) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x}px, ${-pageStyleNums.value.y}px, 50px) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
 }))
 const layer1Style = computed<CSSProperties>(() => ({
   willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 2}px, -${pageStyleNums.value.y * 2}px, 50px)`
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 5}px, ${-pageStyleNums.value.y * 5}px, 50px)`
 }))
 const layer2Style = computed<CSSProperties>(() => ({
   willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 3}px, -${pageStyleNums.value.y * 3}px, 100px)`
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 100px)`
 }))
 const layer3Style = computed<CSSProperties>(() => ({
   willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 4}px, -${-pageStyleNums.value.y * 4}px, 150px)`
+  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 15}px, ${-pageStyleNums.value.y * 15}px, 150px)`
 }))
 </script>
 <template>
@@ -171,8 +172,6 @@ const layer3Style = computed<CSSProperties>(() => ({
     class="route-page"
     :style="pageStyle"
   >
-    x: {{ mousePos.x }}
-    y: {{ mousePos.y }}
     <div class="matrix matrix-left-bottom" />
     <!-- 背景 -->
     <div class="background">
@@ -194,10 +193,16 @@ const layer3Style = computed<CSSProperties>(() => ({
         </div>
       </div>
     </div>
-    <!-- 图片右侧矩阵 -->
-    <div class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100" />
     <!-- 图片左侧矩阵 -->
-    <div class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999" />
+    <div
+      class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100"
+      :style="layer1Style"
+    />
+    <!-- 图片右侧矩阵 -->
+    <div
+      class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999"
+      :style="layer3Style"
+    />
     <!-- 标题 -->
     <div
       class="title"
@@ -228,7 +233,7 @@ const layer3Style = computed<CSSProperties>(() => ({
           <a
             :href="picAndNameList[index - 1].pic"
             target="_blank"
-            class="archives-pic cover-no-repeat-center block clickble will-change-transform"
+            class="archives-pic cover-no-repeat-center block clickble"
             v-show="currentIndex === index - 1"
             :style="{
               'background-image': `url(${picAndNameList[index - 1].pic})`,
@@ -308,6 +313,7 @@ const layer3Style = computed<CSSProperties>(() => ({
 
   &-center {
     .archives-pic {
+      transition: all;
       top: calc(279px + 50vh - 540px);
       left: calc(559px + 50vw - 960px);
       position: absolute;
