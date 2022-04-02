@@ -6,8 +6,12 @@ import haven from '../assets/archive-page/heaven.jpg'
 import anna from '../assets/archive-page/anna.jpg'
 import planning from '../assets/archive-page/planning-board.jpg'
 import { gsap } from 'gsap'
-import { useMouse, useWindowSize } from '@vueuse/core'
+import { useStore } from '../store'
+import { storeToRefs } from 'pinia'
 
+// 状态
+const store = useStore()
+const { windowWidth, windowHeight, mousePos } = storeToRefs(store)
 // TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
 const picAndNameList = ref([
   { name: '花魁们', pic: beauties },
@@ -126,14 +130,6 @@ const switchPic = (next: boolean) => {
     }, 125)
   }
 }
-// 响应式屏幕宽高
-const { width: windowWidth, height: windowHeight } = useWindowSize()
-// 响应式鼠标位置
-const mousePos = useMouse({ touch: false })
-const combinedMousePos = computed(() => ({
-  x: mousePos.x.value,
-  y: mousePos.y.value
-}))
 // 最大倾斜角度
 const maxDeg = 5
 // 整个页面的倾斜样式，纯数字
@@ -142,7 +138,7 @@ const pageStyleNums = ref({
   y: 0
 })
 // 监听鼠标位置的变化
-watch(combinedMousePos, (val) => {
+watch(store.mousePos, (val) => {
   // 停止动画
   gsap.killTweensOf(pageStyleNums.value)
   // 开始新的动画
@@ -175,8 +171,8 @@ const layer3Style = computed<CSSProperties>(() => ({
     class="route-page"
     :style="pageStyle"
   >
-    x: {{ pageStyleNums.x }}
-    y: {{ pageStyleNums.y }}
+    x: {{ mousePos.x }}
+    y: {{ mousePos.y }}
     <div class="matrix matrix-left-bottom" />
     <!-- 背景 -->
     <div class="background">
