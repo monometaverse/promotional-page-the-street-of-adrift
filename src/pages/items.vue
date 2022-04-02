@@ -55,11 +55,11 @@ const currentIndex = ref(0)
     <!-- 模型展示区域 -->
     <div class="models">
       <div class="models-main">
-        <div class="models-prev-btn clickble" />
+        <div class="models-prev-btn prev-btn clickble" />
         <div class="models-main-container">
           <div class="models-rotating-border" />
         </div>
-        <div class="models-next-btn clickble" />
+        <div class="models-next-btn next-btn clickble" />
       </div>
       <!-- 当前模型 -->
       <div class="models-indicator">
@@ -229,29 +229,11 @@ const currentIndex = ref(0)
   }
 
   &-prev-btn {
-    background-image: url('../assets/nft-page/models-prev.svg');
     margin-right: 74px;
   }
 
   &-next-btn {
     background-image: url('../assets/nft-page/models-next.svg');
-    margin-left: 75px;
-  }
-
-  &-prev-btn,
-  &-next-btn {
-    width: 54px;
-    height: 68px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.5;
-    transition: opacity 250ms ease;
-    pointer-events: fill;
-
-    &:hover {
-      opacity: 1;
-    }
   }
 
   &-rotating-border {

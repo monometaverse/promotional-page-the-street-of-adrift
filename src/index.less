@@ -174,3 +174,28 @@ body {
 .short-line-right {
   right: calc(256px + 50vw - 960px);
 }
+
+// 上一个按钮
+.prev-btn {
+  background-image: url('./assets/nft-page/models-prev.svg');
+}
+// 下一个按钮
+.next-btn {
+  background-image: url('./assets/nft-page/models-next.svg');
+}
+
+.prev-btn,
+.next-btn {
+  width: 54px;
+  height: 68px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.5;
+  transition: opacity 250ms ease;
+  pointer-events: fill;
+
+  &:hover {
+    opacity: 1;
+  }
+}
