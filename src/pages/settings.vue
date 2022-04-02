@@ -1,10 +1,10 @@
 <!--设定页面-->
 <script lang="ts" setup>
-import { ref, RendererElement } from 'vue'
+import { ref } from 'vue'
 import settingsList from '../components/settings-list.vue'
 import settingsDetail from '../components/settings-detail.vue'
 import jiuxiao from '../assets/settings-page/jiuxiao-temp.png'
-import { gsap } from 'gsap'
+import jiuxiaoBig from '../assets/archive-page/heaven.jpg'
 
 /**
  * 在 i18n 文件中的样子应该是
@@ -17,14 +17,16 @@ import { gsap } from 'gsap'
  */
 // TODO: 改为从 i18n 文件中获取
 const settings = ref([
-  { name: '白石集团', smallPic: jiuxiao },
-  { name: '福京市', smallPic: jiuxiao },
-  { name: '九霄', smallPic: jiuxiao },
-  { name: '虚爆战争', smallPic: jiuxiao },
-  { name: '四大花魁', smallPic: jiuxiao },
-  { name: '灰墙城', smallPic: jiuxiao },
-  { name: '福京币', smallPic: jiuxiao }
+  { name: '白石集团', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
+  { name: '福京市', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
+  { name: '九霄', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
+  { name: '虚爆战争', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
+  { name: '四大花魁', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行'},
+  { name: '灰墙城', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
+  { name: '福京币', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行'}
 ])
+// 当前正在显示的索引
+const currentIndex = ref(0)
 // 是否在显示详情页
 const showingDetails = ref(false)
 </script>
@@ -53,6 +55,8 @@ const showingDetails = ref(false)
       <settings-detail
         v-show="showingDetails"
         @close="showingDetails = false"
+        :items="settings"
+        v-model="currentIndex"
       />
     </transition>
     <!-- 页面四角的短横线 -->
