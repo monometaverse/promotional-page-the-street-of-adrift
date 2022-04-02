@@ -239,7 +239,7 @@ const layer3Style = computed<CSSProperties>(() => {
       <div class="archives">
         <!-- 向左切换 -->
         <div
-          class="archives-prev clickble"
+          class="archives-prev prev-btn clickble"
           @click="switchPic(false)"
           :style="layer1Style"
         />
@@ -282,7 +282,7 @@ const layer3Style = computed<CSSProperties>(() => {
         </div>
         <!-- 向右切换 -->
         <div
-          class="archives-next clickble"
+          class="archives-next next-btn clickble"
           @click="switchPic(true)"
           :style="layer1Style"
         />
@@ -315,34 +315,16 @@ const layer3Style = computed<CSSProperties>(() => {
   align-items: center;
   // TODO: 把上一个下一个按钮抽离成组件
   &-prev {
-    background-image: url('../assets/nft-page/models-prev.svg');
     position: absolute;
     left: calc(250px + 50vw - 960px);
     top: calc(50vh - 34px);
   }
 
   &-next {
-    background-image: url('../assets/nft-page/models-next.svg');
     margin-left: 204px;
     position: absolute;
     right: calc(250px + 50vw - 960px);
     top: calc(50vh - 34px);
-  }
-
-  &-prev,
-  &-next {
-    width: 54px;
-    height: 68px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.5;
-    transition: opacity 250ms ease;
-    pointer-events: fill;
-
-    &:hover {
-      opacity: 1;
-    }
   }
 
   &-center {
