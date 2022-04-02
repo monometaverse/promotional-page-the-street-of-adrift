@@ -15,6 +15,8 @@ export const useStore = defineStore('main', () => {
   const mousePos = reactive(useMouse())
   // 屏幕大小
   const { width: windowWidth, height: windowHeight } = useWindowSize()
+  // 是否正在切换页面
+  const pageChanging = ref(false)
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -22,6 +24,7 @@ export const useStore = defineStore('main', () => {
     allowScroll,
     mousePos,
     windowWidth,
-    windowHeight
+    windowHeight,
+    pageChanging
   }
 })

@@ -14,7 +14,7 @@ import { useStyleTag } from '@vueuse/core'
 import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, pageChanging } = storeToRefs(store)
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
@@ -499,7 +499,11 @@ useStyleTag(hideCursorStyle)
             height="16"
           >
         </div>
-        <transition :name="getTransitionName(route.path, currentRoutePath)">
+        <transition
+          :name="getTransitionName(route.path, currentRoutePath)"
+          @before-enter="pageChanging = true"
+          @after-leave="pageChanging = false"
+        >
           <component :is="Component" />
         </transition>
       </div>

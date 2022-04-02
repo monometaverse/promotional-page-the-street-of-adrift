@@ -11,7 +11,7 @@ import { storeToRefs } from 'pinia'
 
 // 状态
 const store = useStore()
-const { windowWidth, windowHeight, mousePos } = storeToRefs(store)
+const { windowWidth, windowHeight, pageChanging } = storeToRefs(store)
 // TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
 const picAndNameList = ref([
   { name: '花魁们', pic: beauties },
@@ -21,23 +21,104 @@ const picAndNameList = ref([
 ])
 // 当前正在显示的图片索引
 const currentIndex = ref(0)
-// 当前正在进行上一张还是下一张
-const isNext = ref(false)
-// 当前使用的动画类名
-const picAnimationName = computed(() => {
-  return isNext.value ? 'pic-next' : 'pic-prev'
-})
-// 用来显示的图片索引
-const showCurrentIndex = ref(0)
+// 用来显示的名字索引
+const showCurrentNameIndex = ref(0)
 // 用来显示的图片名称
 const showCurrentName = computed(() => {
-  return picAndNameList.value[showCurrentIndex.value].name
+  return picAndNameList.value[showCurrentNameIndex.value].name
 })
+// 标题动画定时
 let animationTimeout = -1
 const translateDistance = 100
+// 图片动画用的参数
+const picAnimationArgs = ref({
+  origin: '',
+  scale: 1
+})
+// 图片动画时使用的样式
+const picAnimationStyle = computed<CSSProperties>(() => ({
+  transform: `scale(${picAnimationArgs.value.scale}, ${picAnimationArgs.value.scale})`,
+  transformOrigin: picAnimationArgs.value.origin
+}))
+// 下一张图片动画用的参数
+const picAnimationArgsNext = ref({
+  origin: '',
+  scale: 1
+})
+// 下一张图片动画时使用的样式
+const picAnimationStyleNext = computed<CSSProperties>(() => ({
+  transform: `scale(${picAnimationArgsNext.value.scale}, ${picAnimationArgsNext.value.scale})`,
+  transformOrigin: picAnimationArgsNext.value.origin
+}))
+// 是否正在进行下一张图片
+const isNextPic = ref(false)
+// 上一张图片
+const prevPic = ref(0)
+// 图片动画
+const doPicAniamtion = (next: boolean) => {
+  isNextPic.value = next
+  // 终止图片的动画
+  gsap.killTweensOf(picAnimationArgs.value)
+  gsap.killTweensOf(picAnimationArgsNext.value)
+  gsap.fromTo(picAnimationArgs.value,{
+    scale: 1
+  }, {
+    scale: 0,
+    origin: next ? 'top left' : 'bottom right',
+    duration: 0.75,
+  })
+  gsap.fromTo(picAnimationArgsNext.value,{
+    scale: 0
+  }, {
+    scale: 1,
+    origin: next ? 'bottom right' : 'top left',
+    duration: 0.75
+  })
+}
+// 进行标题动画
+const doTitleAnimation = (next: boolean) => {
+  // 终止标题动画
+  window.clearTimeout(animationTimeout)
+  gsap.killTweensOf('.title-name')
+  gsap.killTweensOf('.title-number')
+  // 开始标题退出动画
+  gsap.to('.title-name', {
+    translateX: `${next ? -translateDistance : translateDistance}px`,
+    opacity: '0',
+    duration: 0.25
+  })
+  // 开始图片退出动画
+  animationTimeout = window.setTimeout(() => {
+    gsap.to('.title-number', {
+      translateX: `${next ? -translateDistance : translateDistance}px`,
+      opacity: '0',
+      duration: 0.25,
+      onComplete: () => {
+        // 开始标题进入动画
+        showCurrentNameIndex.value = currentIndex.value
+        gsap.fromTo('.title-name', {
+          translateX: `${next ? translateDistance : -translateDistance}px`,
+        }, {
+          translateX: '0',
+          opacity: '1',
+          duration: 0.25
+        })
+        setTimeout(() => {
+          gsap.fromTo('.title-number', {
+            translateX: `${next ? translateDistance : -translateDistance}px`,
+          }, {
+            translateX: '0',
+            opacity: '0.5',
+            duration: 0.25
+          })
+        }, 125)
+      }
+    })
+  }, 125)
+}
 // 上一张或下一张
 const switchPic = (next: boolean) => {
-  isNext.value = next
+  prevPic.value = currentIndex.value
   if (next) {
     // 下一张，如果是最后一张就跳到第一张
     if (currentIndex.value < picAndNameList.value.length - 1) {
@@ -45,43 +126,6 @@ const switchPic = (next: boolean) => {
     } else {
       currentIndex.value = 0
     }
-    // 终止标题动画
-    window.clearTimeout(animationTimeout)
-    gsap.killTweensOf('.title-name')
-    gsap.killTweensOf('.title-number')
-    // 开始标题退出动画
-    gsap.to('.title-name', {
-      translateX: `${-translateDistance}px`,
-      opacity: '0',
-      duration: 0.25
-    })
-    animationTimeout = window.setTimeout(() => {
-      gsap.to('.title-number', {
-        translateX: `${-translateDistance}px`,
-        opacity: '0',
-        duration: 0.25,
-        onComplete: () => {
-          // 开始标题进入动画
-          showCurrentIndex.value = currentIndex.value
-          gsap.fromTo('.title-name', {
-            translateX: `${translateDistance}px`
-          }, {
-            translateX: '0',
-            opacity: '1',
-            duration: 0.25
-          })
-          setTimeout(() => {
-            gsap.fromTo('.title-number', {
-              translateX: `${translateDistance}px`
-            }, {
-              translateX: '0',
-              opacity: '0.5',
-              duration: 0.25
-            })
-          }, 125)
-        }
-      })
-    }, 125)
   } else {
     // 上一张，如果是第一张就跳到最后一张
     if (currentIndex.value === 0) {
@@ -89,46 +133,9 @@ const switchPic = (next: boolean) => {
     } else {
       currentIndex.value -= 1
     }
-    // 终止标题动画
-    window.clearTimeout(animationTimeout)
-    gsap.killTweensOf('.title-name')
-    gsap.killTweensOf('.title-number')
-    // 开始标题退出动画
-    gsap.to('.title-name', {
-      translateX: `${translateDistance}px`,
-      opacity: '0',
-      duration: 0.25
-    })
-    animationTimeout = window.setTimeout(() => {
-      gsap.to('.title-number', {
-        translateX: `${translateDistance}px`,
-        opacity: '0',
-        duration: 0.25,
-        onComplete: () => {
-          // 开始标题进入动画
-          showCurrentIndex.value = currentIndex.value
-          gsap.fromTo('.title-name', {
-            translateX: `${-translateDistance}px`,
-            opacity: '0',
-          }, {
-            translateX: '0',
-            opacity: '1',
-            duration: 0.25
-          })
-          setTimeout(() => {
-            gsap.fromTo('.title-number', {
-              translateX: `${-translateDistance}px`,
-              opacity: '0',
-            }, {
-              translateX: '0',
-              opacity: '0.5',
-              duration: 0.25
-            })
-          }, 125)
-        }
-      })
-    }, 125)
   }
+  doTitleAnimation(next)
+  doPicAniamtion(next)
 }
 // 最大倾斜角度
 const maxDeg = 5
@@ -139,6 +146,7 @@ const pageStyleNums = ref({
 })
 // 监听鼠标位置的变化
 watch(store.mousePos, (val) => {
+  if (pageChanging.value) return
   // 停止动画
   gsap.killTweensOf(pageStyleNums.value)
   // 开始新的动画
@@ -150,22 +158,34 @@ watch(store.mousePos, (val) => {
   })
 })
 // 整个页面的倾斜样式
-const pageStyle = computed<CSSProperties>(() => ({
-  willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x}px, ${-pageStyleNums.value.y}px, 50px) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
-}))
-const layer1Style = computed<CSSProperties>(() => ({
-  willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 5}px, ${-pageStyleNums.value.y * 5}px, 50px)`
-}))
-const layer2Style = computed<CSSProperties>(() => ({
-  willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 100px)`
-}))
-const layer3Style = computed<CSSProperties>(() => ({
-  willChange: 'transform',
-  transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 15}px, ${-pageStyleNums.value.y * 15}px, 150px)`
-}))
+const pageStyle = computed<CSSProperties>(() => {
+  if (pageChanging.value) return {}
+  return {
+    willChange: 'transform',
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x}px, ${-pageStyleNums.value.y}px, 50px) rotateY(${pageStyleNums.value.x}deg) rotateX(${pageStyleNums.value.y}deg)`
+  }
+})
+const layer1Style = computed<CSSProperties>(() => {
+  if (pageChanging.value) return {}
+  return {
+    willChange: 'transform',
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 5}px, ${-pageStyleNums.value.y * 5}px, 50px)`
+  }
+})
+const layer2Style = computed<CSSProperties>(() => {
+  if (pageChanging.value) return {}
+  return {
+    willChange: 'transform',
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 50px)`
+  }
+})
+const layer3Style = computed<CSSProperties>(() => {
+  if (pageChanging.value) return {}
+  return {
+    willChange: 'transform',
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 15}px, ${-pageStyleNums.value.y * 15}px, 50px)`
+  }
+})
 </script>
 <template>
   <div
@@ -212,7 +232,7 @@ const layer3Style = computed<CSSProperties>(() => ({
         {{ showCurrentName }}
       </div>
       <div class="title-number">
-        0{{ showCurrentIndex + 1 }}
+        0{{ showCurrentNameIndex + 1 }}
       </div>
     </div>
     <!-- 主要内容 -->
@@ -225,22 +245,28 @@ const layer3Style = computed<CSSProperties>(() => ({
       />
       <div class="archives-center">
         <!-- 图片 -->
-        <transition
-          :name="picAnimationName"
-          v-for="index in picAndNameList.length"
-          :key="index"
-        >
-          <a
-            :href="picAndNameList[index - 1].pic"
-            target="_blank"
-            class="archives-pic cover-no-repeat-center block clickble"
-            v-show="currentIndex === index - 1"
-            :style="{
-              'background-image': `url(${picAndNameList[index - 1].pic})`,
-              ...layer2Style
-            }"
-          />
-        </transition>
+        <a
+          :href="picAndNameList[showCurrentNameIndex].pic"
+          target="_blank"
+          class="archives-pic cover-no-repeat-center block clickble"
+          :style="{
+            'background-image': `url(${picAndNameList[currentIndex].pic})`,
+            transform: layer2Style.transform + ' ' + picAnimationStyleNext.transform,
+            willChange: layer2Style.willChange,
+            transformOrigin: picAnimationStyleNext.transformOrigin
+          }"
+        />
+        <a
+          :href="picAndNameList[showCurrentNameIndex].pic"
+          target="_blank"
+          class="archives-pic cover-no-repeat-center block clickble"
+          :style="{
+            'background-image': `url(${picAndNameList[prevPic].pic})`,
+            transform: layer2Style.transform + ' ' + picAnimationStyle.transform,
+            willChange: layer2Style.willChange,
+            transformOrigin: picAnimationStyle.transformOrigin
+          }"
+        />
         <!-- 当前图片位置指示器 -->
         <div
           class="archives-indicators"
