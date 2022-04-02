@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "devtools-detect": "^4.0.0",
     "element-plus": "^2.1.4",
     "gsap": "^3.9.1",
     "pinia": "^2.0.12",
