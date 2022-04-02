@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { useMouse, useWindowSize } from '@vueuse/core'
 
 export const useStore = defineStore('main', () => {
   // 是否是刷新后首次进入首页
@@ -10,10 +11,20 @@ export const useStore = defineStore('main', () => {
   const scrollHintAnimationStart = ref(false)
   // 是否已经可以滚动以切换页面了
   const allowScroll = ref(false)
+  // 鼠标的位置
+  const mousePos = reactive(useMouse())
+  // 屏幕大小
+  const { width: windowWidth, height: windowHeight } = useWindowSize()
+  // 是否正在切换页面
+  const pageChanging = ref(false)
   return {
     firstEnter,
     staticFrameworkAnimationStart,
     scrollHintAnimationStart,
-    allowScroll
+    allowScroll,
+    mousePos,
+    windowWidth,
+    windowHeight,
+    pageChanging
   }
 })

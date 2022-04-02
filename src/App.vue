@@ -8,15 +8,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
-import { useEventListener } from '@vueuse/core'
+import { useElementSize, useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
-import { useWindowSize } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
-import devTools, { DevToolsEvent } from 'devtools-detect'
 import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll} = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, pageChanging } = storeToRefs(store)
 // 资源引用
 const loadedRes = ref<LoadedResources | null>(null)
 // 当资源加载完成时
@@ -248,7 +246,7 @@ const mouseClickStyle = ref<CSSProperties>({})
 // 鼠标是否在可点击的物体上
 const isMouseOverClickable = ref(false)
 // 监听屏幕内部鼠标移动事件
-useEventListener(window, 'mousemove', (event: MouseEvent) => {
+watch(store.mousePos, (val) => {
   // 取消正在进行的动画
   gsap.killTweensOf(mouseOuterStyle.value)
   // 把鼠标跟随圈移动到鼠标所在位置
@@ -256,14 +254,14 @@ useEventListener(window, 'mousemove', (event: MouseEvent) => {
     left: mouseOuterStyle.value.left,
     top: mouseOuterStyle.value.top
   }, {
-    left: event.x + 'px',
-    top: event.y + 'px',
+    left: val.x + 'px',
+    top: val.y + 'px',
     duration: 0.25,
     ease: 'power4'
   })
   // 移动鼠标十字
-  mouseInnerStyle.value.left = event.x + 'px'
-  mouseInnerStyle.value.top = event.y + 'px'
+  mouseInnerStyle.value.left = val.x + 'px'
+  mouseInnerStyle.value.top = val.y + 'px'
 })
 // 监听鼠标点击事件
 useEventListener(window, 'click', (event) => {
@@ -336,8 +334,6 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
     }
   }
 })() })
-// 获取响应式的屏幕高宽
-const { width: windowWidth, height: windowHeight } = useWindowSize()
 // 检测是否在移动设备上，使用 user-agent 方式
 // 当宽度发生变化时再检测一次，这样 DevTools 切换视图时也能收到变化，不需要刷新页面
 const isOnMobileByUserAgent = computed(() => {
@@ -346,12 +342,10 @@ const isOnMobileByUserAgent = computed(() => {
   return device.type === 'mobile' || device.type === 'tablet'
 })
 // 如果开发者工具打开了，就显示鼠标
-const hideCursor = ref(false)
+const staticFramwork = useElementSize(staticFramworkEl)
 const hideCursorStyle = computed(() => {
-  return hideCursor.value ? '* { cursor: none!important; }' : ''
-})
-useEventListener(window, 'resize', () => {
-  hideCursor.value = devTools.isOpen
+  // 如果静态框架的宽度小于窗口宽度，表示可能是开发者工具打开了
+  return window.outerWidth > staticFramwork.width.value ? '' : '* { cursor: none!important; }'
 })
 useStyleTag(hideCursorStyle)
 </script>
@@ -505,7 +499,11 @@ useStyleTag(hideCursorStyle)
             height="16"
           >
         </div>
-        <transition :name="getTransitionName(route.path, currentRoutePath)">
+        <transition
+          :name="getTransitionName(route.path, currentRoutePath)"
+          @before-enter="pageChanging = true"
+          @after-leave="pageChanging = false"
+        >
           <component :is="Component" />
         </transition>
       </div>

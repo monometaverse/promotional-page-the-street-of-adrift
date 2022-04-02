@@ -3,7 +3,6 @@
 import { storeToRefs } from 'pinia'
 import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
-import { useWindowSize } from '@vueuse/core'
 
 // states
 const store = useStore()
@@ -13,8 +12,6 @@ const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, all
 const logoRef = ref<HTMLDivElement | null>(null)
 // logo 图标复制体的样式
 const logoCopyStyle = ref<CSSProperties>({})
-// 使用并监听屏幕宽度变化
-const { width: windowWidth } = useWindowSize()
 // 标题下方描述文字是否显示
 const showDescriptionText = ref(false)
 // 是否将元素转移到动画开始的状态
