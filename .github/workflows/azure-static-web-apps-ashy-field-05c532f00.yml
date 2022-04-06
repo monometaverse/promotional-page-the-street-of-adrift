@@ -10,22 +10,11 @@ on:
       - main
 
 jobs:
-  build_and_deploy_job:
+  start_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: 发送构建开始的消息到 Slack
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      # 导出触发此次构建的提交的信息和构建开始时间
-      - name: Export commit info and start time
-        id: commit
-        run: |
-          echo "::set-output name=startTime::$(date +%s)"
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
-          echo "::set-output name=msg::$(git log -1 --format=%s)"
-          echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
       # 发送开始构建的消息到 Slack
       - name: Send Build Start Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
@@ -47,6 +36,22 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+  build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      # 导出触发此次构建的提交的信息和构建开始时间
+      - name: Export commit info and start time
+        id: commit
+        run: |
+          echo "::set-output name=startTime::$(date +%s)"
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
+          echo "::set-output name=msg::$(git log -1 --format=%s)"
+          echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
       # 通过 Azure 静态网站构建和部署
       - name: Build And Deploy
         id: builddeploy
