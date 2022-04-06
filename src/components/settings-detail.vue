@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { gsap } from 'gsap'
 // 需要父组件传入的部分
 const props = defineProps<{
   items: { name: string, smallPic: string, bigPic: string, desc: string }[],
@@ -7,14 +8,71 @@ const props = defineProps<{
 // 定义会触发的事件
 const emits = defineEmits<{
   (e: 'close'): void,
-  (e: 'update:modelValue', val: number): void
+  (e: 'next'): void, // 下一张
+  (e: 'prev'): void  // 上一张
 }>()
+// 动画从开始到结束图片和描述会移动的距离
+const transitionDistance = 200
+// 动画时长
+const animationDuration = 0.3
+// 描述动画开始定时
+let descAnimationTimeout = -1
+// 上一页或下一页
+const prevOrNext = (next: boolean) => {
+  // 取消动画
+  gsap.killTweensOf('.details-pic')
+  clearTimeout(descAnimationTimeout)
+  // 开始新的图片退出动画
+  gsap.to('.details-pic', {
+    opacity: '0',
+    translateX: (next ? transitionDistance : -transitionDistance) + 'px',
+    duration: animationDuration,
+  })
+  descAnimationTimeout = window.setTimeout(() => {
+    // 开始描述退出动画
+    gsap.to('.details-desc', {
+      translateX: (next ? transitionDistance : -transitionDistance) + 'px',
+      opacity: '0',
+      duration: animationDuration,
+      onComplete: () => {
+        // 真正调用页面切换逻辑
+        next ? emits('next') : emits('prev')
+        // 开始图片进入动画
+        gsap.fromTo('.details-pic', {
+          opacity: '0',
+          translateX: (next ? -transitionDistance : transitionDistance) + 'px'
+        }, {
+          translateX: '0',
+          opacity: '1',
+          duration: animationDuration,
+        })
+        // 开始描述进入动画
+        window.setTimeout(() => {
+          gsap.fromTo('.details-desc', {
+            opacity: '0',
+            translateX: (next ? -transitionDistance : transitionDistance) + 'px'
+          }, {
+            translateX: '0',
+            opacity: '1',
+            duration: animationDuration,
+          })
+        }, animationDuration * 500)
+      }
+    })
+  }, animationDuration * 500)
+}
 </script>
 <template>
   <div class="details">
     <!-- 切换按钮 -->
-    <div class="details-prev-btn prev-btn clickble" />
-    <div class="details-next-btn next-btn clickble" />
+    <div
+      class="details-prev-btn prev-btn clickble"
+      @click="prevOrNext(false)"
+    />
+    <div
+      class="details-next-btn next-btn clickble"
+      @click="prevOrNext(true)"
+    />
     <!-- 图片上方矩阵 -->
     <div class="matrix top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999" />
     <!-- 图片下方矩阵 -->

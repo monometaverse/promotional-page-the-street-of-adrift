@@ -8,10 +8,11 @@ import planning from '../assets/archive-page/planning-board.jpg'
 import { gsap } from 'gsap'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
+import { usePagination } from '../utils'
 
 // 状态
 const store = useStore()
-const { windowWidth, windowHeight, pageChanging } = storeToRefs(store)
+const { windowWidth, windowHeight } = storeToRefs(store)
 // TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
 const picAndNameList = ref([
   { name: '花魁们', pic: beauties },
@@ -19,8 +20,6 @@ const picAndNameList = ref([
   { name: '安娜', pic: anna },
   { name: '计划板', pic: planning },
 ])
-// 当前正在显示的图片索引
-const currentIndex = ref(0)
 // 用来显示的名字索引
 const showCurrentNameIndex = ref(0)
 // 用来显示的图片名称
@@ -116,27 +115,13 @@ const doTitleAnimation = (next: boolean) => {
     })
   }, 125)
 }
-// 上一张或下一张
-const switchPic = (next: boolean) => {
-  prevPic.value = currentIndex.value
-  if (next) {
-    // 下一张，如果是最后一张就跳到第一张
-    if (currentIndex.value < picAndNameList.value.length - 1) {
-      currentIndex.value += 1
-    } else {
-      currentIndex.value = 0
-    }
-  } else {
-    // 上一张，如果是第一张就跳到最后一张
-    if (currentIndex.value === 0) {
-      currentIndex.value = picAndNameList.value.length - 1
-    } else {
-      currentIndex.value -= 1
-    }
-  }
+// 使用分页组件
+const { currentIndex, prevOrNext: switchPic } = usePagination(picAndNameList, (next, prevIndex) => {
+  prevPic.value = prevIndex
+}, (next) => {
   doTitleAnimation(next)
   doPicAniamtion(next)
-}
+})
 // 最大倾斜角度
 const maxDeg = 5
 // 整个页面的倾斜样式，纯数字
