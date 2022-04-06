@@ -15,13 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     name: 发送构建开始的消息到 Slack
     steps:
+      # 代码签出
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
       # 导出触发此次构建的提交的信息和构建开始时间
       - name: Export commit info and start time
         id: commit
         run: |
-          echo "::set-output name=startTime::$(date +%s)"
           echo "::set-output name=sha::$(git rev-parse HEAD)"
           echo "::set-output name=msg::$(git log -1 --format=%s)"
+          echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
       # 发送开始构建的消息到 Slack
       - name: Send Build Start Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
@@ -48,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+      # 代码签出
       - uses: actions/checkout@v2
         with:
           submodules: true
