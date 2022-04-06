@@ -5,6 +5,7 @@ import settingsList from '../components/settings-list.vue'
 import settingsDetail from '../components/settings-detail.vue'
 import jiuxiao from '../assets/settings-page/jiuxiao-temp.png'
 import jiuxiaoBig from '../assets/archive-page/heaven.jpg'
+import { usePagination } from '../utils'
 
 /**
  * 在 i18n 文件中的样子应该是
@@ -26,9 +27,14 @@ const settings = ref([
   { name: '福京币', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行'}
 ])
 // 当前正在显示的索引
-const currentIndex = ref(0)
+const { currentIndex, next, prev } = usePagination(settings)
 // 是否在显示详情页
 const showingDetails = ref(false)
+// 当设定中的一项被点击时
+const onItemClick = (index: number) => {
+  currentIndex.value = index
+  showingDetails.value = true
+}
 </script>
 <template>
   <div class="route-page">
@@ -40,7 +46,7 @@ const showingDetails = ref(false)
         :is-overlay="true"
         :items="settings"
         v-show="!showingDetails"
-        @item-click="showingDetails = true"
+        @item-click="onItemClick"
       />
     </transition>
     <transition name="scale-fade">
@@ -57,6 +63,8 @@ const showingDetails = ref(false)
         @close="showingDetails = false"
         :items="settings"
         v-model="currentIndex"
+        @prev="prev"
+        @next="next"
       />
     </transition>
     <!-- 页面四角的短横线 -->
