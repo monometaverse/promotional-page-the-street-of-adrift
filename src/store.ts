@@ -1,3 +1,4 @@
+import { LoadedResources } from './components/ResourceLoader/Resources'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useMouse, useWindowSize } from '@vueuse/core'
@@ -15,8 +16,10 @@ export const useStore = defineStore('main', () => {
   const mousePos = reactive(useMouse())
   // 屏幕大小
   const { width: windowWidth, height: windowHeight } = useWindowSize()
-  // 是否正在切换页面
-  const pageChanging = ref(false)
+  // 已经加载好的资源
+  const res = ref<LoadedResources | null>(null)
+  // 当前正在显示的阵营图片
+  const showingCharacter = ref(new Image())
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -25,6 +28,7 @@ export const useStore = defineStore('main', () => {
     mousePos,
     windowWidth,
     windowHeight,
-    pageChanging
+    res,
+    showingCharacter
   }
 })
