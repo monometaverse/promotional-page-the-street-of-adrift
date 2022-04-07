@@ -84,7 +84,11 @@ const doInfoItemAnimation = (enter: boolean) => {
     opacity: enter ? '1' : '0',
     duration: durations.infoItem / 1000
   })
+  // 离开动画进行时隐藏分割条，进入动画进行时显示分割条
+  isDividerHide.value = !enter
 }
+// 分割条是否隐藏
+const isDividerHide = ref(false)
 // 动画定时
 let nameLeaveTimeout = -1
 let infoItemLeaveTimeout = -1
@@ -186,7 +190,12 @@ const swtichTo = (index: number) => {
         </div>
       </div>
       <!-- 分割线 -->
-      <div class="info-divider" />
+      <div
+        class="info-divider"
+        :class="{
+          'info-divider-hide': isDividerHide
+        }"
+      />
       <div class="info-desc">
         她是巨型企业白石集团董事长的女儿，出于保护人身安全的目的，她的父母为她创造了一个假名[九条泷川]，并让她在福京市理工大学学习，就读理论物理专业。
         然而，纵使白石的物质生活极度优越，可她却总是被父母的意志所支配，就连学习的专业与未来的工作都在计划板上被写的清清楚楚。
@@ -318,14 +327,16 @@ const swtichTo = (index: number) => {
     height: 2px;
     width: 16px;
     background-color: white;
-    transition-property: width;
-    will-change: width;
+    transition-property: transform;
+    will-change: transform;
     transition-timing-function: ease;
     transition-duration: 250ms;
+    transform-origin: right;
   }
 
   &-divider-hide {
-    width: 0;
+    transform: scale(0);
+    transform-origin: left;
   }
 
   &-desc {
