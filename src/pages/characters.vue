@@ -1,11 +1,129 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, CSSProperties, ref } from 'vue'
+import { gsap } from 'gsap'
+
 import rosetta from '../assets/characters-page/rosetta.png'
+import { transformStyle } from '@vue/compiler-dom'
 // TODO: 从 i18n 获取
 const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里斯蒂娜 琼斯', '安娜 伊凡诺娃', '东山 抚子', '般若', '德川璃璃子'])
 const characterPaintings = ref([rosetta])
 const currentShow = ref(0)
+const currentShowForNav = ref(0)
+// 动画长度
+const durations = {
+  characterPainting: 500,
+  name: 250,
+  infoItem: 250,
+  infoDesc: 250
+}
+// 动画延迟
+const delay = {
+  characterPainting: 0,
+  name: 125,
+  infoItem: 250,
+  infoDesc: 375
+}
+// 离开动画结束时、进入动画开始时偏移距离 px
+const translateX = {
+  characterPainting: 200,
+  name: 100,
+  infoItem: 100,
+  infoDesc: 100
+}
+// 立绘动画参数
+const paintingArgs = ref({
+  translateX: 0,
+  opacity: 1,
+  rotateY: 0
+})
+// 响应式立绘行内样式
+const paintingStyle = computed<CSSProperties>(() => ({
+  filter: `brightness(${(100 - Math.abs(paintingArgs.value.translateX))}%)`,
+  transform: `perspective(1000px) translateX(${paintingArgs.value.translateX}px) rotateY(${paintingArgs.value.rotateY}deg)`,
+  opacity: paintingArgs.value.opacity,
+  transformStyle: 'preserve-3d'
+}))
+// 立绘切换动画
+const doPaintingAnimation = (enter: boolean) => {
+  gsap.fromTo(paintingArgs.value, {
+    translateX: enter ? translateX.characterPainting : 0,
+    opacity: enter ? 0 : 1,
+    rotateY: enter ? 10 : 0
+  }, {
+    translateX: enter ? 0 : -translateX.characterPainting,
+    opacity: enter ? 1 : 0,
+    rotateY: enter ? 0 : -10,
+    duration: durations.characterPainting / 1000
+  })
+}
+// 角色名称和英文名称动画参数
+const nameArgs = ref({ translateX: 0, opacity: 1 })
+const nameStyle = computed<CSSProperties>(() => ({
+  transform: `translateX(${nameArgs.value.translateX}px)`,
+  opacity: nameArgs.value.opacity
+}))
+// 角色名称切换动画
+const doNameAnimation = (enter: boolean) => {
+  gsap.fromTo(nameArgs.value, {
+    translateX: enter ? translateX.name : 0,
+    opacity: enter ? 0 : 1
+  }, {
+    translateX: enter ? 0 : -translateX.name,
+    opacity: enter ? 1 : 0,
+    duration: durations.name / 1000
+  })
+}
+// CV 和画师信息切换动画
+const doInfoItemAnimation = (enter: boolean) => {
+  gsap.fromTo('.info-more', {
+    translateX: `${enter ? translateX.infoItem : 0}px`,
+    opacity: enter ? '0' : '1'
+  }, {
+    translateX: `${enter ? 0 : -translateX.infoItem}px`,
+    opacity: enter ? '1' : '0',
+    duration: durations.infoItem / 1000
+  })
+}
+// 动画定时
+let nameLeaveTimeout = -1
+let infoItemLeaveTimeout = -1
+let infoDescLeaveTimeout = -1
+// 详细介绍切换动画
+const doInfoDescAnimation = (enter: boolean, index: number) => {
+  gsap.fromTo('.info-desc', {
+    translateX: `${enter ? translateX.infoDesc : 0}px`,
+    opacity: enter ? '0' : '1'
+  }, {
+    translateX: `${enter ? 0 : -translateX.infoDesc}px`,
+    duration: durations.infoDesc / 1000,
+    opacity: enter ? '1' : '0',
+    onComplete: () => {
+      if (enter) return
+      // 真正修改目前正在显示的索引
+      currentShow.value = index
+      // 开始进入动画
+      doPaintingAnimation(true)
+      setTimeout(doNameAnimation, delay.name, true)
+      setTimeout(doInfoItemAnimation, delay.infoItem, true)
+      setTimeout(doInfoDescAnimation, delay.infoDesc, true)
+    }
+  })
+}
+// 切换函数
+const swtichTo = (index: number) => {
+  currentShowForNav.value = index
+  // 取消所有正在进行的动画和动画定时
+  gsap.killTweensOf(paintingArgs.value)
+  clearTimeout(nameLeaveTimeout)
+  clearTimeout(infoItemLeaveTimeout)
+  clearTimeout(infoDescLeaveTimeout)
+  // 开始退出动画
+  doPaintingAnimation(false)
+  nameLeaveTimeout = window.setTimeout(doNameAnimation, delay.name, false)
+  infoItemLeaveTimeout = window.setTimeout(doInfoItemAnimation, delay.infoItem, false)
+  infoDescLeaveTimeout =  window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
+}
 </script>
 <template>
   <div class="route-page">
@@ -16,10 +134,10 @@ const currentShow = ref(0)
     <div class="selector">
       <div
         class="selector-item"
-        :class="currentShow === index - 1 ? 'selector-item-active' : ''"
+        :class="currentShowForNav === index - 1 ? 'selector-item-active' : ''"
         v-for="index in characters.length"
         :key="index - 1"
-        @click="currentShow = index - 1"
+        @click="swtichTo(index - 1)"
       >
         <div class="selector-item-icon clickble" />
         <div class="selector-item-title clickble">
@@ -31,15 +149,22 @@ const currentShow = ref(0)
     <div
       class="character-painting"
       :style="{
-        backgroundImage: `url('${characterPaintings[0]}')`
+        backgroundImage: `url('${characterPaintings[0]}')`,
+        ...paintingStyle
       }"
     />
     <!-- 角色介绍 -->
     <div class="info">
-      <div class="info-title">
+      <div
+        class="info-title"
+        :style="nameStyle"
+      >
         {{ characters[currentShow] }}
       </div>
-      <div class="info-title-en">
+      <div
+        class="info-title-en"
+        :style="nameStyle"
+      >
         SHIRAISHI ROSETTA
       </div>
       <div class="info-more">
@@ -60,6 +185,7 @@ const currentShow = ref(0)
           </div>
         </div>
       </div>
+      <!-- 分割线 -->
       <div class="info-divider" />
       <div class="info-desc">
         她是巨型企业白石集团董事长的女儿，出于保护人身安全的目的，她的父母为她创造了一个假名[九条泷川]，并让她在福京市理工大学学习，就读理论物理专业。
@@ -192,6 +318,14 @@ const currentShow = ref(0)
     height: 2px;
     width: 16px;
     background-color: white;
+    transition-property: width;
+    will-change: width;
+    transition-timing-function: ease;
+    transition-duration: 250ms;
+  }
+
+  &-divider-hide {
+    width: 0;
   }
 
   &-desc {
