@@ -4,7 +4,11 @@ import { computed, CSSProperties, ref } from 'vue'
 import { gsap } from 'gsap'
 
 import rosetta from '../assets/characters-page/rosetta.png'
-import { transformStyle } from '@vue/compiler-dom'
+import { useStore } from '../store'
+import { storeToRefs } from 'pinia'
+// pinia 状态管理
+const store = useStore()
+const { res, showingCharacter, allImagesForParticles } = storeToRefs(store)
 // TODO: 从 i18n 获取
 const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里斯蒂娜 琼斯', '安娜 伊凡诺娃', '东山 抚子', '般若', '德川璃璃子'])
 const characterPaintings = ref([rosetta])
@@ -117,6 +121,11 @@ const doInfoDescAnimation = (enter: boolean, index: number) => {
 // 切换函数
 const swtichTo = (index: number) => {
   currentShowForNav.value = index
+  // 切换粒子图片
+  if (allImagesForParticles.value) {
+    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
+    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+  }
   // 取消所有正在进行的动画和动画定时
   gsap.killTweensOf(paintingArgs.value)
   clearTimeout(nameLeaveTimeout)

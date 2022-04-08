@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useStore } from '../store'
+import { shuffle } from 'lodash'
+
 // 状态管理
 const store = useStore()
 const { windowWidth, windowHeight } = storeToRefs(store)
@@ -12,7 +14,7 @@ const canvasCtx = computed(() => {
   return canvasEl.value?.getContext('2d')
 })
 // 粒子点对象
-const points: {
+let points: {
   x: number, // 目前的位置 x
   y: number, // 目前的位置 y
   targetX: number, // 将要移动到的位置 x
@@ -23,6 +25,9 @@ watchEffect(() => {
   const ctx = canvasCtx.value
   if (!ctx) return
   const newVal = store.showingCharacter
+  // 开始锁住画布，停止绘制
+  pausePointRender.value = true
+  ctx.clearRect(0,0,canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
   ctx.drawImage(newVal, 0, 0, newVal.width, newVal.height)
   // 获取到图片的信息
   const imageData = ctx.getImageData(0,0,newVal.width, newVal.height).data
@@ -41,8 +46,11 @@ watchEffect(() => {
       }
     }
   }
+  // 打乱数组
+  points = shuffle(points)
   // 移除多余的点
-  points.slice(0, pointsPos.length)
+  points = points.slice(0, pointsPos.length)
+
   for (let i = 0; i < pointsPos.length ;i ++) {
     if (i < points.length) {
       // 把已经存在的点移动到相应位置
@@ -50,33 +58,42 @@ watchEffect(() => {
       points[i].targetY = pointsPos[i].y
     } else {
       // 生成缺少的点
-      points.push({ x: 0, y: 0, targetX: pointsPos[i].x, targetY: pointsPos[i].y })
+      points.push({
+        x: Math.random() * newVal.width,
+        y: Math.random() * newVal.width,
+        targetX: pointsPos[i].x,
+        targetY: pointsPos[i].y
+      })
     }
   }
+  // 解锁画布，继续绘制
+  pausePointRender.value = false
 })
 // 是否停止帧刷
 const stopRender = ref(false)
+// 是否暂停绘制，在获取新的图片信息时，需要暂停点的绘制，否则会获取到已经存在的点的信息，并且把这些点的位置信息误当成图片信息
+const pausePointRender = ref(false)
 // 渲染函数
 const render = () => {
   const ctx = canvasCtx.value
   // 如果没有上下文，就不继续了
   if (!ctx) return
-  // 清除整个画布
-  ctx.clearRect(0,0, canvasEl.value!.width, canvasEl.value!.height)
-  points.forEach((it) => {
-    console.log('drawing point')
-    // 移动粒子
-    it.x += (it.targetX - it.x) / 40
-    it.y += (it.targetY - it.y) / 40
-    // 渲染粒子
-    ctx.beginPath()
-    ctx.arc(it.x, it.y, 1, 0, Math.PI * 2)
-    ctx.fillStyle = '#fff'
-    ctx.fill()
-    ctx.closePath()
-  })
+  if (!pausePointRender.value) {
+    // 清除整个画布
+    ctx.clearRect(0,0, canvasEl.value!.width, canvasEl.value!.height)
+    points.forEach((it) => {
+      // 移动粒子
+      it.x += (it.targetX - it.x) / 40
+      it.y += (it.targetY - it.y) / 40
+      // 渲染粒子
+      ctx.beginPath()
+      ctx.arc(it.x, it.y, 1, 0, Math.PI * 2)
+      ctx.fillStyle = '#fff'
+      ctx.fill()
+      ctx.closePath()
+    })
+  }
   if (!stopRender.value) requestAnimationFrame(render)
-  console.log(Date.now(), 'end')
 }
 // 当挂载时开始帧刷
 onMounted(() => {

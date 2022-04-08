@@ -1,6 +1,6 @@
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useMouse, useWindowSize } from '@vueuse/core'
 
 export const useStore = defineStore('main', () => {
@@ -20,6 +20,14 @@ export const useStore = defineStore('main', () => {
   const res = ref<LoadedResources | null>(null)
   // 当前正在显示的阵营图片
   const showingCharacter = ref(new Image())
+  // 所有的阵营图片资源
+  const allImagesForParticles = computed(() => res.value?.filter(it => it.for === 'particle'))
+  // 根据名称和用途获取资源
+  const getRes = (name: LoadedResources[number]['name'], forWhat: LoadedResources[number]['for']) => {
+    const r = res.value?.find(it => it.name === name && it.for === forWhat)
+    if (!r) throw new Error(`获取不到此资源，名称：${name}，用途：${forWhat}`)
+    return r
+  }
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -29,6 +37,8 @@ export const useStore = defineStore('main', () => {
     windowWidth,
     windowHeight,
     res,
-    showingCharacter
+    showingCharacter,
+    allImagesForParticles,
+    getRes
   }
 })
