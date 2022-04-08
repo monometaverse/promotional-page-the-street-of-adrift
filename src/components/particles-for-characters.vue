@@ -75,6 +75,9 @@ const stopRender = ref(false)
 const pausePointRender = ref(false)
 // 鼠标距离目标点多少会被吸引
 const mouseAbsorbDistance = 64
+const mouseAbsorbDistanceMax = 128
+// 当在最大受影响范围内时，最大的偏移距离
+const maxOffset = 32
 // 渲染函数
 const render = () => {
   const ctx = canvasCtx.value
@@ -86,19 +89,35 @@ const render = () => {
     points.forEach((it) => {
       // 计算鼠标和目标点的距离
       const mouseDistance = Math.sqrt(Math.pow(mousePos.value.x - it.targetX, 2) + Math.pow(mousePos.value.y - it.targetY, 2))
-      if (mouseDistance <= mouseAbsorbDistance) {
-        // 当鼠标和目标点的距离小于一定的值时，粒子移动到鼠标的位置，而不是目标点的位置
-        it.x += (mousePos.value.x - it.x) / 10
-        it.y += (mousePos.value.y - it.y) / 10
+      // 计算鼠标和点当前的距离
+      const mouseDistanceCurrent = Math.sqrt(Math.pow(mousePos.value.x - it.x, 2) + Math.pow(mousePos.value.y - it.y, 2))
+      if (mouseDistanceCurrent <= mouseAbsorbDistance) {
+        if (mouseDistance <= mouseAbsorbDistanceMax) {
+          // 当鼠标和目标点的距离小于最小受影响范围时，粒子移动到鼠标的位置，而不是目标点的位置
+          it.x += (mousePos.value.x - it.x) / 10
+          it.y += (mousePos.value.y - it.y) / 10
+        } else {
+          // 偏移的距离，斜边长度
+          const percent = mouseAbsorbDistance / mouseDistance * maxOffset
+          const offsetY = (mousePos.value.y - it.targetY) * percent / mouseDistance
+          const offsetX = (mousePos.value.x - it.targetX) * percent / mouseDistance
+          // 在最大受影响范围内时，把粒子移动到偏移过的目标点
+          it.x += (it.targetX + offsetX - it.x) / 40
+          it.y += (it.targetY + offsetY - it.y) / 40
+        }
       } else {
-        // 移动粒子
-        it.x += (it.targetX - it.x) / 40
-        it.y += (it.targetY - it.y) / 40
+        // 偏移的距离，斜边长度
+        const percent = mouseAbsorbDistance / mouseDistanceCurrent * maxOffset
+        const offsetY = (mousePos.value.y - it.targetY) * percent / mouseDistanceCurrent
+        const offsetX = (mousePos.value.x - it.targetX) * percent / mouseDistanceCurrent
+        // 在最大受影响范围内时，把粒子移动到偏移过的目标点
+        it.x += (it.targetX + offsetX - it.x) / 40
+        it.y += (it.targetY + offsetY - it.y) / 40
       }
       // 渲染粒子
       ctx.beginPath()
-      ctx.arc(it.x, it.y, 1, 0, Math.PI * 2)
-      ctx.fillStyle = '#fff'
+      ctx.arc(it.x, it.y, 1.2, 0, Math.PI * 2)
+      ctx.fillStyle = '#eee'
       ctx.fill()
       ctx.closePath()
     })
