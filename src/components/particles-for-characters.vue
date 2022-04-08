@@ -94,8 +94,8 @@ const render = () => {
       if (mouseDistanceCurrent <= mouseAbsorbDistance) {
         if (mouseDistance <= mouseAbsorbDistanceMax) {
           // 当鼠标和目标点的距离小于最小受影响范围时，粒子移动到鼠标的位置，而不是目标点的位置
-          it.x += (mousePos.value.x - it.x) / 10
-          it.y += (mousePos.value.y - it.y) / 10
+          it.x += (mousePos.value.x + Math.random() * 32 - 16 - it.x) / 10
+          it.y += (mousePos.value.y + Math.random() * 32 - 16 - it.y) / 10
         } else {
           // 偏移的距离，斜边长度
           const percent = mouseAbsorbDistance / mouseDistance * maxOffset
