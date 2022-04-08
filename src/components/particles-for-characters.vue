@@ -54,15 +54,15 @@ watchEffect(() => {
   for (let i = 0; i < pointsPos.length ;i ++) {
     if (i < points.length) {
       // 把已经存在的点移动到相应位置
-      points[i].targetX = pointsPos[i].x
-      points[i].targetY = pointsPos[i].y
+      points[i].targetX = pointsPos[i].x + Math.random() - 0.5
+      points[i].targetY = pointsPos[i].y + Math.random() - 0.5
     } else {
       // 生成缺少的点
       points.push({
         x: Math.random() * newVal.width,
         y: Math.random() * newVal.width,
-        targetX: pointsPos[i].x,
-        targetY: pointsPos[i].y
+        targetX: pointsPos[i].x + Math.random() - 0.5,
+        targetY: pointsPos[i].y + Math.random() - 0.5
       })
     }
   }
