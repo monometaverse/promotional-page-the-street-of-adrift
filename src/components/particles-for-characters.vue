@@ -6,7 +6,7 @@ import { shuffle } from 'lodash'
 
 // 状态管理
 const store = useStore()
-const { windowWidth, windowHeight } = storeToRefs(store)
+const { windowWidth, windowHeight, mousePos } = storeToRefs(store)
 // canvas 的引用
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 // canvas 上下文
@@ -73,6 +73,8 @@ watchEffect(() => {
 const stopRender = ref(false)
 // 是否暂停绘制，在获取新的图片信息时，需要暂停点的绘制，否则会获取到已经存在的点的信息，并且把这些点的位置信息误当成图片信息
 const pausePointRender = ref(false)
+// 鼠标距离目标点多少会被吸引
+const mouseAbsorbDistance = 64
 // 渲染函数
 const render = () => {
   const ctx = canvasCtx.value
@@ -82,9 +84,17 @@ const render = () => {
     // 清除整个画布
     ctx.clearRect(0,0, canvasEl.value!.width, canvasEl.value!.height)
     points.forEach((it) => {
-      // 移动粒子
-      it.x += (it.targetX - it.x) / 40
-      it.y += (it.targetY - it.y) / 40
+      // 计算鼠标和目标点的距离
+      const mouseDistance = Math.sqrt(Math.pow(mousePos.value.x - it.targetX, 2) + Math.pow(mousePos.value.y - it.targetY, 2))
+      if (mouseDistance <= mouseAbsorbDistance) {
+        // 当鼠标和目标点的距离小于一定的值时，粒子移动到鼠标的位置，而不是目标点的位置
+        it.x += (mousePos.value.x - it.x) / 10
+        it.y += (mousePos.value.y - it.y) / 10
+      } else {
+        // 移动粒子
+        it.x += (it.targetX - it.x) / 40
+        it.y += (it.targetY - it.y) / 40
+      }
       // 渲染粒子
       ctx.beginPath()
       ctx.arc(it.x, it.y, 1, 0, Math.PI * 2)
