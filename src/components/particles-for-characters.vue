@@ -25,13 +25,31 @@ watchEffect(() => {
   const ctx = canvasCtx.value
   if (!ctx) return
   const newVal = store.showingCharacter
+  // 当图片为空时
+  if (newVal.width === 0) {
+    targetAlpha = 0
+    if (points.length === 0) {
+      // 如果没有存在的粒子，就直接忽略
+      return
+    } else {
+      // 如果有存在的粒子，让粒子分散到屏幕各处，然后消失
+      points.forEach((it) => {
+        it.targetX = Math.random() * (canvasEl.value?.width ?? 0)
+        it.targetY = Math.random() * (canvasEl.value?.height ?? 0)
+      })
+      return
+    }
+  }
+  targetAlpha = 1
   // 开始锁住画布，停止绘制
   pausePointRender.value = true
   ctx.clearRect(0,0,canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
+  ctx.globalAlpha = 1
   ctx.drawImage(newVal, 0, 0, newVal.width, newVal.height)
   // 获取到图片的信息
   const imageData = ctx.getImageData(0,0,newVal.width, newVal.height).data
   // 清除图片
+  ctx.globalAlpha = 0
   ctx.clearRect(0, 0, canvasEl.value!.width, canvasEl.value!.height)
   // 记录已遍历的点的数量
   let pointsPos: { x: number, y: number }[] = []
@@ -78,14 +96,17 @@ const mouseAbsorbDistance = 64
 const mouseAbsorbDistanceMax = 128
 // 当在最大受影响范围内时，最大的偏移距离
 const maxOffset = 32
+// 全局透明度
+let targetAlpha = 1
 // 渲染函数
 const render = () => {
   const ctx = canvasCtx.value
   // 如果没有上下文，就不继续了
   if (!ctx) return
   if (!pausePointRender.value) {
+    ctx.globalAlpha += (targetAlpha - ctx.globalAlpha) / (targetAlpha > ctx.globalAlpha ? 60 : 10)
     // 清除整个画布
-    ctx.clearRect(0,0, canvasEl.value!.width, canvasEl.value!.height)
+    ctx.clearRect(0,0, canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
     points.forEach((it) => {
       // 计算鼠标和目标点的距离
       const mouseDistance = Math.sqrt(Math.pow(mousePos.value.x - it.targetX, 2) + Math.pow(mousePos.value.y - it.targetY, 2))

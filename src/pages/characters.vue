@@ -1,6 +1,6 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, ref } from 'vue'
+import { computed, CSSProperties, onMounted, onUnmounted, ref } from 'vue'
 import { gsap } from 'gsap'
 
 import rosetta from '../assets/characters-page/rosetta.png'
@@ -137,6 +137,18 @@ const swtichTo = (index: number) => {
   infoItemLeaveTimeout = window.setTimeout(doInfoItemAnimation, delay.infoItem, false)
   infoDescLeaveTimeout =  window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
 }
+// 当页面挂载时，随机设置一个粒子图片，TODO: 等数据填充好之后，使用第一个
+onMounted(() => {
+  // 切换粒子图片
+  if (allImagesForParticles.value) {
+    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
+    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+  }
+})
+// 当页面卸载时，移除正在显示的粒子图片
+onUnmounted(() => {
+  showingCharacter.value = new Image()
+})
 </script>
 <template>
   <div class="route-page">

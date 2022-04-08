@@ -18,8 +18,6 @@ const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , al
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
-  const find = res.find((it) => it.name === 'dennisOrg')?.value as HTMLImageElement
-  showingCharacter.value = find
   router.push('/')
 }
 // i18n 切换语言
