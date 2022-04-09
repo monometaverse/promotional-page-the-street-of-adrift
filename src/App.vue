@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WebGLBackground from './components/WebGLBackground/index.vue'
+import particlesForCharacter from './components/particles-for-characters.vue'
 import ResourceLoader from './components/ResourceLoader/index.vue'
 import { computed, CSSProperties, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -14,9 +14,7 @@ import { useStyleTag } from '@vueuse/core'
 import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, pageChanging } = storeToRefs(store)
-// 资源引用
-const loadedRes = ref<LoadedResources | null>(null)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, showingCharacter } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
@@ -27,17 +25,6 @@ const i18n = useI18n()
 const switchLang = () => {
   i18n.locale.value = i18n.locale.value === 'zh' ? 'en' : 'zh'
 }
-// 背景 canvas
-const webGlBackground = ref<InstanceType<typeof WebGLBackground> | null>(null)
-// 显示或隐藏辅助 canvas
-const toggleHelper = () => {
-  if (!webGlBackground.value) {
-    return
-  }
-  showHelper.value = !showHelper.value
-  webGlBackground.value.showOrHidePic(showHelper.value)
-}
-const showHelper = ref(false)
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
   { to: '/', name: '首页' },
@@ -364,10 +351,13 @@ useStyleTag(hideCursorStyle)
         v-if="loadedRes"
         ref="staticFramworkEl"
       >
+        <!-- 背景 -->
         <div
           class="background cover-no-repeat-center"
           :style="backgroundCss"
         />
+        <!-- 粒子效果 -->
+        <particles-for-character />
         <div
           class="mouse-container"
           v-if="!isOnMobileByUserAgent"
@@ -501,10 +491,10 @@ useStyleTag(hideCursorStyle)
         </div>
         <transition
           :name="getTransitionName(route.path, currentRoutePath)"
-          @before-enter="pageChanging = true"
-          @after-leave="pageChanging = false"
         >
-          <component :is="Component" />
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
         </transition>
       </div>
     </transition>

@@ -13,7 +13,7 @@ import { gsap } from 'gsap'
 // 手动保持引用
 [draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
 // 控制图片的最大高度或宽度
-const picSize = ref(400)
+const picSize = ref(360 * 1.5)
 // 定义父组件需要监听的事件
 const emits = defineEmits<{
   (events: 'loadComplete', loaded: LoadedResources): void
@@ -71,16 +71,18 @@ onMounted(() => {
     const img = new Image()
     img.src = res.value
     img.onload = () => {
-      // 处理图片大小
-      const width = Number(img.width)
-      img.width = picSize.value
-      img.height = img.height * picSize.value / width
-      if (img.height > 400) {
-        const height = Number(img.height)
-        img.height = picSize.value
-        img.width = img.width * picSize.value / height
+      // 处理图片大小，只有阵营图片需要这么操作
+      if (res.for === 'particle') {
+        const width = Number(img.width)
+        img.width = picSize.value
+        img.height = img.height * picSize.value / width
+        if (img.height > picSize.value) {
+          const height = Number(img.height)
+          img.height = picSize.value
+          img.width = img.width * picSize.value / height
+        }
+        img.style.background = 'black'
       }
-      img.style.background = 'black'
       loaded++
       onResItemLoadEnd(loaded, all, res.name, img, res.for)
     }

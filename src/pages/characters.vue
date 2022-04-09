@@ -1,10 +1,15 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, ref } from 'vue'
+import { computed, CSSProperties, onActivated, onDeactivated, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { gsap } from 'gsap'
 
 import rosetta from '../assets/characters-page/rosetta.png'
-import { transformStyle } from '@vue/compiler-dom'
+import { useStore } from '../store'
+import { storeToRefs } from 'pinia'
+import { useElementBounding } from '@vueuse/core'
+// pinia 状态管理
+const store = useStore()
+const { res, showingCharacter, allImagesForParticles, infoElPos } = storeToRefs(store)
 // TODO: 从 i18n 获取
 const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里斯蒂娜 琼斯', '安娜 伊凡诺娃', '东山 抚子', '般若', '德川璃璃子'])
 const characterPaintings = ref([rosetta])
@@ -117,6 +122,11 @@ const doInfoDescAnimation = (enter: boolean, index: number) => {
 // 切换函数
 const swtichTo = (index: number) => {
   currentShowForNav.value = index
+  // 切换粒子图片
+  if (allImagesForParticles.value) {
+    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
+    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+  }
   // 取消所有正在进行的动画和动画定时
   gsap.killTweensOf(paintingArgs.value)
   clearTimeout(nameLeaveTimeout)
@@ -128,6 +138,30 @@ const swtichTo = (index: number) => {
   infoItemLeaveTimeout = window.setTimeout(doInfoItemAnimation, delay.infoItem, false)
   infoDescLeaveTimeout =  window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
 }
+// 当页面激活时，随机设置一个粒子图片，TODO: 等数据填充好之后，使用第一个
+onActivated(() => {
+  // 切换粒子图片
+  if (allImagesForParticles.value) {
+    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
+    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+  }
+  window.dispatchEvent(new Event('resize'))
+})
+// 当页面休眠时，移除正在显示的粒子图片
+onDeactivated(() => {
+  showingCharacter.value = new Image()
+})
+// 角色信息块引用
+const infoEl = ref<HTMLDivElement>()
+// 角色信息块位置
+const infoElBounding = useElementBounding(infoEl)
+// 监听角色信息块的位置，发送给 pinia
+watchEffect(() => {
+  infoElPos.value = {
+    x: infoElBounding.x.value,
+    y: infoElBounding.y.value
+  }
+})
 </script>
 <template>
   <div class="route-page">
@@ -158,7 +192,10 @@ const swtichTo = (index: number) => {
       }"
     />
     <!-- 角色介绍 -->
-    <div class="info">
+    <div
+      class="info"
+      ref="infoEl"
+    >
       <div
         class="info-title"
         :style="nameStyle"
