@@ -73,7 +73,7 @@ watchEffect(() => {
   points = points.slice(0, pointsPos.length)
   // 根据角色信息块的位置来计算粒子的位置
   const offsetX = infoElPos.value.x
-  let offsetY = infoElPos.value.y - 256
+  let offsetY = infoElPos.value.y - 360
   // 因为角色页刚进入时获取到的位置是被偏移过的，需要进行额外的判断
   if (offsetY > windowHeight.value) {
     offsetY -= windowHeight.value
@@ -83,15 +83,15 @@ watchEffect(() => {
   for (let i = 0; i < pointsPos.length ;i ++) {
     if (i < points.length) {
       // 把已经存在的点移动到相应位置
-      points[i].targetX = offsetX + pointsPos[i].x + Math.random() - 0.5
-      points[i].targetY = offsetY + pointsPos[i].y + Math.random() - 0.5
+      points[i].targetX = offsetX + (pointsPos[i].x + Math.random() - 0.5) / 1.5
+      points[i].targetY = offsetY + (pointsPos[i].y + Math.random() - 0.5) / 1.5
     } else {
       // 生成缺少的点
       points.push({
         x: Math.random() * canvasCtx.value.canvas.width,
         y: Math.random() * canvasCtx.value.canvas.height,
-        targetX: offsetX + pointsPos[i].x + Math.random() - 0.5,
-        targetY: offsetY + pointsPos[i].y + Math.random() - 0.5
+        targetX: offsetX + (pointsPos[i].x + Math.random() - 0.5) / 1.5,
+        targetY: offsetY + (pointsPos[i].y + Math.random() - 0.5) / 1.5
       })
     }
   }
@@ -148,7 +148,7 @@ const render = () => {
       }
       // 渲染粒子
       ctx.beginPath()
-      ctx.arc(it.x, it.y, 1.2, 0, Math.PI * 2)
+      ctx.arc(it.x, it.y, 0.8, 0, Math.PI * 2)
       ctx.fillStyle = '#eee'
       ctx.fill()
       ctx.closePath()

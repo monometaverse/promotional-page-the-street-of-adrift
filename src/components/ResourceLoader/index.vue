@@ -13,7 +13,7 @@ import { gsap } from 'gsap'
 // 手动保持引用
 [draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
 // 控制图片的最大高度或宽度
-const picSize = ref(256)
+const picSize = ref(360 * 1.5)
 // 定义父组件需要监听的事件
 const emits = defineEmits<{
   (events: 'loadComplete', loaded: LoadedResources): void
