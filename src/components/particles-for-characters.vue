@@ -3,10 +3,11 @@ import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useStore } from '../store'
 import { shuffle } from 'lodash'
+import { offset } from '@popperjs/core'
 
 // 状态管理
 const store = useStore()
-const { windowWidth, windowHeight, mousePos } = storeToRefs(store)
+const { windowWidth, windowHeight, mousePos, infoElPos } = storeToRefs(store)
 // canvas 的引用
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 // canvas 上下文
@@ -40,6 +41,8 @@ watchEffect(() => {
       return
     }
   }
+  // 如果没有获取到角色信息块的位置，停止处理
+  if (!infoElPos.value.x) return
   targetAlpha = 1
   // 开始锁住画布，停止绘制
   pausePointRender.value = true
@@ -68,19 +71,27 @@ watchEffect(() => {
   points = shuffle(points)
   // 移除多余的点
   points = points.slice(0, pointsPos.length)
-
+  // 根据角色信息块的位置来计算粒子的位置
+  const offsetX = infoElPos.value.x
+  let offsetY = infoElPos.value.y - 256
+  // 因为角色页刚进入时获取到的位置是被偏移过的，需要进行额外的判断
+  if (offsetY > windowHeight.value) {
+    offsetY -= windowHeight.value
+  } else if (offsetY < 0) {
+    offsetY += windowHeight.value
+  }
   for (let i = 0; i < pointsPos.length ;i ++) {
     if (i < points.length) {
       // 把已经存在的点移动到相应位置
-      points[i].targetX = pointsPos[i].x + Math.random() - 0.5
-      points[i].targetY = pointsPos[i].y + Math.random() - 0.5
+      points[i].targetX = offsetX + pointsPos[i].x + Math.random() - 0.5
+      points[i].targetY = offsetY + pointsPos[i].y + Math.random() - 0.5
     } else {
       // 生成缺少的点
       points.push({
-        x: Math.random() * newVal.width,
-        y: Math.random() * newVal.width,
-        targetX: pointsPos[i].x + Math.random() - 0.5,
-        targetY: pointsPos[i].y + Math.random() - 0.5
+        x: Math.random() * canvasCtx.value.canvas.width,
+        y: Math.random() * canvasCtx.value.canvas.height,
+        targetX: offsetX + pointsPos[i].x + Math.random() - 0.5,
+        targetY: offsetY + pointsPos[i].y + Math.random() - 0.5
       })
     }
   }

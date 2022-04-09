@@ -28,6 +28,8 @@ export const useStore = defineStore('main', () => {
     if (!r) throw new Error(`获取不到此资源，名称：${name}，用途：${forWhat}`)
     return r
   }
+  // 角色信息块的位置
+  const infoElPos = ref({ x: 0, y: 0 })
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -39,6 +41,7 @@ export const useStore = defineStore('main', () => {
     res,
     showingCharacter,
     allImagesForParticles,
-    getRes
+    getRes,
+    infoElPos
   }
 })

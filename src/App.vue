@@ -492,7 +492,9 @@ useStyleTag(hideCursorStyle)
         <transition
           :name="getTransitionName(route.path, currentRoutePath)"
         >
-          <component :is="Component" />
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
         </transition>
       </div>
     </transition>
