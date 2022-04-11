@@ -13,8 +13,8 @@ import touyamaOrg from '../../assets/touyama-org.png'
 import vue3Org from '../../assets/Vue3.png'
 import watanabeOrg from '../../assets/watanabe-org.png'
 // 九霄金币
-import kusyouCoin from '../../assets/kusyouCoin.glb'
-import coinEnviroment from '../../assets/coinEnviroment.hdr'
+import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
+import coinEnviroment from '../../assets/nft-page/coinEnviroment.hdr'
 import { DataTexture } from 'three'
 // 背景图片
 import homeBackground from '../../assets/static-framework/background-home.png'

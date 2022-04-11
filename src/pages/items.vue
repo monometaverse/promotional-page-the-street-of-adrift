@@ -3,6 +3,8 @@
 import { computed, CSSProperties, reactive, ref } from 'vue'
 import { usePagination } from '../utils'
 import { gsap } from 'gsap'
+import modelViewer from '../components/model-viewer.vue'
+import { useElementBounding } from '@vueuse/core'
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<{
   name: string,
@@ -114,11 +116,20 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
       }
     })
   }, delay.reserveBtn)
-
 }
+// 模型容器元素
+const modelContainerEl = ref<HTMLDivElement | null>(null)
+// 模型容器元素的位置高宽信息
+const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 </script>
 <template>
   <div class="route-page">
+    <model-viewer
+      :width="modelContainerElBounding.width"
+      :height="modelContainerElBounding.height"
+      :top="modelContainerElBounding.top"
+      :left="modelContainerElBounding.left"
+    />
     <div class="info">
       <!-- NFT 名字 -->
       <div
@@ -168,7 +179,10 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
           class="models-prev-btn prev-btn clickble"
           @click="prevOrNextLocal(false)"
         />
-        <div class="models-main-container">
+        <div
+          class="models-main-container"
+          ref="modelContainerEl"
+        >
           <div class="models-rotating-border" />
         </div>
         <div
