@@ -1,5 +1,8 @@
 <!--NFT 页面-->
-<script lang="ts" setup>import { ref } from 'vue'
+<script lang="ts" setup>
+import { computed, CSSProperties, reactive, ref } from 'vue'
+import { usePagination } from '../utils'
+import { gsap } from 'gsap'
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<{
   name: string,
@@ -24,30 +27,136 @@ const itemsList = ref<{
   }
 ])
 // 当前正在显示的 NFT
-const currentIndex = ref(0)
+const { currentIndex, prevOrNext } = usePagination(itemsList)
+// 动画偏移量
+const translateX = reactive({
+  info: 100,
+  reserveBtn: 100
+})
+// 动画时长
+const durations = reactive({
+  info: 250,
+  reserveBtn: 250
+})
+// 动画延迟
+const delay = reactive({
+  info: 0,
+  reserveBtn: 250
+})
+// NFT 信息动画参数
+const infoAnimationArgs = reactive({
+  translateX: 0,
+  opacity: 1
+})
+const infoAnimationStyle = computed<CSSProperties>(() => ({
+  transform: `translateX(${infoAnimationArgs.translateX}px)`,
+  opacity: infoAnimationArgs.opacity
+}))
+// 预约按钮动画参数
+const reserveBtnAnimationArgs = reactive({
+  translateX: 0,
+  opacity: 1
+})
+const reserveBtnAnimationStyle = computed<CSSProperties>(() => ({
+  transform: `translateX(${reserveBtnAnimationArgs.translateX}px)`,
+  opacity: reserveBtnAnimationArgs.opacity
+}))
+// 上一页或下一页
+const prevOrNextLocal = (next?: boolean, index?: number) => {
+  if (typeof next === 'undefined') {
+    if (typeof index === 'undefined') {
+      throw new Error('切换组件：没有传入任何参数')
+    } else {
+      doAnimation(true, index, false)
+    }
+  } else {
+    if (typeof index !== 'undefined') {
+      console.warn('已经传入了要进行的动作：' + next + '，再传入要跳转的索引是无效的')
+    } else {
+      doAnimation(next, -1, false)
+    }
+  }
+}
+// 动画定时
+let reserveBtnAnimationTimeout = -1
+// 动画函数
+const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
+  // 停止正在进行的动画
+  gsap.killTweensOf(infoAnimationArgs)
+  // 取消动画定时
+  window.clearTimeout(reserveBtnAnimationTimeout)
+  // 开始新的动画
+  gsap.fromTo(infoAnimationArgs, {
+    translateX: next ? (enter ? -translateX.info : 0) : (enter ? translateX.info : 0),
+    opacity: enter ? 0 : 1
+  }, {
+    translateX: next ? (enter ? 0 : translateX.info) : (enter ? 0 : -translateX.info),
+    opacity: enter ? 1 : 0,
+    duration: durations.info / 1000
+  })
+  reserveBtnAnimationTimeout = window.setTimeout(() => {
+    gsap.fromTo(reserveBtnAnimationArgs, {
+      translateX: next ? (enter ? -translateX.reserveBtn : 0) : (enter ? translateX.reserveBtn : 0),
+      opacity: enter ? 0 : 1
+    }, {
+      translateX: next ? (enter ? 0 : translateX.reserveBtn) : (enter ? 0 : -translateX.reserveBtn),
+      opacity: enter ? 1 : 0,
+      duration: durations.reserveBtn / 1000,
+      onComplete: () => {
+        if (enter) return
+        // 正式修改正显示的 NFT 索引
+        if (newIndex !== -1) {
+          currentIndex.value = newIndex
+        } else {
+          prevOrNext(next)
+        }
+        doAnimation(next, -1, true)
+      }
+    })
+  }, delay.reserveBtn)
+
+}
 </script>
 <template>
   <div class="route-page">
     <div class="info">
       <!-- NFT 名字 -->
-      <div class="info-title">
+      <div
+        class="info-title"
+        :style="infoAnimationStyle"
+      >
         {{ itemsList[currentIndex].name }}
       </div>
       <!-- 当切换至英文时，隐藏，但是占空间 -->
-      <div class="info-title-en">
+      <div
+        class="info-title-en"
+        :style="infoAnimationStyle"
+      >
         {{ itemsList[currentIndex].nameEn.toUpperCase() }}
       </div>
-      <div class="info-divider" />
+      <div
+        class="info-divider"
+        :style="infoAnimationStyle"
+      />
       <!-- NFT 描述 -->
-      <div class="info-desc">
+      <div
+        class="info-desc"
+        :style="infoAnimationStyle"
+      >
         {{ itemsList[currentIndex].description }}
       </div>
       <!-- 预约按钮 TODO: 从 i18n 获取文案 -->
-      <div class="info-reserve-btn">
-        <div class="info-reserve-btn-inner clickble" />
-      </div>
-      <div class="info-reserve-btn-text">
+      <div
+        class="info-reserve-btn-text"
+        :style="reserveBtnAnimationStyle"
+      >
         {{ itemsList[currentIndex].reserved ? '已预约' : '立即预约' }}
+      </div>
+      <div
+        class="info-reserve-btn"
+        :style="reserveBtnAnimationStyle"
+      >
+        <div class="info-reserve-btn-inner clickble" />
       </div>
     </div>
     <div class="matrix matrix-left-bottom" />
@@ -55,19 +164,26 @@ const currentIndex = ref(0)
     <!-- 模型展示区域 -->
     <div class="models">
       <div class="models-main">
-        <div class="models-prev-btn prev-btn clickble" />
+        <div
+          class="models-prev-btn prev-btn clickble"
+          @click="prevOrNextLocal(false)"
+        />
         <div class="models-main-container">
           <div class="models-rotating-border" />
         </div>
-        <div class="models-next-btn next-btn clickble" />
+        <div
+          class="models-next-btn next-btn clickble"
+          @click="prevOrNextLocal(true)"
+        />
       </div>
       <!-- 当前模型 -->
       <div class="models-indicator">
         <div
-          class="models-indicator-item"
+          class="models-indicator-item clickble"
           v-for="index in itemsList.length"
           :key="itemsList[index - 1].name"
           :class="currentIndex === (index - 1) ? 'models-indicator-item-active' : ''"
+          @click="prevOrNextLocal(undefined, index - 1)"
         />
       </div>
     </div>
@@ -101,7 +217,7 @@ const currentIndex = ref(0)
     font-weight: 600;
     line-height: @title-en-line-height;
     font-family: 'Montserrat', sans-serif;
-    opacity: 0.5;
+    color: rgba(255, 255, 255, 0.5);
   }
   // 分割线
   &-divider {
@@ -133,7 +249,9 @@ const currentIndex = ref(0)
   }
   // 预约按钮边框和背景
   &-reserve-btn {
-    transition: all 250ms ease;
+    transition-property: background-color;
+    transition-duration: 250ms;
+    transition-timing-function: ease;
     position: absolute;
     top: calc(50% + @all-height / 2 - 64px);
     height: 64px;
