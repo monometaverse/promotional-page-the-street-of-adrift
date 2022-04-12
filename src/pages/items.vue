@@ -3,7 +3,7 @@
 import { computed, CSSProperties, reactive, ref } from 'vue'
 import { usePagination } from '../utils'
 import { gsap } from 'gsap'
-import modelViewer from '../components/model-viewer.vue'
+import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding } from '@vueuse/core'
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<{
