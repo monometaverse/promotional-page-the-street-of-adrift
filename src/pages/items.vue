@@ -5,27 +5,36 @@ import { usePagination } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding } from '@vueuse/core'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useStore } from '../store'
+import type { NFTItem } from '../components/ResourceLoader/Resources'
+// pinia 状态管理
+const store = useStore()
 // TODO: 到时候从服务器上拿数据吧
-const itemsList = ref<{
-  name: string,
-  nameEn: string,
-  description: string,
-  descriptionEn: string,
-  reserved: boolean
-}[]>([
+const itemsList = ref<NFTItem[]>([
   {
     name: '九霄金币',
     nameEn: 'need text',
     description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
     descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
-    reserved: false
+    reserved: false,
+    model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
+    customData: {
+      childName: 'YX_Gold',
+      roughness: 0.2,
+      metalness: 1.0
+    }
   },
   {
     name: '九霄银币',
     nameEn: 'need text',
     description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
     descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
-    reserved: true
+    reserved: true,
+    model: (store.getRes('littlestTokyo', 'NFT').value as GLTF).scene,
+    customData: {
+
+    }
   }
 ])
 // 当前正在显示的 NFT
@@ -63,6 +72,8 @@ const reserveBtnAnimationStyle = computed<CSSProperties>(() => ({
   transform: `translateX(${reserveBtnAnimationArgs.translateX}px)`,
   opacity: reserveBtnAnimationArgs.opacity
 }))
+// 模型查看器实例
+const modelViewerEl = ref<InstanceType<typeof modelViewer> | null>(null)
 // 上一页或下一页
 const prevOrNextLocal = (next?: boolean, index?: number) => {
   if (typeof next === 'undefined') {
@@ -112,6 +123,7 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
         } else {
           prevOrNext(next)
         }
+        modelViewerEl.value?.prevOrNextModel(next, itemsList.value[currentIndex.value].model, itemsList.value[currentIndex.value].customData)
         doAnimation(next, -1, true)
       }
     })
@@ -124,11 +136,14 @@ const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 </script>
 <template>
   <div class="route-page">
+    <!-- 模型查看器 -->
     <model-viewer
       :width="modelContainerElBounding.width"
       :height="modelContainerElBounding.height"
       :top="modelContainerElBounding.top"
       :left="modelContainerElBounding.left"
+      :env="store.getRes('coinEnviroment', 'NFT').value"
+      ref="modelViewerEl"
     />
     <div class="info">
       <!-- NFT 名字 -->

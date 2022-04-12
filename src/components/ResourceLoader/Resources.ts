@@ -14,8 +14,9 @@ import vue3Org from '../../assets/Vue3.png'
 import watanabeOrg from '../../assets/watanabe-org.png'
 // 九霄金币
 import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
+import littlestTokyo from '../../assets/nft-page/LittlestTokyo.glb'
 import coinEnviroment from '../../assets/nft-page/coinEnviroment.hdr'
-import { DataTexture } from 'three'
+import { DataTexture, Group } from 'three'
 // 背景图片
 import homeBackground from '../../assets/static-framework/background-home.png'
 import nftBackground from '../../assets/static-framework/background-nft.png'
@@ -37,6 +38,7 @@ export const resources = [
   { name: 'vue3Org', value: vue3Org, type: 'image', for: 'particle' },
   { name: 'watanabeOrg', value: watanabeOrg, type: 'image', for: 'particle' },
   { name: 'kusyouCoin', value: kusyouCoin, type: 'glb', for: 'NFT' },
+  { name: 'littlestTokyo', value: littlestTokyo, type: 'glb', for: 'NFT' },
   { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' },
   // 全局背景，请务必以页面名称开头 + Background
   { name: 'homeBackground', value: homeBackground, type: 'image', for: 'background' },
@@ -48,3 +50,21 @@ export const resources = [
 export type Resources = typeof resources
 export type LoadingResources = { name: Resources[number]['name'], value: HTMLImageElement | GLTF | DataTexture, for: Resources[number]['for'] }[]
 export type LoadedResources = Required<LoadingResources>
+export type NFTItem = {
+  name: string, // 名称
+  nameEn: string, // 名称的英文
+  description: string, // 描述
+  descriptionEn: string, // 英文描述
+  reserved: boolean, // 是否已经预约
+  model: Group, // 模型组
+  customData?: {
+    metalness?: number,
+    roughness?: number,
+    metalnessMap?: DataTexture,
+    roughnessMap?: DataTexture,
+    normalMap?: DataTexture,
+    alphaMap?: DataTexture,
+    map?: DataTexture,
+    childName?: string
+  } // 自定义数据
+}

@@ -1,4 +1,5 @@
-import { BoxBufferGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three"
+import { NFTItem } from './../ResourceLoader/Resources'
+import { BoxBufferGeometry, DataTexture, EquirectangularReflectionMapping, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three"
 
 export class ThreeApp {
   private canvasEl: HTMLCanvasElement
@@ -8,7 +9,7 @@ export class ThreeApp {
   private cube: Mesh
   private renderPaused: boolean = false
 
-  constructor(el: HTMLCanvasElement) {
+  constructor(el: HTMLCanvasElement, envMap: DataTexture) {
     this.canvasEl = el
     // 初始化渲染器
     this.renderer = new WebGLRenderer({
@@ -23,8 +24,10 @@ export class ThreeApp {
     this.camera.position.setZ(5)
     // 初始化场景
     this.scene = new Scene()
+    envMap.mapping = EquirectangularReflectionMapping
+    this.scene.environment = envMap
     // 初始化临时方块
-    this.cube = new Mesh(new BoxBufferGeometry(), new MeshBasicMaterial({ color: 0xffffff }))
+    this.cube = new Mesh(new BoxBufferGeometry(), new MeshStandardMaterial({ color: 0xffffff }))
     this.scene.add(this.cube)
   }
 
@@ -54,5 +57,10 @@ export class ThreeApp {
   // 继续渲染
   resumeRender = () => {
     this.renderPaused = false
+  }
+
+  // 显示上一个或下一个模型
+  prevOrNext = (next: boolean, model: Group, customData: NFTItem['customData']) => {
+    console.log(`next: ${next}, model: ${model.name}, customData: ${JSON.stringify(customData)}`)
   }
 }

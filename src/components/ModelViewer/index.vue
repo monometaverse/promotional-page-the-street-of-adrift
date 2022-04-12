@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { computed, CSSProperties, onActivated, onDeactivated, onMounted, ref, watch } from 'vue'
-import { BoxBufferGeometry, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { useStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { ThreeApp } from './ThreeApp'
+import type { NFTItem } from '../../components/ResourceLoader/Resources'
+import { DataTexture, Group } from 'three'
 // pinia 状态管理
 const store = useStore()
 const { windowWidth, windowHeight } = storeToRefs(store)
@@ -12,7 +13,8 @@ const props = defineProps<{
   width: number,
   height: number,
   top: number,
-  left: number
+  left: number,
+  env: DataTexture
 }>()
 // canvas 要用的样式
 const canvasStyle = computed<CSSProperties>(() => ({
@@ -32,7 +34,7 @@ const canvasEl = ref<HTMLCanvasElement | null>(null)
 let threeApp: ThreeApp | null = null
 // 当挂载时开始渲染
 onMounted(() => {
-  threeApp = new ThreeApp(canvasEl.value!)
+  threeApp = new ThreeApp(canvasEl.value!, props.env)
   threeApp.render()
 })
 // 监听属性变化
@@ -47,6 +49,14 @@ onActivated(() => {
 // 当休眠时暂停渲染
 onDeactivated(() => {
   threeApp?.pauseRender()
+})
+// 上一个或下一个模型
+const prevOrNextModel = (next: boolean, model: Group, customData: NFTItem['customData']) => {
+  threeApp?.prevOrNext(next, model, customData)
+}
+// 暴露给父组件调用的函数
+defineExpose({
+  prevOrNextModel
 })
 </script>
 <template>
