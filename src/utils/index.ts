@@ -1,3 +1,4 @@
+import { Object3D } from "three"
 import { ref, Ref } from "vue"
 
 type DebouncedFunc<T extends (...args: any[]) => void> = (...args: Parameters<T>) => void
@@ -14,6 +15,31 @@ export const debounce: DebounceFunc = <T extends (...args: any[]) => any = () =>
     }
     // 设置计时器
     timer = window.setTimeout(func, time, ...args)
+  }
+}
+
+/**
+ * 搜索 3D 对象的子对象
+ * @param root 根对象
+ * @param childName 子对象的名称
+ * @param deep 是否需要深度搜索，如果需要，会搜索子对象的子对象
+ */
+export const getChildObject = (root: Object3D[] | Object3D, childName: string, deep: boolean, first: boolean): Object3D | undefined => {
+  if (Array.isArray(root)) {
+    for (let obj of root) {
+      const child = getChildObject(obj, childName, deep, false)
+      if (child) {
+        return child
+      }
+    }
+    return undefined
+  } else {
+    if (root.name === childName) {
+      return root
+    } else if (deep || first) {
+      return getChildObject(root.children, childName, deep, false)
+    }
+    return undefined
   }
 }
 
