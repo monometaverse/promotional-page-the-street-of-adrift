@@ -22,7 +22,6 @@ export class ThreeApp {
       antialias: true
     })
     this.renderer.setSize(this.canvasEl.width, this.canvasEl.height)
-    this.renderer.setPixelRatio(devicePixelRatio)
     // 初始化相机
     this.camera = new PerspectiveCamera(75, this.canvasEl.width / this.canvasEl.height)
     this.camera.position.setZ(5)
