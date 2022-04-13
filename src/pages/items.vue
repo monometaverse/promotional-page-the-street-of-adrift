@@ -1,6 +1,6 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, reactive, ref } from 'vue'
+import { computed, CSSProperties, onMounted, reactive, ref, toRaw, unref, watchEffect } from 'vue'
 import { usePagination } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
@@ -8,6 +8,7 @@ import { useElementBounding } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
+import { DataTexture } from 'three'
 // pinia 状态管理
 const store = useStore()
 // TODO: 到时候从服务器上拿数据吧
@@ -22,7 +23,9 @@ const itemsList = ref<NFTItem[]>([
     customData: {
       childName: 'YX_Gold',
       roughness: 0.2,
-      metalness: 1.0
+      metalness: 1.0,
+      scale: 5,
+      positionY: -2.4
     }
   },
   {
@@ -33,7 +36,9 @@ const itemsList = ref<NFTItem[]>([
     reserved: true,
     model: (store.getRes('littlestTokyo', 'NFT').value as GLTF).scene,
     customData: {
-
+      scale: 0.008,
+      positionX: 0.5,
+      positionY: 0.3
     }
   }
 ])
@@ -123,7 +128,7 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
         } else {
           prevOrNext(next)
         }
-        modelViewerEl.value?.prevOrNextModel(next, itemsList.value[currentIndex.value].model, itemsList.value[currentIndex.value].customData)
+        modelViewerEl.value?.prevOrNextModel(next, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
         doAnimation(next, -1, true)
       }
     })
@@ -133,6 +138,10 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
 const modelContainerEl = ref<HTMLDivElement | null>(null)
 // 模型容器元素的位置高宽信息
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
+// 当挂载时，显示第一个模型
+onMounted(() => {
+  modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
+})
 </script>
 <template>
   <div class="route-page">
@@ -142,7 +151,7 @@ const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
       :height="modelContainerElBounding.height"
       :top="modelContainerElBounding.top"
       :left="modelContainerElBounding.left"
-      :env="store.getRes('coinEnviroment', 'NFT').value"
+      :env="(store.getRes('coinEnviroment', 'NFT').value as DataTexture)"
       ref="modelViewerEl"
     />
     <div class="info">

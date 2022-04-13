@@ -16,7 +16,7 @@ import watanabeOrg from '../../assets/watanabe-org.png'
 import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
 import littlestTokyo from '../../assets/nft-page/LittlestTokyo.glb'
 import coinEnviroment from '../../assets/nft-page/coinEnviroment.hdr'
-import { DataTexture, Group } from 'three'
+import { DataTexture, Group, Material } from 'three'
 // 背景图片
 import homeBackground from '../../assets/static-framework/background-home.png'
 import nftBackground from '../../assets/static-framework/background-nft.png'
@@ -65,6 +65,14 @@ export type NFTItem = {
     normalMap?: DataTexture,
     alphaMap?: DataTexture,
     map?: DataTexture,
-    childName?: string
+    childName?: string,
+    correctToStandardMaterial?: boolean, // 对材质进行修正
+    scale?: number,
+    rotateX?: number, // 旋转修正
+    rotateY?: number,
+    rotateZ?: number,
+    positionX?: number,
+    positionY?: number, // 位置修正
+    positionZ?: number,
   } // 自定义数据
 }
