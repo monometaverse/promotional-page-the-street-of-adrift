@@ -3,6 +3,7 @@ import { DataTexture, EquirectangularReflectionMapping, Group, Mesh, MeshStandar
 import { getChildObject } from '../../utils'
 import { gsap } from 'gsap'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export class ThreeApp {
   private canvasEl: HTMLCanvasElement
@@ -13,6 +14,8 @@ export class ThreeApp {
   // 当前模型
   private currentModel: Group | null = null
   private currentCustomData: NFTItem['customData'] = undefined
+  // 拖动控制
+  private orbitControls: OrbitControls
 
   constructor(el: HTMLCanvasElement) {
     this.canvasEl = el
@@ -26,6 +29,10 @@ export class ThreeApp {
     // 初始化相机
     this.camera = new PerspectiveCamera(50, this.canvasEl.width / this.canvasEl.height)
     this.camera.position.setZ(5)
+    // 初始化拖动控制助手
+    this.orbitControls = new OrbitControls(this.camera, this.canvasEl)
+    this.orbitControls.enableDamping = true
+    this.orbitControls.autoRotate = true
     // 初始化场景
     this.scene = new Scene()
     // 设置统一的环境贴图
@@ -44,7 +51,8 @@ export class ThreeApp {
   render = () => {
     requestAnimationFrame(this.render.bind(this))
     if (this.renderPaused) return
-    this.currentModel?.rotateY(0.01)
+    // this.currentModel?.rotateY(0.01)
+    this.orbitControls.update()
     this.renderer.render(this.scene, this.camera)
   }
 
@@ -84,6 +92,7 @@ export class ThreeApp {
 
   // 显示上一个或下一个模型
   prevOrNext = (next: boolean, model: Group, customData: NFTItem['customData']) => {
+    this.camera.position.set(0, 0, 5)
     if (!this.currentModel) {
       // 当前没有在显示的模型，直接把模型放到画布中央
       this.addModel(model, customData)
@@ -100,6 +109,5 @@ export class ThreeApp {
         this.currentCustomData = customData
       }})
     }
-    console.log(this.scene.children)
   }
 }
