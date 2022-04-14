@@ -8,7 +8,7 @@ import { useElementBounding } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
-import { DataTexture } from 'three'
+import { DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 // pinia 状态管理
 const store = useStore()
 // TODO: 到时候从服务器上拿数据吧
@@ -22,10 +22,18 @@ const itemsList = ref<NFTItem[]>([
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
     customData: {
       childName: 'YX_Gold',
-      roughness: 0.2,
-      metalness: 1.0,
-      scale: 5,
-      positionY: -2.4
+      scale: 4,
+      positionY: -1.9,
+      correctMaterial: (() => {
+        const material = new MeshPhysicalMaterial()
+        material.metalness = 1
+        material.roughness = 0.16
+        material.clearcoatRoughness = 0.01
+        material.reflectivity = 1
+        material.clearcoat = 1
+        material.fog = true
+        return material
+      })()
     }
   },
   {
@@ -34,16 +42,20 @@ const itemsList = ref<NFTItem[]>([
     description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
     descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
     reserved: true,
-    model: (store.getRes('littlestTokyo', 'NFT').value as GLTF).scene,
+    model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
     customData: {
-      scale: 0.008,
-      positionX: 0.5,
-      positionY: 0.3
+      depthWrite: true,
+      childName: 'polySurface67_Mesh001',
+      side: FrontSide,
+      scale: 1.5,
+      positionY: -1.2
     }
   }
 ])
 // 当前正在显示的 NFT
 const { currentIndex, prevOrNext } = usePagination(itemsList)
+// 当前正在显示的 NFT 索引，供动画使用
+const currentIndexForAnimation = ref(0)
 // 动画偏移量
 const translateX = reactive({
   info: 100,
@@ -81,16 +93,21 @@ const reserveBtnAnimationStyle = computed<CSSProperties>(() => ({
 const modelViewerEl = ref<InstanceType<typeof modelViewer> | null>(null)
 // 上一页或下一页
 const prevOrNextLocal = (next?: boolean, index?: number) => {
+  // 修改正 NFT 索引
   if (typeof next === 'undefined') {
     if (typeof index === 'undefined') {
       throw new Error('切换组件：没有传入任何参数')
     } else {
+      currentIndex.value = index
+      modelViewerEl.value?.prevOrNextModel(true, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
       doAnimation(true, index, false)
     }
   } else {
     if (typeof index !== 'undefined') {
       console.warn('已经传入了要进行的动作：' + next + '，再传入要跳转的索引是无效的')
     } else {
+      prevOrNext(next)
+      modelViewerEl.value?.prevOrNextModel(next, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
       doAnimation(next, -1, false)
     }
   }
@@ -123,12 +140,7 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
       onComplete: () => {
         if (enter) return
         // 正式修改正显示的 NFT 索引
-        if (newIndex !== -1) {
-          currentIndex.value = newIndex
-        } else {
-          prevOrNext(next)
-        }
-        modelViewerEl.value?.prevOrNextModel(next, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
+        currentIndexForAnimation.value = currentIndex.value
         doAnimation(next, -1, true)
       }
     })
@@ -151,7 +163,6 @@ onMounted(() => {
       :height="modelContainerElBounding.height"
       :top="modelContainerElBounding.top"
       :left="modelContainerElBounding.left"
-      :env="(store.getRes('coinEnviroment', 'NFT').value as DataTexture)"
       ref="modelViewerEl"
     />
     <div class="info">
@@ -160,14 +171,14 @@ onMounted(() => {
         class="info-title"
         :style="infoAnimationStyle"
       >
-        {{ itemsList[currentIndex].name }}
+        {{ itemsList[currentIndexForAnimation].name }}
       </div>
       <!-- 当切换至英文时，隐藏，但是占空间 -->
       <div
         class="info-title-en"
         :style="infoAnimationStyle"
       >
-        {{ itemsList[currentIndex].nameEn.toUpperCase() }}
+        {{ itemsList[currentIndexForAnimation].nameEn.toUpperCase() }}
       </div>
       <div
         class="info-divider"
@@ -178,14 +189,14 @@ onMounted(() => {
         class="info-desc"
         :style="infoAnimationStyle"
       >
-        {{ itemsList[currentIndex].description }}
+        {{ itemsList[currentIndexForAnimation].description }}
       </div>
       <!-- 预约按钮 TODO: 从 i18n 获取文案 -->
       <div
         class="info-reserve-btn-text"
         :style="reserveBtnAnimationStyle"
       >
-        {{ itemsList[currentIndex].reserved ? '已预约' : '立即预约' }}
+        {{ itemsList[currentIndexForAnimation].reserved ? '已预约' : '立即预约' }}
       </div>
       <div
         class="info-reserve-btn"

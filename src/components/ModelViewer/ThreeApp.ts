@@ -1,7 +1,9 @@
 import { NFTItem } from './../ResourceLoader/Resources'
-import { DataTexture, EquirectangularReflectionMapping, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three"
+import { DataTexture, EquirectangularReflectionMapping, Group, Material, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, PerspectiveCamera, PMREMGenerator, Scene, WebGLRenderer } from "three"
 import { getChildObject } from '../../utils'
 import { gsap } from 'gsap'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export class ThreeApp {
   private canvasEl: HTMLCanvasElement
@@ -12,8 +14,10 @@ export class ThreeApp {
   // 当前模型
   private currentModel: Group | null = null
   private currentCustomData: NFTItem['customData'] = undefined
+  // 拖动控制
+  private orbitControls: OrbitControls
 
-  constructor(el: HTMLCanvasElement, envMap: DataTexture) {
+  constructor(el: HTMLCanvasElement) {
     this.canvasEl = el
     // 初始化渲染器
     this.renderer = new WebGLRenderer({
@@ -23,12 +27,17 @@ export class ThreeApp {
     })
     this.renderer.setSize(this.canvasEl.width, this.canvasEl.height)
     // 初始化相机
-    this.camera = new PerspectiveCamera(75, this.canvasEl.width / this.canvasEl.height)
+    this.camera = new PerspectiveCamera(50, this.canvasEl.width / this.canvasEl.height)
     this.camera.position.setZ(5)
+    // 初始化拖动控制助手
+    this.orbitControls = new OrbitControls(this.camera, this.canvasEl)
+    this.orbitControls.enableDamping = true
+    this.orbitControls.autoRotate = true
     // 初始化场景
     this.scene = new Scene()
-    envMap.mapping = EquirectangularReflectionMapping
-    this.scene.environment = envMap
+    // 设置统一的环境贴图
+    const pemremGenerator = new PMREMGenerator(this.renderer)
+    this.scene.environment = pemremGenerator.fromScene(new RoomEnvironment()).texture
   }
 
   // 设置高宽
@@ -42,7 +51,8 @@ export class ThreeApp {
   render = () => {
     requestAnimationFrame(this.render.bind(this))
     if (this.renderPaused) return
-    this.currentModel?.rotateY(0.01)
+    // this.currentModel?.rotateY(0.01)
+    this.orbitControls.update()
     this.renderer.render(this.scene, this.camera)
   }
 
@@ -65,14 +75,17 @@ export class ThreeApp {
       if (customData.childName) {
         const child = getChildObject(model, customData.childName, true, true) as Mesh
         if (!child) throw new Error('指定的要修改的子对象不存在: ' + customData.childName)
-        let material = child.material as MeshStandardMaterial
-        if (customData.correctToStandardMaterial) material = new MeshStandardMaterial()
-        if (customData.metalness) material.metalness = customData.metalness
-        if (customData.roughness) material.roughness = customData.roughness
-        if (customData.metalnessMap) material.metalnessMap = customData.metalnessMap
-        if (customData.normalMap) material.normalMap = customData.normalMap
-        if (customData.map) material.map = customData.map
-        if (customData.roughnessMap) material.roughnessMap = customData.roughnessMap
+        let material = child.material as Material
+        if (customData.depthWrite) material.depthWrite = true
+        if (customData.side) material.side = customData.side
+        // 有修正的材质
+        if (customData.correctMaterial) {
+          if (material instanceof MeshStandardMaterial) {
+            const color = material.color
+            child.material = customData.correctMaterial;
+            (child.material as MeshPhysicalMaterial).color = color
+          }
+        }
       }
     }
     this.scene.add(model)
@@ -80,6 +93,7 @@ export class ThreeApp {
 
   // 显示上一个或下一个模型
   prevOrNext = (next: boolean, model: Group, customData: NFTItem['customData']) => {
+    this.camera.position.set(0, 0, 5)
     if (!this.currentModel) {
       // 当前没有在显示的模型，直接把模型放到画布中央
       this.addModel(model, customData)
@@ -96,6 +110,5 @@ export class ThreeApp {
         this.currentCustomData = customData
       }})
     }
-    console.log(this.scene.children)
   }
 }
