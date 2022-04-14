@@ -8,7 +8,7 @@ import { useElementBounding } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
-import { DataTexture, FrontSide } from 'three'
+import { DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 // pinia 状态管理
 const store = useStore()
 // TODO: 到时候从服务器上拿数据吧
@@ -22,10 +22,18 @@ const itemsList = ref<NFTItem[]>([
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
     customData: {
       childName: 'YX_Gold',
-      roughness: 0.2,
-      metalness: 1.0,
       scale: 4,
-      positionY: -1.9
+      positionY: -1.9,
+      correctMaterial: (() => {
+        const material = new MeshPhysicalMaterial()
+        material.metalness = 1
+        material.roughness = 0.16
+        material.clearcoatRoughness = 0.01
+        material.reflectivity = 1
+        material.clearcoat = 1
+        material.fog = true
+        return material
+      })()
     }
   },
   {

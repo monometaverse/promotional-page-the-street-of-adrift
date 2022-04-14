@@ -58,15 +58,7 @@ export type NFTItem = {
   reserved: boolean, // 是否已经预约
   model: Group, // 模型组
   customData?: {
-    metalness?: number,
-    roughness?: number,
-    metalnessMap?: DataTexture,
-    roughnessMap?: DataTexture,
-    normalMap?: DataTexture,
-    alphaMap?: DataTexture,
-    map?: DataTexture,
     childName?: string,
-    correctToStandardMaterial?: boolean, // 对材质进行修正
     scale?: number,
     rotateX?: number, // 旋转修正
     rotateY?: number,
@@ -74,8 +66,8 @@ export type NFTItem = {
     positionX?: number,
     positionY?: number, // 位置修正
     positionZ?: number,
-    env?: DataTexture | 'room', // 环境贴图
     side?: Side, // 显示面
-    depthWrite?: boolean
+    depthWrite?: boolean,
+    correctMaterial?: Material
   } // 自定义数据
 }

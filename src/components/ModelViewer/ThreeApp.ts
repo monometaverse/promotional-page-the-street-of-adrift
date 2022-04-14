@@ -1,5 +1,5 @@
 import { NFTItem } from './../ResourceLoader/Resources'
-import { DataTexture, EquirectangularReflectionMapping, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, PMREMGenerator, Scene, WebGLRenderer } from "three"
+import { DataTexture, EquirectangularReflectionMapping, Group, Material, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, PerspectiveCamera, PMREMGenerator, Scene, WebGLRenderer } from "three"
 import { getChildObject } from '../../utils'
 import { gsap } from 'gsap'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment'
@@ -75,16 +75,17 @@ export class ThreeApp {
       if (customData.childName) {
         const child = getChildObject(model, customData.childName, true, true) as Mesh
         if (!child) throw new Error('指定的要修改的子对象不存在: ' + customData.childName)
-        let material = child.material as MeshStandardMaterial
-        if (customData.correctToStandardMaterial) material = new MeshStandardMaterial()
-        if (customData.metalness) material.metalness = customData.metalness
-        if (customData.roughness) material.roughness = customData.roughness
-        if (customData.metalnessMap) material.metalnessMap = customData.metalnessMap
-        if (customData.normalMap) material.normalMap = customData.normalMap
-        if (customData.map) material.map = customData.map
-        if (customData.roughnessMap) material.roughnessMap = customData.roughnessMap
+        let material = child.material as Material
         if (customData.depthWrite) material.depthWrite = true
         if (customData.side) material.side = customData.side
+        // 有修正的材质
+        if (customData.correctMaterial) {
+          if (material instanceof MeshStandardMaterial) {
+            const color = material.color
+            child.material = customData.correctMaterial;
+            (child.material as MeshPhysicalMaterial).color = color
+          }
+        }
       }
     }
     this.scene.add(model)
