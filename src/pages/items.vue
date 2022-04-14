@@ -24,8 +24,8 @@ const itemsList = ref<NFTItem[]>([
       childName: 'YX_Gold',
       roughness: 0.2,
       metalness: 1.0,
-      scale: 5,
-      positionY: -2.4
+      scale: 4,
+      positionY: -1.9
     }
   },
   {
@@ -39,8 +39,8 @@ const itemsList = ref<NFTItem[]>([
       depthWrite: true,
       childName: 'polySurface67_Mesh001',
       side: FrontSide,
-      scale: 2,
-      positionY: -1.8
+      scale: 1.5,
+      positionY: -1.2
     }
   }
 ])

@@ -24,7 +24,7 @@ export class ThreeApp {
     })
     this.renderer.setSize(this.canvasEl.width, this.canvasEl.height)
     // 初始化相机
-    this.camera = new PerspectiveCamera(75, this.canvasEl.width / this.canvasEl.height)
+    this.camera = new PerspectiveCamera(50, this.canvasEl.width / this.canvasEl.height)
     this.camera.position.setZ(5)
     // 初始化场景
     this.scene = new Scene()
