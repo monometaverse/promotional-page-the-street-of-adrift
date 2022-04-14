@@ -13,8 +13,7 @@ const props = defineProps<{
   width: number,
   height: number,
   top: number,
-  left: number,
-  env: DataTexture
+  left: number
 }>()
 // canvas 要用的样式
 const canvasStyle = computed<CSSProperties>(() => ({
@@ -34,7 +33,7 @@ const canvasEl = ref<HTMLCanvasElement | null>(null)
 let threeApp: ThreeApp | null = null
 // 当挂载时开始渲染
 onMounted(() => {
-  threeApp = new ThreeApp(canvasEl.value!, props.env)
+  threeApp = new ThreeApp(canvasEl.value!)
   threeApp.render()
 })
 // 监听属性变化

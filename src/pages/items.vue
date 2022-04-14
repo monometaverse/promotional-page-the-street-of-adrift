@@ -8,7 +8,7 @@ import { useElementBounding } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
-import { DataTexture } from 'three'
+import { DataTexture, FrontSide } from 'three'
 // pinia 状态管理
 const store = useStore()
 // TODO: 到时候从服务器上拿数据吧
@@ -34,11 +34,13 @@ const itemsList = ref<NFTItem[]>([
     description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
     descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
     reserved: true,
-    model: (store.getRes('littlestTokyo', 'NFT').value as GLTF).scene,
+    model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
     customData: {
-      scale: 0.008,
-      positionX: 0.5,
-      positionY: 0.3
+      depthWrite: true,
+      childName: 'polySurface67_Mesh001',
+      side: FrontSide,
+      scale: 2,
+      positionY: -1.8
     }
   }
 ])
@@ -151,7 +153,6 @@ onMounted(() => {
       :height="modelContainerElBounding.height"
       :top="modelContainerElBounding.top"
       :left="modelContainerElBounding.left"
-      :env="(store.getRes('coinEnviroment', 'NFT').value as DataTexture)"
       ref="modelViewerEl"
     />
     <div class="info">

@@ -1,7 +1,8 @@
 import { NFTItem } from './../ResourceLoader/Resources'
-import { DataTexture, EquirectangularReflectionMapping, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three"
+import { DataTexture, EquirectangularReflectionMapping, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, PMREMGenerator, Scene, WebGLRenderer } from "three"
 import { getChildObject } from '../../utils'
 import { gsap } from 'gsap'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment'
 
 export class ThreeApp {
   private canvasEl: HTMLCanvasElement
@@ -13,7 +14,7 @@ export class ThreeApp {
   private currentModel: Group | null = null
   private currentCustomData: NFTItem['customData'] = undefined
 
-  constructor(el: HTMLCanvasElement, envMap: DataTexture) {
+  constructor(el: HTMLCanvasElement) {
     this.canvasEl = el
     // 初始化渲染器
     this.renderer = new WebGLRenderer({
@@ -27,8 +28,9 @@ export class ThreeApp {
     this.camera.position.setZ(5)
     // 初始化场景
     this.scene = new Scene()
-    envMap.mapping = EquirectangularReflectionMapping
-    this.scene.environment = envMap
+    // 设置统一的环境贴图
+    const pemremGenerator = new PMREMGenerator(this.renderer)
+    this.scene.environment = pemremGenerator.fromScene(new RoomEnvironment()).texture
   }
 
   // 设置高宽
@@ -73,6 +75,8 @@ export class ThreeApp {
         if (customData.normalMap) material.normalMap = customData.normalMap
         if (customData.map) material.map = customData.map
         if (customData.roughnessMap) material.roughnessMap = customData.roughnessMap
+        if (customData.depthWrite) material.depthWrite = true
+        if (customData.side) material.side = customData.side
       }
     }
     this.scene.add(model)

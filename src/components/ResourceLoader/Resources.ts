@@ -14,9 +14,9 @@ import vue3Org from '../../assets/Vue3.png'
 import watanabeOrg from '../../assets/watanabe-org.png'
 // 九霄金币
 import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
-import littlestTokyo from '../../assets/nft-page/LittlestTokyo.glb'
+import S_UMSSuper from '../../assets/nft-page/S_UMSSuper.glb'
 import coinEnviroment from '../../assets/nft-page/coinEnviroment.hdr'
-import { DataTexture, Group, Material } from 'three'
+import { DataTexture, Group, Material, Side } from 'three'
 // 背景图片
 import homeBackground from '../../assets/static-framework/background-home.png'
 import nftBackground from '../../assets/static-framework/background-nft.png'
@@ -38,7 +38,7 @@ export const resources = [
   { name: 'vue3Org', value: vue3Org, type: 'image', for: 'particle' },
   { name: 'watanabeOrg', value: watanabeOrg, type: 'image', for: 'particle' },
   { name: 'kusyouCoin', value: kusyouCoin, type: 'glb', for: 'NFT' },
-  { name: 'littlestTokyo', value: littlestTokyo, type: 'glb', for: 'NFT' },
+  { name: 'S_UMSSuper', value: S_UMSSuper, type: 'glb', for: 'NFT' },
   { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' },
   // 全局背景，请务必以页面名称开头 + Background
   { name: 'homeBackground', value: homeBackground, type: 'image', for: 'background' },
@@ -74,5 +74,8 @@ export type NFTItem = {
     positionX?: number,
     positionY?: number, // 位置修正
     positionZ?: number,
+    env?: DataTexture | 'room', // 环境贴图
+    side?: Side, // 显示面
+    depthWrite?: boolean
   } // 自定义数据
 }
