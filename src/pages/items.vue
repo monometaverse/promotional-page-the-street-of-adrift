@@ -9,6 +9,9 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
+import API, { isSuccess } from '../api'
+import { ElMessage } from 'element-plus'
+
 // pinia 状态管理
 const store = useStore()
 // TODO: 到时候从服务器上拿数据吧
@@ -52,6 +55,12 @@ const itemsList = ref<NFTItem[]>([
     }
   }
 ])
+// NFT 名称列表
+const nftNames = computed(() => {
+  const names: string[] = []
+  itemsList.value.forEach(it => names.push(it.name))
+  return names
+})
 // 当前正在显示的 NFT
 const { currentIndex, prevOrNext } = usePagination(itemsList)
 // 当前正在显示的 NFT 索引，供动画使用
@@ -152,9 +161,30 @@ const modelContainerEl = ref<HTMLDivElement | null>(null)
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // 预约成功框
 const showReserveSuccessDialog = ref(false)
+// 预约按钮事件处理器
+const onReserveBtnClick = (index: number) => {
+  if (itemsList.value[index].reserved) return
+  const res = API.nft.reserve(itemsList.value[index].name)
+  if (isSuccess(res)) {
+    showReserveSuccessDialog.value = true
+    itemsList.value[index].reserved = true
+  } else {
+    ElMessage.error(res.message)
+  }
+}
 // 当挂载时，显示第一个模型
 onMounted(() => {
   modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
+  // 获取 NFT 预约状态
+  const res = API.nft.getReservedState(nftNames.value)
+  if (isSuccess(res)) {
+    console.log(res.data)
+    for (let it of itemsList.value) {
+      it.reserved = res.data[it.name]
+    }
+  } else {
+    ElMessage.error('出现了一些错误')
+  }
 })
 </script>
 <template>
@@ -204,7 +234,10 @@ onMounted(() => {
         class="info-reserve-btn"
         :style="reserveBtnAnimationStyle"
       >
-        <div class="info-reserve-btn-inner clickble" />
+        <div
+          class="info-reserve-btn-inner clickble"
+          @click="onReserveBtnClick(currentIndexForAnimation)"
+        />
       </div>
     </div>
     <div class="matrix matrix-left-bottom" />
