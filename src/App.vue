@@ -17,8 +17,8 @@ const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, showingCharacter } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
-  loadedRes.value = res
-  router.push('/')
+  // loadedRes.value = res
+  // router.push('/')
 }
 // i18n 切换语言
 const i18n = useI18n()
