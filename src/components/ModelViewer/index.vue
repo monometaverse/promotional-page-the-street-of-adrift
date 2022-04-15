@@ -22,7 +22,7 @@ const canvasStyle = computed<CSSProperties>(() => ({
   position: 'absolute',
   top: `${props.top < 0 ? props.top + windowHeight.value : props.top > windowHeight.value ? props.top - windowHeight.value : props.top}px`,
   left: `${props.left}px`,
-  zIndex: 998,
+  zIndex: 997,
 }))
 // canvas 引用
 const canvasEl = ref<HTMLCanvasElement | null>(null)

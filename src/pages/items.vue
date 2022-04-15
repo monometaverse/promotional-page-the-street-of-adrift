@@ -150,6 +150,8 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
 const modelContainerEl = ref<HTMLDivElement | null>(null)
 // 模型容器元素的位置高宽信息
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
+// 预约成功框
+const showReserveSuccessDialog = ref(false)
 // 当挂载时，显示第一个模型
 onMounted(() => {
   modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
@@ -234,6 +236,49 @@ onMounted(() => {
           :class="currentIndex === (index - 1) ? 'models-indicator-item-active' : ''"
           @click="prevOrNextLocal(undefined, index - 1)"
         />
+      </div>
+    </div>
+    <!-- 预约成功提示框 -->
+    <div
+      class="absolute w-[100%] h-[100%] flex transition-colors justify-center items-center z-998"
+      :class="{
+        'bg-[rgba(0,0,0,0.5)]': showReserveSuccessDialog,
+        'pointer-events-none': !showReserveSuccessDialog
+      }"
+    >
+      <!-- 提示框主体 -->
+      <div
+        class="w-576px h-480px bg-black flex flex-col justify-between items-center transition duration-250"
+        :class="{
+          'opacity-0': !showReserveSuccessDialog,
+          '-translate-y-50px transform': !showReserveSuccessDialog
+        }"
+      >
+        <!-- 关闭按钮 -->
+        <div class="flex justify-end w-[100%] pt-24px pr-24px">
+          <div
+            class="close-btn clickble"
+            @click="showReserveSuccessDialog = false"
+          />
+        </div>
+        <!-- TODO: 从 i18n 获取文案 -->
+        <span class="font-serif font-900 leading-46px text-32px">预约成功</span>
+        <!-- 预约成功图片 -->
+        <div class="success-pic-container p-14px">
+          <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover" />
+        </div>
+        <!-- 确定按钮，TODO:从 i18n 获取文案 -->
+        <div>
+          <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
+            <div
+              class="reserve-success-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble"
+              @click="showReserveSuccessDialog = false"
+            />
+          </div>
+          <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none">
+            知道了
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -413,5 +458,27 @@ onMounted(() => {
     animation: 15s rotating linear running infinite;
     pointer-events: none;
   }
+}
+
+.success-pic {
+  background-image: url('../assets/nft-page/reserve-success.svg');
+}
+
+.success-pic-container {
+  background-image:
+    url('../assets/static-framework/page-title-dot.png'),
+    url('../assets/static-framework/page-title-dot.png'),
+    url('../assets/static-framework/page-title-dot.png'),
+    url('../assets/static-framework/page-title-dot.png');
+  background-repeat: no-repeat;
+  background-position:
+    top left,
+    top right,
+    bottom left,
+    bottom right;
+}
+
+.reserve-success-bg {
+  background-image: url('../assets/nft-page/reserve-btn-background.svg');
 }
 </style>
