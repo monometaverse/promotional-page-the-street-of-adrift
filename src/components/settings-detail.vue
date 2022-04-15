@@ -96,29 +96,16 @@ const prevOrNext = (next: boolean) => {
     </div>
     <!-- 关闭按钮 -->
     <div
-      class="close-btn clickble"
+      class="close-btn close-btn-local clickble"
       @click="emits('close')"
     />
   </div>
 </template>
 <style lang="less" scoped>
-.close-btn {
+.close-btn-local {
   position: absolute;
-  width: 48px;
-  height: 48px;
-  background-image: url('../assets/characters-page/element-x.svg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 24px 24px;
-  border: rgba(255, 255, 255, 0.5) 1px solid;
-  transition: all 250ms ease;
   top: calc(253px + 50vh - 540px);
   right: calc(403px + 50vw - 960px);
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-color: white;
-  }
 }
 
 .details {
