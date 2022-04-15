@@ -86,19 +86,23 @@ onMounted(() => {
     <div
       class="community-btns"
     >
-      <div
+      <a
         class="community-btn community-btn-discord clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
+        href="https://discord.gg/monoverse"
+        target="_blank"
       />
-      <div
+      <a
         class="community-btn community-btn-twitter clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
+        href="https://twitter.com/monoverse_hq"
+        target="_blank"
       />
     </div>
     <div
