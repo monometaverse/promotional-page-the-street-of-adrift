@@ -144,7 +144,7 @@ onMounted(() => {
       </div>
       <div class="scroll-hint-icon cover-no-repeat-center" />
       <div class="scroll-hint-indicator cover-no-repeat-center" />
-      <div class="scroll-hint-indicator delay-250 cover-no-repeat-center" />
+      <div class="scroll-hint-indicator !animate-delay-250 cover-no-repeat-center" />
     </div>
   </div>
 </template>
@@ -311,6 +311,62 @@ onMounted(() => {
     &:hover {
       opacity: 1;
     }
+  }
+}
+// 宽度低于 1679px 时
+@media screen and (max-width: 1679px) {
+  @logo-width: 360px;
+  @logo-height: calc(@logo-width / 640 * 149);
+  @logo-and-play-top: calc(50% - calc(@logo-height + 48px) / 2);
+  @logo-margin-right: 16px;
+  @play-btn-size: 64px;
+
+  .logo-and-play {
+    left: 32px;
+    top: @logo-and-play-top;
+    padding: 24px;
+
+    .logo {
+      width: @logo-width;
+      height: @logo-height;
+      margin-right: @logo-margin-right;
+    }
+
+    .play-btn {
+      width: @play-btn-size;
+      height: @play-btn-size;
+    }
+  }
+
+  .logo-copy {
+    left: 32px;
+    width: @logo-width;
+    height: @logo-height;
+    position: absolute;
+    top: calc(50% - @logo-height / 2);
+  }
+
+  .logo-copy-center {
+    left: calc(50% - @logo-width / 2 + 30px);
+  }
+
+  .description {
+    top: calc(50% + @logo-height / 2 + 64px);
+    font-size: 14px;
+    left: 32px;
+  }
+
+  .scroll-hint {
+    bottom: 32px;
+
+    &-text,
+    &-icon {
+      display: none;
+    }
+  }
+
+  .community-btns {
+    left: 32px;
   }
 }
 </style>
