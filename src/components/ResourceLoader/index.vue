@@ -233,7 +233,7 @@ onMounted(() => {
   box-shadow: 0 0 24px #fff;
 }
 
-@media screen and (max-width: 1680px) {
+@media screen and (max-width: 1679px) {
   @logo-width: 360px;
   @logo-height: calc(@logo-width / 480 * 112);
   @logo-left: calc(50% - @logo-width / 2);
@@ -272,6 +272,48 @@ onMounted(() => {
   .progress-item {
     height: 12px;
     width: 2px;
+  }
+}
+
+@media screen and (max-width: 1079px) {
+  @logo-width: 240px;
+  @logo-height: calc(@logo-width / 480 * 112);
+  @logo-left: calc(50% - @logo-width / 2);
+  @logo-top: calc(50% - @logo-height / 2);
+  @progress-width: 205px;
+  @progress-left: calc(50% - @progress-width / 2);
+  @progress-top: calc(@logo-top + @logo-height + 16px);
+  // 游戏 logo，需要特意向右边偏移一段距离
+  .game-logo {
+    width: @logo-width;
+    height: @logo-height;
+    margin-left: 20px;
+    left: @logo-left;
+    top: @logo-top;
+  }
+  // 加载条
+  .progress-bar {
+    @height: 16px;
+
+    width: @progress-width;
+    height: @height;
+    left: @progress-left;
+    top: @progress-top;
+    // 加载数字
+    &-center {
+      font-size: 12px;
+      width: 42px;
+    }
+
+    &-left,
+    &-right {
+      column-gap: 3px;
+    }
+  }
+
+  .progress-item {
+    height: 8px;
+    width: 1px;
   }
 }
 </style>
