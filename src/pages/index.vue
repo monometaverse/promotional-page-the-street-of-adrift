@@ -86,19 +86,23 @@ onMounted(() => {
     <div
       class="community-btns"
     >
-      <div
+      <a
         class="community-btn community-btn-discord clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
+        href="https://discord.gg/monoverse"
+        target="_blank"
       />
-      <div
+      <a
         class="community-btn community-btn-twitter clickble"
         :class="{
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
+        href="https://twitter.com/monoverse_hq"
+        target="_blank"
       />
     </div>
     <div
@@ -140,7 +144,7 @@ onMounted(() => {
       </div>
       <div class="scroll-hint-icon cover-no-repeat-center" />
       <div class="scroll-hint-indicator cover-no-repeat-center" />
-      <div class="scroll-hint-indicator delay-250 cover-no-repeat-center" />
+      <div class="scroll-hint-indicator !animate-delay-250 cover-no-repeat-center" />
     </div>
   </div>
 </template>
@@ -307,6 +311,132 @@ onMounted(() => {
     &:hover {
       opacity: 1;
     }
+  }
+}
+// 宽度低于 1679px 时
+@media screen and (max-width: 1679px) {
+  @logo-width: 360px;
+  @logo-height: calc(@logo-width / 640 * 149);
+  @logo-and-play-top: calc(50% - calc(@logo-height + 48px) / 2);
+  @logo-margin-right: 16px;
+  @play-btn-size: 64px;
+
+  .logo-and-play {
+    left: 32px;
+    top: @logo-and-play-top;
+    padding: 24px;
+
+    .logo {
+      width: @logo-width;
+      height: @logo-height;
+      margin-right: @logo-margin-right;
+    }
+
+    .play-btn {
+      width: @play-btn-size;
+      height: @play-btn-size;
+    }
+  }
+
+  .logo-copy {
+    left: 32px;
+    width: @logo-width;
+    height: @logo-height;
+    position: absolute;
+    top: calc(50% - @logo-height / 2);
+  }
+
+  .logo-copy-center {
+    left: calc(50% - @logo-width / 2 + 30px);
+  }
+
+  .description {
+    top: calc(50% + @logo-height / 2 + 64px);
+    font-size: 14px;
+    left: 32px;
+  }
+
+  .scroll-hint {
+    bottom: 32px;
+
+    &-text,
+    &-icon {
+      display: none;
+    }
+  }
+
+  .community-btns {
+    left: 32px;
+  }
+}
+
+// 低于 1080px 切换到手机端
+@media screen and (max-width: 1079px) {
+  @logo-width: 240px;
+  @logo-height: calc(@logo-width / 640 * 149);
+  @logo-and-play-top: calc(50% - calc(@logo-height + 48px) / 2);
+  @logo-margin-right: 16px;
+  @play-btn-size: 64px;
+  @desc-bottom: 100px;
+  @desc-height: 72px;
+  @desc-margin-top: 16px;
+
+  .logo-and-play {
+    top: unset;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top);
+    left: 20px;
+    padding-left: 0;
+
+    .logo {
+      width: @logo-width;
+      height: @logo-height;
+    }
+  }
+
+  .description {
+    font-size: 12px;
+    top: unset;
+    bottom: 100px;
+    left: 20px;
+    width: calc(100vw - 40px);
+    line-height: 24px;
+
+    .text {
+      display: inline;
+    }
+  }
+
+  .logo-copy {
+    top: unset;
+    left: 20px;
+    width: @logo-width;
+    height: @logo-height;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 32px);
+  }
+
+  .logo-copy-center {
+    top: unset;
+    left: calc(50% - @logo-width / 2 + 20px);
+    bottom: calc(50% - @logo-height / 2);
+  }
+
+  .community-btn {
+    width: 60px;
+    height: 24px;
+    background-size: 16px 16px;
+  }
+
+  .route-page {
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
+    background-size: 100% 320px;
+    background-repeat: no-repeat;
+    background-position: bottom;
+  }
+
+  .community-btns {
+    top: unset;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 64px + @logo-height + 18px);
+    left: 20px;
   }
 }
 </style>
