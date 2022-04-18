@@ -369,4 +369,74 @@ onMounted(() => {
     left: 32px;
   }
 }
+
+// 低于 1080px 切换到手机端
+@media screen and (max-width: 1079px) {
+  @logo-width: 240px;
+  @logo-height: calc(@logo-width / 640 * 149);
+  @logo-and-play-top: calc(50% - calc(@logo-height + 48px) / 2);
+  @logo-margin-right: 16px;
+  @play-btn-size: 64px;
+  @desc-bottom: 100px;
+  @desc-height: 72px;
+  @desc-margin-top: 16px;
+
+  .logo-and-play {
+    top: unset;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top);
+    left: 20px;
+    padding-left: 0;
+
+    .logo {
+      width: @logo-width;
+      height: @logo-height;
+    }
+  }
+
+  .description {
+    font-size: 12px;
+    top: unset;
+    bottom: 100px;
+    left: 20px;
+    width: calc(100vw - 40px);
+    line-height: 24px;
+
+    .text {
+      display: inline;
+    }
+  }
+
+  .logo-copy {
+    top: unset;
+    left: 20px;
+    width: @logo-width;
+    height: @logo-height;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 32px);
+  }
+
+  .logo-copy-center {
+    top: unset;
+    left: calc(50% - @logo-width / 2 + 20px);
+    bottom: calc(50% - @logo-height / 2);
+  }
+
+  .community-btn {
+    width: 60px;
+    height: 24px;
+    background-size: 16px 16px;
+  }
+
+  .route-page {
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
+    background-size: 100% 320px;
+    background-repeat: no-repeat;
+    background-position: bottom;
+  }
+
+  .community-btns {
+    top: unset;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 64px + @logo-height + 18px);
+    left: 20px;
+  }
+}
 </style>
