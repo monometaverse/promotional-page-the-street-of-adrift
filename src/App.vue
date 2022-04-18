@@ -789,7 +789,33 @@ useStyleTag(hideCursorStyle)
   height: 100%;
 }
 
-@media screen and (max-height: 1080px) {
+// 当屏幕宽度小于 1680px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  .navigation {
+    right: 32px;
+  }
+
+  .actions {
+    right: 32px;
+    top: 32px;
+  }
+
+  .page-number {
+    right: 32px;
+    bottom: 32px;
+  }
+
+  .page-title {
+    padding-left: 24px;
+    padding-right: 24px;
+
+    &-main {
+      font-size: 48px;
+    }
+  }
+}
+
+@media screen and (max-height: 1079px) {
   // 当屏幕高度小于 1080px 时，缩小导航大小至 700px
   .navigation-line {
     height: 700px;
