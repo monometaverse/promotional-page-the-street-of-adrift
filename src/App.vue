@@ -411,6 +411,9 @@ useStyleTag(hideCursorStyle)
         <!-- 手机端导航 -->
         <nav-on-mobile
           v-if="isOnMobile"
+          :routes="routes"
+          :animation-active="animationActive"
+          :animation-from="animationFrom"
           @item-selected="onNavItemSelected"
         />
         <!-- 桌面和平板端导航 -->
@@ -768,6 +771,23 @@ useStyleTag(hideCursorStyle)
   .actions {
     top: 24px;
     right: 24px;
+  }
+
+  .page-title {
+    left: 24px;
+    padding-left: 12px;
+    padding-right: 12px;
+    top: 72px;
+
+    &-main {
+      font-size: 32px;
+    }
+  }
+
+  .page-number {
+    right: 24px;
+    bottom: 24px;
+    z-index: 999;
   }
 }
 

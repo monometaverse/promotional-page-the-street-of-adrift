@@ -119,4 +119,19 @@ const emits = defineEmits<{
     right: 32px;
   }
 }
+
+@media screen and (max-width: 1079px) {
+  .navigation {
+    right: 24px;
+    top: 72px;
+
+    &-line {
+      height: 500px;
+    }
+
+    &-content {
+      height: 350px;
+    }
+  }
+}
 </style>
