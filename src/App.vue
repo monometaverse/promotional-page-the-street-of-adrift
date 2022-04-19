@@ -11,6 +11,8 @@ import { storeToRefs } from 'pinia'
 import { useElementSize, useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
+import navOnMobile from './components/nav-on-mobile.vue'
+import navOnDesktop from './components/nav-on-desktop.vue'
 import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
@@ -32,7 +34,7 @@ const routes = ref([
   { to: '/characters', name: '角色' },
   { to: '/settings', name: '设定' },
   { to: '/archives', name: '档案' },
-] as const)
+])
 // 获取路由名称
 const getRouteName = (path: string): string => {
   for (let r of routes.value) {
@@ -116,6 +118,10 @@ router.beforeEach((to, from, next) => {
   }
   next()
 })
+// 当导航中的某一项被点击
+const onNavItemSelected = (to: string) => {
+  router.push(to)
+}
 // 获取路由的索引
 const indexOfRoute = (to: string): number => {
   for (let index in routes.value) {
@@ -402,29 +408,19 @@ useStyleTag(hideCursorStyle)
             />
           </div>
         </div>
-        <div
-          class="navigation"
-          :class="{
-            'opacity-0': animationFrom && animationActive,
-            'duration-500 delay-0': animationActive
-          }"
-        >
-          <div class="navigation-content">
-            <!--TODO:替换成 i18n 文案-->
-            <router-link
-              v-for="theRoute of routes"
-              class="navigation-item clickble"
-              :to="theRoute.to"
-              :key="theRoute.name"
-            >
-              <div class="navigation-item-text clickble">
-                {{ theRoute.name }}
-              </div>
-              <div class="navigation-item-icon cover-no-repeat-center clickble" />
-            </router-link>
-          </div>
-          <div class="navigation-line" />
-        </div>
+        <!-- 手机端导航 -->
+        <nav-on-mobile
+          v-if="isOnMobile"
+          @item-selected="onNavItemSelected"
+        />
+        <!-- 桌面和平板端导航 -->
+        <nav-on-desktop
+          :routes="routes"
+          :animation-active="animationActive"
+          :animation-from="animationFrom"
+          @item-selected="onNavItemSelected"
+          v-else
+        />
         <!-- 页码 -->
         <div
           class="page-number"
@@ -559,76 +555,6 @@ useStyleTag(hideCursorStyle)
   width: 100%;
 }
 
-// 导航
-.navigation {
-  z-index: 20;
-  @line-height: 800px;
-
-  position: absolute;
-  display: flex;
-  align-items: center;
-  top: calc(50% - @line-height / 2);
-  right: 64px;
-  // 导航中的左侧部分
-  &-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    height: 500px;
-    margin-right: 24px;
-  }
-  // 导航中的每一项
-  &-item {
-    padding: 10px;
-    display: flex;
-    transition: opacity 250ms ease-out;
-    font-family: 'Noto Sans SC', sans-serif;
-    font-size: 16px;
-    color: white;
-    opacity: 0.5;
-    text-decoration: none;
-    align-items: center;
-    column-gap: 16px;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &-text {
-      transition: transform 250ms ease-out;
-      transform: translateX(34px);
-    }
-
-    &-icon {
-      transition: opacity 250ms ease-out;
-      opacity: 0;
-      width: 12px;
-      height: 18px;
-      background-image: url('./assets/static-framework/navigation-item-active.png');
-      background-size: contain;
-    }
-  }
-
-  // 导航右侧的线
-  &-line {
-    height: @line-height;
-    width: 1px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 25.52%, rgba(255, 255, 255, 0.5) 49.63%, rgba(255, 255, 255, 0.5) 75.52%, rgba(255, 255, 255, 0) 100%);
-  }
-  // 正在显示的导航页面
-  .router-link-active {
-    opacity: 1;
-
-    .navigation-item-text {
-      transform: none;
-      pointer-events: fill;
-    }
-
-    .navigation-item-icon {
-      opacity: 1;
-    }
-  }
-}
 // 页面
 .route-page {
   width: 100%;
@@ -809,10 +735,6 @@ useStyleTag(hideCursorStyle)
 
 // 当屏幕宽度小于 1680px 时，进入平板模式
 @media screen and (max-width: 1679px) {
-  .navigation {
-    right: 32px;
-  }
-
   .actions {
     right: 32px;
     top: 32px;
@@ -835,16 +757,17 @@ useStyleTag(hideCursorStyle)
 
 // 当宽度小于 1080px 时，切换到手机版本
 @media screen and (max-width: 1079px) {
-  .navigation {
-    display: none;
-  }
-
   .actions-text:nth-child(3) {
     margin-right: 24px;
   }
 
   .actions-share {
     margin-left: 32px;
+  }
+
+  .actions {
+    top: 24px;
+    right: 24px;
   }
 }
 
