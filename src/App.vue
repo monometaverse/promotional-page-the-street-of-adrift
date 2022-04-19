@@ -14,7 +14,7 @@ import { useStyleTag } from '@vueuse/core'
 import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, showingCharacter } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
@@ -334,6 +334,8 @@ const hideCursorStyle = computed(() => {
   // 如果静态框架的宽度小于窗口宽度，表示可能是开发者工具打开了
   return window.outerWidth > staticFramwork.width.value ? '' : '* { cursor: none!important; }'
 })
+// 移动端导航是否已打开
+const mobileNavOpen = ref(false)
 useStyleTag(hideCursorStyle)
 </script>
 <template>
@@ -355,6 +357,10 @@ useStyleTag(hideCursorStyle)
         <div
           class="background cover-no-repeat-center"
           :style="backgroundCss"
+        />
+        <div
+          class="background-top-mask"
+          v-if="!mobileNavOpen && isOnMobile"
         />
         <!-- 粒子效果 -->
         <particles-for-character />
@@ -541,6 +547,18 @@ useStyleTag(hideCursorStyle)
     }
   }
 }
+
+// 当处于手机端、并且导航栏没有打开时，显示顶部渐变遮罩
+.background-top-mask {
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  background-position: top;
+  background-size: 100% 88px;
+  background-repeat: no-repeat;
+  height: 88px;
+  position: absolute;
+  width: 100%;
+}
+
 // 导航
 .navigation {
   z-index: 20;
@@ -812,6 +830,21 @@ useStyleTag(hideCursorStyle)
     &-main {
       font-size: 48px;
     }
+  }
+}
+
+// 当宽度小于 1080px 时，切换到手机版本
+@media screen and (max-width: 1079px) {
+  .navigation {
+    display: none;
+  }
+
+  .actions-text:nth-child(3) {
+    margin-right: 24px;
+  }
+
+  .actions-share {
+    margin-left: 32px;
   }
 }
 
