@@ -180,7 +180,7 @@ const onReserveBtnClick = (index: number) => {
 const infoEl = ref<HTMLDivElement | null>(null)
 const infoElBound = useElementBounding(infoEl)
 const reserveBtnPosition = computed<CSSProperties>(() => {
-  let top = infoElBound.bottom.value - (isOnMobile ? 32 : 64)
+  let top = infoElBound.bottom.value - (isOnMobile.value ? 32 : 64)
   if (top > windowHeight.value) {
     top -= windowHeight.value
   } else if (top < 0) {
