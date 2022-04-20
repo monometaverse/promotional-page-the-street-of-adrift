@@ -264,7 +264,7 @@ onMounted(() => {
         @click="onReserveBtnClick(currentIndexForAnimation)"
       />
     </div>
-    <div class="matrix matrix-left-bottom <sm:hidden" />
+    <div class="matrix matrix-left-bottom" />
     <div class="matrix matrix-behind-models <sm:hidden" />
     <!-- 模型展示区域 -->
     <div class="models">
@@ -612,11 +612,6 @@ onMounted(() => {
 
   .matrix-behind-models {
     right: calc(50vw - 597px + 250px);
-  }
-
-  .matrix-left-bottom {
-    left: 48px;
-    bottom: 48px;
   }
 }
 

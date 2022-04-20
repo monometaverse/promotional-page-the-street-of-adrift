@@ -68,6 +68,10 @@ const nameStyle = computed<CSSProperties>(() => ({
   transform: `translateX(${nameArgs.value.translateX}px)`,
   opacity: nameArgs.value.opacity
 }))
+const nameEnStyle = computed<CSSProperties>(() => ({
+  transform: `translateX(${nameArgs.value.translateX}px)`,
+  opacity: nameArgs.value.opacity - 0.5
+}))
 // 角色名称切换动画
 const doNameAnimation = (enter: boolean) => {
   gsap.fromTo(nameArgs.value, {
@@ -204,7 +208,7 @@ watchEffect(() => {
       </div>
       <div
         class="info-title-en"
-        :style="nameStyle"
+        :style="nameEnStyle"
       >
         SHIRAISHI ROSETTA
       </div>
@@ -403,5 +407,60 @@ watchEffect(() => {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+// 当宽度低于 1680px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  .selector {
+    &-item {
+      &-title {
+        font-size: 20px;
+        line-height: 30px;
+      }
+    }
+  }
+
+  .element-x {
+    width: 48px;
+    height: 48px;
+  }
+
+  .matrix-behind-pic {
+    width: 128px;
+    height: 128px;
+    right: calc(608px + 50vw - 597px);
+    bottom: calc(211px + 50vh - 417px);
+  }
+
+  // 角色立绘
+  .character-painting {
+    position: absolute;
+    width: 576px;
+    height: calc(576px / 900 * 1500);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    bottom: calc(-143px + 50vh - 417px);
+    right: calc(511px + 50vw - 597px);
+  }
+
+  .info {
+    right: 181px;
+    bottom: calc(104px + 50vh - 417px);
+
+    &-title {
+      font-size: 48px;
+      line-height: 69px;
+    }
+
+    &-title-en {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    &-desc {
+      width: 400px;
+    }
+  }
 }
 </style>
