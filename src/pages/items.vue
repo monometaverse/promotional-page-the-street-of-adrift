@@ -11,9 +11,11 @@ import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
 import { ElMessage } from 'element-plus'
+import { storeToRefs } from 'pinia'
 
 // pinia 状态管理
 const store = useStore()
+const { windowHeight } = storeToRefs(store)
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<NFTItem[]>([
   {
@@ -43,7 +45,7 @@ const itemsList = ref<NFTItem[]>([
   {
     name: '九霄银币',
     nameEn: 'need text',
-    description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
+    description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
     descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
     reserved: true,
     model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
@@ -173,6 +175,20 @@ const onReserveBtnClick = (index: number) => {
     ElMessage.error(res.message)
   }
 }
+// 预约按钮文字元素
+const infoEl = ref<HTMLDivElement | null>(null)
+const infoElBound = useElementBounding(infoEl)
+const reserveBtnPosition = computed<CSSProperties>(() => {
+  let top = infoElBound.bottom.value - 64
+  if (top > windowHeight.value) {
+    top -= windowHeight.value
+  } else if (top < 0) {
+    top += windowHeight.value
+  }
+  return {
+    top: `${top}px`
+  }
+})
 // 当挂载时，显示第一个模型
 onMounted(() => {
   modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
@@ -198,7 +214,10 @@ onMounted(() => {
       :left="modelContainerElBounding.left"
       ref="modelViewerEl"
     />
-    <div class="info">
+    <div
+      class="info"
+      ref="infoEl"
+    >
       <!-- NFT 名字 -->
       <div
         class="info-title"
@@ -231,15 +250,18 @@ onMounted(() => {
       >
         {{ itemsList[currentIndexForAnimation].reserved ? '已预约' : '立即预约' }}
       </div>
+    </div>
+    <div
+      class="info-reserve-btn"
+      :style="{
+        ...reserveBtnAnimationStyle,
+        ...reserveBtnPosition
+      }"
+    >
       <div
-        class="info-reserve-btn"
-        :style="reserveBtnAnimationStyle"
-      >
-        <div
-          class="info-reserve-btn-inner clickble"
-          @click="onReserveBtnClick(currentIndexForAnimation)"
-        />
-      </div>
+        class="info-reserve-btn-inner clickble"
+        @click="onReserveBtnClick(currentIndexForAnimation)"
+      />
     </div>
     <div class="matrix matrix-left-bottom" />
     <div class="matrix matrix-behind-models" />
@@ -375,36 +397,38 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
   }
-  // 预约按钮边框和背景
-  &-reserve-btn {
-    transition-property: background-color;
-    transition-duration: 250ms;
-    transition-timing-function: ease;
-    position: absolute;
-    top: calc(50% + @all-height / 2 - 64px);
-    height: 64px;
-    width: 192px;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    box-sizing: border-box;
+}
 
-    &-inner {
-      transition: opacity 250ms ease;
-      width: 100%;
-      height: 100%;
-      background-image: url('../assets/nft-page/reserve-btn-background.svg');
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      opacity: 0.1;
-    }
+// 预约按钮边框和背景
+.info-reserve-btn {
+  transition-property: background-color;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+  position: absolute;
+  top: calc(50% + @all-height / 2 - 64px);
+  height: 64px;
+  width: 192px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+  left: 64px;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
+  &-inner {
+    transition: opacity 250ms ease;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/nft-page/reserve-btn-background.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.1;
+  }
 
-    &:hover &-inner {
-      opacity: 1;
-    }
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &:hover &-inner {
+    opacity: 1;
   }
 }
 
