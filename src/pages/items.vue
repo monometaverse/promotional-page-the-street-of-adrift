@@ -405,7 +405,6 @@ onMounted(() => {
   transition-duration: 250ms;
   transition-timing-function: ease;
   position: absolute;
-  top: calc(50% + @all-height / 2 - 64px);
   height: 64px;
   width: 192px;
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -456,6 +455,7 @@ onMounted(() => {
   @indicator-margin-top: 60px;
   @indicator-heigth: 4px;
   @container-width-height: 688px;
+  @prev-btn-margin-right: 74px;
 
   position: absolute;
   top: calc(50% - calc(@indicator-heigth + @container-width-height + @indicator-margin-top) / 2);
@@ -466,6 +466,7 @@ onMounted(() => {
     justify-content: center;
     column-gap: 24px;
     margin-top: @indicator-margin-top;
+    margin-left: @prev-btn-margin-right;
 
     &-item {
       transition: opacity 250ms ease;
@@ -499,7 +500,7 @@ onMounted(() => {
   }
 
   &-prev-btn {
-    margin-right: 74px;
+    margin-right: @prev-btn-margin-right;
   }
 
   &-next-btn {
@@ -538,5 +539,72 @@ onMounted(() => {
 
 .reserve-success-bg {
   background-image: url('../assets/nft-page/reserve-btn-background.svg');
+}
+
+// 当宽度小于 1680px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  @title-line-height: 69px;
+  @title-en-line-height: 20px;
+  @divider-margin-top: 24px;
+  @desc-margin-top: 24px;
+  @divider-height: 2px;
+  @desc-line-height: 32px;
+  @reserve-btn-margin-top: 48px;
+  @reserve-btn-height: 64px;
+  @all-height: calc(@title-line-height + @title-en-line-height + @divider-margin-top + @desc-margin-top + @divider-height + @divider-height + @desc-line-height * 2 + @reserve-btn-height + @reserve-btn-margin-top);
+
+  .info {
+    top: calc(50vh - @all-height / 2);
+
+    &-title {
+      font-size: 48px;
+      line-height: 69px;
+    }
+
+    &-title-en {
+      font-size: 16px;
+      line-height: @title-en-line-height;
+    }
+
+    &-desc {
+      font-size: 14px;
+      width: 320px;
+    }
+
+    &-reserve-btn-text {
+      margin-top: @reserve-btn-margin-top;
+    }
+  }
+  // 模型容器
+  .models {
+    @container-width-height: 466px;
+    @indicator-margin-top: 40px;
+    @indicator-heigth: 4px;
+    @prev-btn-margin-right: 40px;
+
+    position: absolute;
+    top: calc(50% - calc(@indicator-heigth + @container-width-height + @indicator-margin-top) / 2);
+    right: 180px;
+
+    &-main {
+      &-container {
+        width: @container-width-height;
+        height: @container-width-height;
+      }
+    }
+
+    &-prev-btn {
+      margin-right: @prev-btn-margin-right;
+    }
+
+    &-indicator {
+      margin-top: @indicator-margin-top;
+      margin-left: @prev-btn-margin-right;
+
+      &-item {
+        width: 32px;
+      }
+    }
+  }
 }
 </style>
