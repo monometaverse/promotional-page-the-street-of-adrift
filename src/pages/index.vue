@@ -360,13 +360,6 @@ onMounted(() => {
     background-size: 16px 16px;
   }
 
-  .route-page {
-    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
-    background-size: 100% 320px;
-    background-repeat: no-repeat;
-    background-position: bottom;
-  }
-
   .community-btns {
     top: unset;
     bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 64px + @logo-height + 18px);

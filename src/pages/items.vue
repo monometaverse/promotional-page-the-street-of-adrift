@@ -12,10 +12,11 @@ import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
 import { ElMessage } from 'element-plus'
 import { storeToRefs } from 'pinia'
+import ScrollHint from '../components/scroll-hint.vue'
 
 // pinia 状态管理
 const store = useStore()
-const { windowHeight } = storeToRefs(store)
+const { windowHeight, isOnMobile } = storeToRefs(store)
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<NFTItem[]>([
   {
@@ -179,7 +180,7 @@ const onReserveBtnClick = (index: number) => {
 const infoEl = ref<HTMLDivElement | null>(null)
 const infoElBound = useElementBounding(infoEl)
 const reserveBtnPosition = computed<CSSProperties>(() => {
-  let top = infoElBound.bottom.value - 64
+  let top = infoElBound.bottom.value - (isOnMobile ? 32 : 64)
   if (top > windowHeight.value) {
     top -= windowHeight.value
   } else if (top < 0) {
@@ -263,8 +264,8 @@ onMounted(() => {
         @click="onReserveBtnClick(currentIndexForAnimation)"
       />
     </div>
-    <div class="matrix matrix-left-bottom" />
-    <div class="matrix matrix-behind-models" />
+    <div class="matrix matrix-left-bottom <sm:hidden" />
+    <div class="matrix matrix-behind-models <sm:hidden" />
     <!-- 模型展示区域 -->
     <div class="models">
       <div class="models-main">
@@ -304,7 +305,7 @@ onMounted(() => {
     >
       <!-- 提示框主体 -->
       <div
-        class="w-576px h-480px bg-black flex flex-col justify-between items-center transition duration-250"
+        class="w-576px h-480px bg-black flex flex-col justify-between items-center transition duration-250 <sm:(w-320px h-374px)"
         :class="{
           'opacity-0': !showReserveSuccessDialog,
           '-translate-y-50px transform': !showReserveSuccessDialog
@@ -318,25 +319,27 @@ onMounted(() => {
           />
         </div>
         <!-- TODO: 从 i18n 获取文案 -->
-        <span class="font-serif font-900 leading-46px text-32px">预约成功</span>
+        <span class="font-serif font-900 leading-46px text-32px <sm:(text-24px leading-34px)">预约成功</span>
         <!-- 预约成功图片 -->
         <div class="success-pic-container p-14px">
-          <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover" />
+          <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
         </div>
         <!-- 确定按钮，TODO:从 i18n 获取文案 -->
         <div>
           <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
             <div
-              class="reserve-success-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble"
+              class="reserve-success-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
               @click="showReserveSuccessDialog = false"
             />
           </div>
-          <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none">
+          <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-96px h-32px text-16px leading-23px -translate-y-32px)">
             知道了
           </div>
         </div>
       </div>
     </div>
+    <!-- 只在手机端出现的滑动提示 -->
+    <scroll-hint class="!sm:hidden" />
   </div>
 </template>
 <style lang="less" scoped>
@@ -605,6 +608,92 @@ onMounted(() => {
         width: 32px;
       }
     }
+  }
+
+  .matrix-behind-models {
+    right: calc(50vw - 597px + 250px);
+  }
+
+  .matrix-left-bottom {
+    left: 48px;
+    bottom: 48px;
+  }
+}
+
+// 当宽度小于 1080px 时，进入手机模式
+@media screen and (max-width: 1079px) {
+  // 模型容器
+  .models {
+    @container-width-height: 300px;
+    @indicator-margin-top: 20px;
+    @indicator-heigth: 4px;
+
+    position: absolute;
+    top: calc(50vh + 165px - 406px);
+    right: unset;
+    width: 100%;
+
+    &-main {
+      width: 100%;
+      justify-content: center;
+
+      &-container {
+        width: @container-width-height;
+        height: @container-width-height;
+      }
+    }
+
+    &-prev-btn {
+      margin-right: unset;
+    }
+
+    &-indicator {
+      margin-top: @indicator-margin-top;
+      margin-left: unset;
+
+      &-item {
+        width: 24px;
+        height: 2px;
+      }
+    }
+  }
+
+  .info {
+    width: 100%;
+    top: unset;
+    bottom: 100px;
+    left: 0;
+    padding: 20px 20px 0 20px;
+
+    &-title {
+      font-size: 32px;
+      line-height: 46px;
+    }
+
+    &-title-en {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    &-desc {
+      width: 100%;
+      font-size: 12px;
+      line-height: 24px;
+    }
+
+    &-reserve-btn-text {
+      margin-top: 24px;
+      width: 96px;
+      height: 32px;
+      font-size: 16px;
+      line-height: 23px;
+    }
+  }
+
+  .info-reserve-btn {
+    left: 20px;
+    width: 96px;
+    height: 32px;
   }
 }
 </style>

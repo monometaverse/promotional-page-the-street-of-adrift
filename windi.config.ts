@@ -11,7 +11,11 @@ export default defineConfig({
         serif: ['Noto Serif SC', 'sans-serif'],
         monsterrat: ['Montserrat', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif']
-      }
+      },
+    },
+    screens: {
+      sm: '1080px', // <md
+      xl: '1680px' // <xl
     }
   }
 })
