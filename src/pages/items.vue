@@ -8,7 +8,7 @@ import { useElementBounding } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
-import { DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
+import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
 import { ElMessage } from 'element-plus'
 
@@ -30,11 +30,12 @@ const itemsList = ref<NFTItem[]>([
       correctMaterial: (() => {
         const material = new MeshPhysicalMaterial()
         material.metalness = 1
-        material.roughness = 0.16
+        material.roughness = 0.14
         material.clearcoatRoughness = 0.01
         material.reflectivity = 1
         material.clearcoat = 1
         material.fog = true
+        material.color = new Color(0xFFCB3D)
         return material
       })()
     }
