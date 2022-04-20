@@ -80,11 +80,7 @@ export class ThreeApp {
         if (customData.side) material.side = customData.side
         // 有修正的材质
         if (customData.correctMaterial) {
-          if (material instanceof MeshStandardMaterial) {
-            const color = material.color
-            child.material = customData.correctMaterial;
-            (child.material as MeshPhysicalMaterial).color = color
-          }
+          child.material = customData.correctMaterial
         }
       }
     }
