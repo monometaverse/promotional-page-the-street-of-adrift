@@ -3,11 +3,10 @@ import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useStore } from '../store'
 import { shuffle } from 'lodash'
-import { offset } from '@popperjs/core'
 
 // 状态管理
 const store = useStore()
-const { windowWidth, windowHeight, mousePos, infoElPos } = storeToRefs(store)
+const { windowWidth, windowHeight, mousePos, infoElPos, isOnMobile, isOnTablet } = storeToRefs(store)
 // canvas 的引用
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 // canvas 上下文
@@ -43,6 +42,16 @@ watchEffect(() => {
   }
   // 如果没有获取到角色信息块的位置，停止处理
   if (!infoElPos.value.x) return
+  // 开始处理图片高宽
+  const picSize = isOnMobile.value ? 120 * 1.5 : isOnTablet.value ? 240 * 1.5 : 360 * 1.5
+  const width = Number(newVal.width)
+  newVal.width = picSize
+  newVal.height = newVal.height * picSize / width
+  if (newVal.height > picSize) {
+    const height = Number(newVal.height)
+    newVal.height = picSize
+    newVal.width = newVal.width * picSize / height
+  }
   targetAlpha = 1
   // 开始锁住画布，停止绘制
   pausePointRender.value = true
@@ -56,9 +65,11 @@ watchEffect(() => {
   ctx.clearRect(0, 0, canvasEl.value!.width, canvasEl.value!.height)
   // 记录已遍历的点的数量
   let pointsPos: { x: number, y: number }[] = []
+  // 采样密度，越低越密
+  const denisty = isOnMobile.value ? 1.5 : isOnTablet.value ? 3 : 4
   // 根据图片的颜色信息生成点阵，用图片的高宽去计算到应该获取到像素点位置
-  for (let h = 0; h < newVal.height; h += 4) {
-    for (let w = 0; w < newVal.width; w += 4) {
+  for (let h = 0; h < newVal.height; h += denisty) {
+    for (let w = 0; w < newVal.width; w += denisty) {
       const position = (newVal.width * h + w) * 4 // 数组是以 rgba 的顺序排列的，每跳过一个像素点需要跳过 4 个索引值
       const r = imageData[position], g = imageData[position + 1], b = imageData[position + 2], a = imageData[position + 3]
       // 如果颜色值为白色，才进行下一步处理
@@ -73,7 +84,7 @@ watchEffect(() => {
   points = points.slice(0, pointsPos.length)
   // 根据角色信息块的位置来计算粒子的位置
   const offsetX = infoElPos.value.x
-  let offsetY = infoElPos.value.y - 360
+  let offsetY = infoElPos.value.y - picSize / 1.5
   // 因为角色页刚进入时获取到的位置是被偏移过的，需要进行额外的判断
   if (offsetY > windowHeight.value) {
     offsetY -= windowHeight.value

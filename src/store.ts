@@ -18,6 +18,7 @@ export const useStore = defineStore('main', () => {
   const { width: windowWidth, height: windowHeight } = useWindowSize()
   // 是否处于手机端
   const isOnMobile = useMediaQuery('(max-width: 1079px)')
+  const isOnTablet = useMediaQuery('(max-width: 1679px)')
   // 已经加载好的资源
   const res = ref<LoadedResources | null>(null)
   // 当前正在显示的阵营图片
@@ -45,6 +46,7 @@ export const useStore = defineStore('main', () => {
     allImagesForParticles,
     getRes,
     infoElPos,
-    isOnMobile
+    isOnMobile,
+    isOnTablet
   }
 })
