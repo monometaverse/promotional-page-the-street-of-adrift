@@ -3,6 +3,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
+import scrollHint from '../components/scroll-hint.vue'
 
 // states
 const store = useStore()
@@ -134,18 +135,10 @@ onMounted(() => {
         }"
       >其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。</span>
     </div>
-    <div
-      class="scroll-hint"
+    <scroll-hint
       :class="scrollHintAnimationClass"
       @transitionend="onScrollHintTransitionEnd"
-    >
-      <div class="scroll-hint-text">
-        SCROLL
-      </div>
-      <div class="scroll-hint-icon cover-no-repeat-center" />
-      <div class="scroll-hint-indicator cover-no-repeat-center" />
-      <div class="scroll-hint-indicator !animate-delay-250 cover-no-repeat-center" />
-    </div>
+    />
   </div>
 </template>
 <style lang="less" scoped>
@@ -154,20 +147,6 @@ onMounted(() => {
 @logo-and-play-top: calc(50% - calc(@logo-height + 64px) / 2);
 @logo-margin-right: 16px;
 @play-btn-size: 90px;
-// 滑动提示
-@keyframes for-scroll {
-  0% {
-    opacity: 0.5;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  20% {
-    opacity: 0.5;
-  }
-}
 // logo 的复制体
 .logo-copy {
   width: @logo-width;
@@ -184,42 +163,6 @@ onMounted(() => {
 
 .transition-active {
   transition: all 250ms ease !important;
-}
-
-.scroll-hint {
-  position: absolute;
-  bottom: 24px;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-
-  &-text {
-    font-family: "Poppins", sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  &-icon {
-    width: 25px;
-    height: 37px;
-    background-image: url("../assets/home-page/mouse-icon.svg");
-    margin-bottom: 8px;
-  }
-
-  &-indicator {
-    opacity: 0.5;
-    width: 18px;
-    height: 7px;
-    background-image: url("../assets/home-page/scroll-indicator.svg");
-    animation: 5s for-scroll infinite;
-
-    &:first-child {
-      margin-bottom: 8px;
-    }
-  }
 }
 // 文字介绍
 .description {
@@ -356,15 +299,6 @@ onMounted(() => {
     left: 32px;
   }
 
-  .scroll-hint {
-    bottom: 32px;
-
-    &-text,
-    &-icon {
-      display: none;
-    }
-  }
-
   .community-btns {
     left: 32px;
   }
@@ -424,13 +358,6 @@ onMounted(() => {
     width: 60px;
     height: 24px;
     background-size: 16px 16px;
-  }
-
-  .route-page {
-    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
-    background-size: 100% 320px;
-    background-repeat: no-repeat;
-    background-position: bottom;
   }
 
   .community-btns {
