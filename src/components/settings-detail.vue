@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { gsap } from 'gsap'
+import scrollHint from './scroll-hint.vue'
+
 // 需要父组件传入的部分
 const props = defineProps<{
   items: { name: string, smallPic: string, bigPic: string, desc: string }[],
@@ -64,19 +66,10 @@ const prevOrNext = (next: boolean) => {
 </script>
 <template>
   <div class="details">
-    <!-- 切换按钮 -->
-    <div
-      class="details-prev-btn prev-btn clickble"
-      @click="prevOrNext(false)"
-    />
-    <div
-      class="details-next-btn next-btn clickble"
-      @click="prevOrNext(true)"
-    />
     <!-- 图片上方矩阵 -->
-    <div class="matrix top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999 <xl:(top-[calc(210px+50vh-417px)] right-[calc(352px+50vw-597px)])" />
+    <div class="matrix top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999 <xl:(top-[calc(210px+50vh-417px)] right-[calc(352px+50vw-597px)]) <sm:hidden" />
     <!-- 图片下方矩阵 -->
-    <div class="matrix bottom-[calc(250px+50vh-540px)] right-[calc(378px+50vw-960px)] z-999 <xl:(bottom-[calc(225px+50vh-417px)] right-[calc(243px+50vw-597px)])" />
+    <div class="matrix bottom-[calc(250px+50vh-540px)] right-[calc(378px+50vw-960px)] z-999 <xl:(bottom-[calc(225px+50vh-417px)] right-[calc(243px+50vw-597px)]) <sm:hidden" />
     <!-- 图片 -->
     <div
       class="details-pic cover-no-repeat-center"
@@ -96,9 +89,20 @@ const prevOrNext = (next: boolean) => {
     </div>
     <!-- 关闭按钮 -->
     <div
-      class="close-btn close-btn-local clickble"
+      class="close-btn close-btn-local clickble <sm:hidden"
       @click="emits('close')"
     />
+    <!-- 切换按钮 -->
+    <div
+      class="details-prev-btn prev-btn clickble"
+      @click="prevOrNext(false)"
+    />
+    <div
+      class="details-next-btn next-btn clickble"
+      @click="prevOrNext(true)"
+    />
+    <!-- 只在手机端出现的滑动提示 -->
+    <scroll-hint class="!sm:hidden" />
   </div>
 </template>
 <style lang="less" scoped>
@@ -209,6 +213,53 @@ const prevOrNext = (next: boolean) => {
         font-size: 12px;
         line-height: 28px;
       }
+    }
+  }
+}
+
+@media screen and (max-width: 1079px) {
+  .details {
+    @pic-top: calc(221px + 50vh - 406px);
+    @pic-height: calc(calc(100vw - 48px) / 16 * 9);
+
+    &-desc {
+      padding: 24px 24px 0 24px;
+      width: 100%;
+      top: unset;
+      left: unset;
+      bottom: 64px;
+
+      &-title {
+        font-size: 32px;
+        line-height: 49px;
+      }
+
+      &-divider {
+        margin-top: 8px;
+      }
+
+      &-text {
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 20px;
+      }
+    }
+
+    &-pic {
+      width: calc(100vw - 48px);
+      margin: 0 24px;
+      left: 0;
+      top: @pic-top;
+      height: calc(calc(100vw - 48px) / 16 * 9);
+    }
+
+    &-prev-btn { left: 20px; }
+    &-next-btn { right: 20px; }
+
+    &-prev-btn,
+    &-next-btn {
+      top: calc(@pic-top + @pic-height / 2 - 24px);
+      position: absolute;
     }
   }
 }
