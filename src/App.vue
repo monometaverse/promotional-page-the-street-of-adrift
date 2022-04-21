@@ -13,10 +13,9 @@ import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
 import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
-import UAParser from 'ua-parser-js'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
@@ -327,13 +326,6 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
     }
   }
 })() })
-// 检测是否在移动设备上，使用 user-agent 方式
-// 当宽度发生变化时再检测一次，这样 DevTools 切换视图时也能收到变化，不需要刷新页面
-const isOnMobileByUserAgent = computed(() => {
-  windowWidth.value, windowHeight.value
-  const device = new UAParser(navigator.userAgent).getDevice()
-  return device.type === 'mobile' || device.type === 'tablet'
-})
 // 如果开发者工具打开了，就显示鼠标
 const staticFramwork = useElementSize(staticFramworkEl)
 const hideCursorStyle = computed(() => {

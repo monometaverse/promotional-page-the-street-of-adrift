@@ -180,7 +180,7 @@ const onReserveBtnClick = (index: number) => {
 const infoEl = ref<HTMLDivElement | null>(null)
 const infoElBound = useElementBounding(infoEl)
 const reserveBtnPosition = computed<CSSProperties>(() => {
-  let top = infoElBound.bottom.value - (isOnMobile ? 32 : 64)
+  let top = infoElBound.bottom.value - (isOnMobile.value ? 32 : 64)
   if (top > windowHeight.value) {
     top -= windowHeight.value
   } else if (top < 0) {
@@ -264,7 +264,7 @@ onMounted(() => {
         @click="onReserveBtnClick(currentIndexForAnimation)"
       />
     </div>
-    <div class="matrix matrix-left-bottom <sm:hidden" />
+    <div class="matrix matrix-left-bottom" />
     <div class="matrix matrix-behind-models <sm:hidden" />
     <!-- 模型展示区域 -->
     <div class="models">
@@ -612,11 +612,6 @@ onMounted(() => {
 
   .matrix-behind-models {
     right: calc(50vw - 597px + 250px);
-  }
-
-  .matrix-left-bottom {
-    left: 48px;
-    bottom: 48px;
   }
 }
 

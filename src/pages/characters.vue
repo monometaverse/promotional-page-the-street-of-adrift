@@ -7,6 +7,8 @@ import rosetta from '../assets/characters-page/rosetta.png'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 import { useElementBounding } from '@vueuse/core'
+import ScrollHint from '../components/scroll-hint.vue'
+import { usePagination } from '../utils'
 // pinia 状态管理
 const store = useStore()
 const { res, showingCharacter, allImagesForParticles, infoElPos } = storeToRefs(store)
@@ -15,6 +17,10 @@ const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里�
 const characterPaintings = ref([rosetta])
 const currentShow = ref(0)
 const currentShowForNav = ref(0)
+// 页面切换器，仅在手机端使用
+const { prev, next } = usePagination(characters, undefined, (next: boolean, nextIndex: number) => {
+  swtichTo(nextIndex)
+})
 // 动画长度
 const durations = {
   characterPainting: 500,
@@ -67,6 +73,10 @@ const nameArgs = ref({ translateX: 0, opacity: 1 })
 const nameStyle = computed<CSSProperties>(() => ({
   transform: `translateX(${nameArgs.value.translateX}px)`,
   opacity: nameArgs.value.opacity
+}))
+const nameEnStyle = computed<CSSProperties>(() => ({
+  transform: `translateX(${nameArgs.value.translateX}px)`,
+  opacity: nameArgs.value.opacity - 0.5
 }))
 // 角色名称切换动画
 const doNameAnimation = (enter: boolean) => {
@@ -167,7 +177,7 @@ watchEffect(() => {
   <div class="route-page">
     <div class="element-x" />
     <div class="matrix matrix-left-bottom" />
-    <div class="matrix matrix-behind-pic" />
+    <div class="matrix matrix-behind-pic <sm:hidden" />
     <!-- 角色选择器 -->
     <div class="selector">
       <div
@@ -204,7 +214,7 @@ watchEffect(() => {
       </div>
       <div
         class="info-title-en"
-        :style="nameStyle"
+        :style="nameEnStyle"
       >
         SHIRAISHI ROSETTA
       </div>
@@ -241,6 +251,16 @@ watchEffect(() => {
         一直以来，她都在寻找这样一个契机。
       </div>
     </div>
+    <scroll-hint class="!sm:hidden" />
+    <!-- 页面切换器，仅在手机端显示 -->
+    <div
+      class="prev-btn sm:hidden absolute left-20px top-[calc(50vh+296px-406px)]"
+      @click="prev"
+    />
+    <div
+      class="next-btn sm:hidden absolute right-20px top-[calc(50vh+296px-406px)]"
+      @click="next"
+    />
   </div>
 </template>
 <style lang="less" scoped>
@@ -403,5 +423,131 @@ watchEffect(() => {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+// 当宽度低于 1680px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  .selector {
+    &-item {
+      &-title {
+        font-size: 20px;
+        line-height: 30px;
+      }
+    }
+  }
+
+  .element-x {
+    width: 48px;
+    height: 48px;
+  }
+
+  .matrix-behind-pic {
+    width: 128px;
+    height: 128px;
+    right: calc(608px + 50vw - 597px);
+    bottom: calc(211px + 50vh - 417px);
+  }
+
+  // 角色立绘
+  .character-painting {
+    position: absolute;
+    width: 576px;
+    height: calc(576px / 900 * 1500);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    bottom: calc(-143px + 50vh - 417px);
+    right: calc(511px + 50vw - 597px);
+  }
+
+  .info {
+    right: 181px;
+    bottom: calc(104px + 50vh - 417px);
+
+    &-title {
+      font-size: 48px;
+      line-height: 69px;
+    }
+
+    &-title-en {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    &-desc {
+      width: 400px;
+    }
+  }
+}
+
+// 当宽度低于 1080px 时，进入手机模式
+@media screen and (max-width: 1079px) {
+  .selector {
+    display: none;
+  }
+  // 角色立绘
+  .character-painting {
+    position: absolute;
+    width: 512px;
+    height: calc(512px / 900 * 1500);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    bottom: calc(-120px + 50vh - 406px);
+    right: calc(50vw - 256px);
+  }
+
+  .info {
+    right: unset;
+    bottom: 64px;
+    width: 100%;
+    padding: 24px 24px 0 24px;
+
+    &-title {
+      font-size: 32px;
+      line-height: 46px;
+    }
+
+    &-title-en {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    &-more {
+      margin-top: 8px;
+
+      &-item {
+        &-title {
+          font-size: 12px;
+          height: 18px;
+          width: 86px;
+          padding-left: 4px;
+        }
+
+        &-content {
+          font-size: 12px;
+          line-height: 18px;
+        }
+      }
+    }
+
+    &-divider {
+      margin-top: 8px;
+    }
+
+    &-desc {
+      width: 100%;
+      font-size: 12px;
+      line-height: 24px;
+      margin-top: 8px;
+    }
+  }
+
+  .element-x {
+    width: 32px;
+    height: 32px;
+    top: calc(50vh + 153px - 406px);
+    left: calc(50vw + 71px - 187.5px);
+  }
 }
 </style>
