@@ -49,7 +49,7 @@ export const getChildObject = (root: Object3D[] | Object3D, childName: string, d
  * @param beforeSwitch 页面切换之前要做的事情
  * @param afterSwitch 当页面切换之后要做的事情
  */
-export const usePagination = <T extends Ref<any[]>>(pages: T, beforeSwitch?: (next: boolean, prev: number) => void, afterSwitch?: (next: boolean) => void) => {
+export const usePagination = <T extends Ref<any[]>>(pages: T, beforeSwitch?: (next: boolean, prev: number) => void, afterSwitch?: (next: boolean, nextIndex: number) => void) => {
   // 当前页面
   const currentIndex = ref(0)
   // 下一页或上一页
@@ -72,7 +72,7 @@ export const usePagination = <T extends Ref<any[]>>(pages: T, beforeSwitch?: (ne
       }
     }
     // 回调
-    afterSwitch?.(next)
+    afterSwitch?.(next, currentIndex.value)
   }
   // 下一页
   const next = () => prevOrNext(true)
