@@ -521,6 +521,7 @@ watchEffect(() => {
           font-size: 12px;
           height: 18px;
           width: 86px;
+          padding-left: 4px;
         }
 
         &-content {
