@@ -2,6 +2,7 @@ import { LoadedResources } from './components/ResourceLoader/Resources'
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 import { useMediaQuery, useMouse, useWindowSize } from '@vueuse/core'
+import UAParser from 'ua-parser-js'
 
 export const useStore = defineStore('main', () => {
   // 是否是刷新后首次进入首页
@@ -33,6 +34,13 @@ export const useStore = defineStore('main', () => {
   }
   // 角色信息块的位置
   const infoElPos = ref({ x: 0, y: 0 })
+  // 检测是否在移动设备上，使用 user-agent 方式
+  // 当宽度发生变化时再检测一次，这样 DevTools 切换视图时也能收到变化，不需要刷新页面
+  const isOnMobileByUserAgent = computed(() => {
+    windowWidth.value, windowHeight.value
+    const device = new UAParser(navigator.userAgent).getDevice()
+    return device.type === 'mobile' || device.type === 'tablet'
+  })
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -47,6 +55,7 @@ export const useStore = defineStore('main', () => {
     getRes,
     infoElPos,
     isOnMobile,
-    isOnTablet
+    isOnTablet,
+    isOnMobileByUserAgent
   }
 })
