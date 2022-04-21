@@ -74,9 +74,9 @@ const prevOrNext = (next: boolean) => {
       @click="prevOrNext(true)"
     />
     <!-- 图片上方矩阵 -->
-    <div class="matrix top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999" />
+    <div class="matrix top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999 <xl:(top-[calc(210px+50vh-417px)] right-[calc(352px+50vw-597px)])" />
     <!-- 图片下方矩阵 -->
-    <div class="matrix bottom-[calc(250px+50vh-540px)] right-[calc(378px+50vw-960px)] z-999" />
+    <div class="matrix bottom-[calc(250px+50vh-540px)] right-[calc(378px+50vw-960px)] z-999 <xl:(bottom-[calc(225px+50vh-417px)] right-[calc(243px+50vw-597px)])" />
     <!-- 图片 -->
     <div
       class="details-pic cover-no-repeat-center"
@@ -160,6 +160,55 @@ const prevOrNext = (next: boolean) => {
       font-size: 14px;
       line-height: 28px;
       white-space: pre-wrap;
+    }
+  }
+}
+
+@media screen and (max-width: 1679px) {
+  .close-btn-local {
+    position: absolute;
+    top: calc(183px + 50vh - 407px);
+    right: calc(267px + 50vw - 597px);
+  }
+
+  .details {
+    &-prev-btn { left: calc(32px + 50vw - 597px); }
+    &-next-btn { right: calc(153px + 50vw - 597px); }
+
+    &-prev-btn,
+    &-next-btn {
+      top: calc(393px + 50vh - 407px);
+      position: absolute;
+    }
+
+    &-pic {
+      @height: 320px;
+      @width: calc(@height / 9 * 16);
+
+      height: @height;
+      width: @width;
+      top: calc(50vh - calc(@height / 2));
+      right: calc(263px + 50vw - 597px);
+    }
+
+    &-desc {
+      top: calc(211px + 50vh - 407px);
+      left: calc(121px + 50vw - 597px);
+
+      &-title {
+        font-size: 48px;
+        line-height: 69px;
+      }
+
+      &-divider {
+        margin-top: 16px;
+      }
+
+      &-text {
+        margin-top: 16px;
+        font-size: 12px;
+        line-height: 28px;
+      }
     }
   }
 }
