@@ -781,6 +781,13 @@ useStyleTag(hideCursorStyle)
     bottom: 24px;
     z-index: 999;
   }
+
+  .route-page {
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
+    background-size: 100% 320px;
+    background-repeat: no-repeat;
+    background-position: bottom;
+  }
 }
 
 @media screen and (max-height: 1079px) {
@@ -791,13 +798,6 @@ useStyleTag(hideCursorStyle)
 
   .navigation {
     top: calc(50% - 350px);
-  }
-
-  .route-page {
-    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
-    background-size: 100% 320px;
-    background-repeat: no-repeat;
-    background-position: bottom;
   }
 }
 </style>
