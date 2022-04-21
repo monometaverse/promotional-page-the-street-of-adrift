@@ -29,7 +29,7 @@ const onItemClick = (index: number) => {
   >
     <!-- 左侧渐变线 -->
     <div
-      class="settings-list-left"
+      class="settings-list-left <xl:hidden"
       :class="{
         '!opacity-0': props.isOverlay
       }"
@@ -158,7 +158,7 @@ const onItemClick = (index: number) => {
     </div>
     <!-- 右侧渐变线 -->
     <div
-      class="settings-list-right"
+      class="settings-list-right <xl:hidden"
       :class="{
         '!opacity-0': props.isOverlay
       }"
@@ -301,6 +301,42 @@ const onItemClick = (index: number) => {
     line-height: 17px;
     font-family: 'Montserrat', sans-serif;
     opacity: 0.5;
+  }
+}
+
+// 当小于 1680px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  .settings {
+    &-item {
+      width: 200px;
+      height: 200px;
+
+      &-text {
+        font-size: 32px;
+        line-height: 49px;
+      }
+    }
+  }
+
+  .settings-list {
+    &-line {
+      &-1 {
+        margin-left: 139px;
+      }
+
+      &-2 {
+        margin-left: 267px;
+      }
+    }
+  }
+
+  .rotated-lines {
+    padding: 16px 26px;
+  }
+
+  .game-name-with-icon-name {
+    font-size: 12px;
+    line-height: 15px;
   }
 }
 </style>

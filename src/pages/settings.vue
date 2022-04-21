@@ -1,11 +1,17 @@
 <!--设定页面-->
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, onActivated, ref } from 'vue'
 import settingsList from '../components/settings-list.vue'
 import settingsDetail from '../components/settings-detail.vue'
 import jiuxiao from '../assets/settings-page/jiuxiao-temp.png'
 import jiuxiaoBig from '../assets/archive-page/heaven.jpg'
 import { usePagination } from '../utils'
+import { useStore } from '../store'
+import { storeToRefs } from 'pinia'
+
+// 状态管理
+const store = useStore()
+const { isOnMobile } = storeToRefs(store)
 
 /**
  * 在 i18n 文件中的样子应该是
@@ -29,7 +35,13 @@ const settings = ref([
 // 当前正在显示的索引
 const { currentIndex, next, prev } = usePagination(settings)
 // 是否在显示详情页
-const showingDetails = ref(false)
+const showingDetails = computed((() => {
+  const isShow = ref(false)
+  return {
+    get: () => isShow.value || isOnMobile.value,
+    set: (val: boolean) => isShow.value = val
+  }
+})())
 // 当设定中的一项被点击时
 const onItemClick = (index: number) => {
   currentIndex.value = index
@@ -72,9 +84,9 @@ onActivated(() => {
       />
     </transition>
     <!-- 页面四角的短横线 -->
-    <div class="short-line short-line-top short-line-left" />
-    <div class="short-line short-line-top short-line-right" />
-    <div class="short-line short-line-bottom short-line-left" />
-    <div class="short-line short-line-bottom short-line-right" />
+    <div class="short-line short-line-top short-line-left <xl:hidden" />
+    <div class="short-line short-line-top short-line-right <xl:hidden" />
+    <div class="short-line short-line-bottom short-line-left <xl:hidden" />
+    <div class="short-line short-line-bottom short-line-right <xl:hidden" />
   </div>
 </template>
