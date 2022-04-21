@@ -35,6 +35,10 @@ const onItemClick = (index: number) => {
   currentIndex.value = index
   showingDetails.value = true
 }
+// 当页面激活时，回到列表页
+onActivated(() => {
+  showingDetails.value = false
+})
 </script>
 <template>
   <div class="route-page">
