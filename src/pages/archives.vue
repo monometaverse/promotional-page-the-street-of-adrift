@@ -178,6 +178,7 @@ const layer3Style = computed<CSSProperties>(() => {
       class="effect"
       :style="pageStyle"
     >
+      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)]" />
       <!-- 背景 -->
       <div class="background">
         <div class="flex flex-col gap-8px">
@@ -281,6 +282,10 @@ const layer3Style = computed<CSSProperties>(() => {
   </div>
 </template>
 <style lang="less" scoped>
+.element-block {
+  background-image: url('../assets/characters-page/character-active.svg');
+}
+
 .effect {
   position: absolute;
   top: 0;
