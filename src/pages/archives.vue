@@ -13,7 +13,7 @@ import { usePagination } from '../utils'
 // 状态
 const store = useStore()
 const { windowWidth, windowHeight, isOnMobile } = storeToRefs(store)
-// TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
+// TODO: 使用 i18n 替代文案
 const picAndNameList = ref([
   { name: '花魁们', pic: beauties },
   { name: '九霄', pic: haven },
@@ -140,6 +140,20 @@ const pageStyleNums = ref({
 })
 // 监听鼠标位置的变化
 watch(store.mousePos, (val) => {
+  // 如果在移动端，就停止响应
+  if (isOnMobile.value) {
+    // 停止动画
+    gsap.killTweensOf(pageStyleNums.value)
+    // 开始新的动画
+    gsap.to(pageStyleNums.value, {
+      duration: 1.5,
+      // 计算出倾斜角度
+      x: 0,
+      y: 0,
+      ease: 'power4'
+    })
+    return
+  }
   // 停止动画
   gsap.killTweensOf(pageStyleNums.value)
   // 开始新的动画
@@ -189,7 +203,7 @@ const layer3Style = computed<CSSProperties>(() => {
       class="effect"
       :style="pageStyle"
     >
-      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)] <xl:(top-[calc(478px+50vh-407px)] right-[calc(254px+50vw-597px)])" />
+      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)] <xl:(top-[calc(478px+50vh-407px)] right-[calc(254px+50vw-597px)]) <sm:hidden" />
       <!-- 背景 -->
       <div class="background">
         <div class="flex flex-col gap-8px">
@@ -212,12 +226,12 @@ const layer3Style = computed<CSSProperties>(() => {
       </div>
       <!-- 图片左侧矩阵 -->
       <div
-        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100 <xl:(left-[calc(113px+50vw-597px)] bottom-[calc(266px+50vh-407px)])"
+        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100 <xl:(left-[calc(113px+50vw-597px)] bottom-[calc(266px+50vh-407px)]) <sm:hidden"
         :style="layer1Style"
       />
       <!-- 图片右侧矩阵 -->
       <div
-        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999 <xl:(right-[calc(256px+50vw-597px)] top-[calc(171px+50vh-407px)])"
+        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999 <xl:(right-[calc(256px+50vw-597px)] top-[calc(171px+50vh-407px)]) <sm:hidden"
         :style="layer3Style"
       />
       <!-- 标题 -->
@@ -477,6 +491,7 @@ const layer3Style = computed<CSSProperties>(() => {
     &-indicators {
       bottom: calc(206px + 50vh - 407px);
       right: calc(290px + 50vw - 597px);
+      column-gap: 16px;
     }
 
     &-prev {
@@ -487,6 +502,79 @@ const layer3Style = computed<CSSProperties>(() => {
     &-next {
       right: calc(153px + 50vw - 597px);
       top: calc(50vh - 32px);
+    }
+  }
+}
+
+// 当宽度低于 1079px 时，进入手机模式
+@media screen and (max-width: 1079px) {
+  .background {
+    display: none;
+  }
+
+  @pic-width: calc(100vw - 48px);
+  @pic-height: calc(@pic-width / 16 * 9);
+  @indicators-mt: 16px;
+  @title-line-height: 46px;
+  @title-mt: 16px;
+  @title-number-line-height: 36px;
+  @small-pic-mt: 8px;
+  @small-pic-width: calc(calc(100vw - 48px - 32px) / 3);
+  @small-pic-height: calc(@small-pic-width / 16 * 9);
+  @indicator-height: 2px;
+  @all-height: calc(@pic-height + @indicators-mt + @title-line-height + @title-mt + @title-number-line-height + @small-pic-mt + @small-pic-height + @indicator-height);
+  @all-top: calc(50vh - @all-height / 2);
+
+  .archives {
+    &-center {
+      .archives-pic {
+        top: @all-top;
+        left: 24px;
+        width: @pic-width;
+        height: @pic-height;
+      }
+    }
+
+    &-indicators {
+      top: calc(@all-top + @pic-height);
+      left: 24px;
+      margin-top: @indicators-mt;
+      width: @pic-width;
+    }
+
+    &-indicator {
+      width: 24px;
+      height: @indicator-height;
+      column-gap: 8px;
+    }
+
+    &-prev,
+    &-next {
+      top: calc(@all-top + @pic-height / 2 - 17px);
+    }
+
+    &-prev {
+      left: 20px;
+      z-index: 98;
+    }
+
+    &-next {
+      right: 20px;
+    }
+  }
+
+  .title {
+    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt);
+    left: 24px;
+
+    &-name {
+      font-size: 32px;
+      line-height: @title-line-height;
+    }
+
+    &-number {
+      font-size: 24px;
+      line-height: @title-number-line-height;
     }
   }
 }
