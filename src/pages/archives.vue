@@ -122,6 +122,15 @@ const { currentIndex, prevOrNext: switchPic } = usePagination(picAndNameList, (n
   doTitleAnimation(next)
   doPicAniamtion(next)
 })
+// 切换至某张图片
+const switchTo = (index: number) => {
+  // 如果当前照片索引与要切换到的索引相同，就不继续了
+  if (currentIndex.value === index) return
+  prevPic.value = currentIndex.value
+  currentIndex.value = index
+  doTitleAnimation(true)
+  doPicAniamtion(true)
+}
 // 最大倾斜角度
 const maxDeg = 5
 // 整个页面的倾斜样式，纯数字
@@ -263,6 +272,7 @@ const layer3Style = computed<CSSProperties>(() => {
               v-for="index in picAndNameList.length"
               :key="index"
               :class="index - 1 === currentIndex ? 'archives-indicator-active' : ''"
+              @click="switchTo(index - 1)"
             />
           </div>
         </div>
