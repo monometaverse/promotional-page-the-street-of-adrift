@@ -258,7 +258,7 @@ const prevOrNext = (next: boolean) => {
 
     &-prev-btn,
     &-next-btn {
-      top: calc(@pic-top + @pic-height / 2 - 24px);
+      top: calc(@pic-top + @pic-height / 2 - 17px);
       position: absolute;
     }
   }

@@ -1,6 +1,6 @@
 <!--档案页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, ref, watch } from 'vue'
+import { computed, CSSProperties, reactive, ref, watch } from 'vue'
 import beauties from '../assets/archive-page/beauties.jpg'
 import haven from '../assets/archive-page/heaven.jpg'
 import anna from '../assets/archive-page/anna.jpg'
@@ -12,8 +12,8 @@ import { usePagination } from '../utils'
 
 // 状态
 const store = useStore()
-const { windowWidth, windowHeight } = storeToRefs(store)
-// TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
+const { windowWidth, windowHeight, isOnMobile } = storeToRefs(store)
+// TODO: 使用 i18n 替代文案
 const picAndNameList = ref([
   { name: '花魁们', pic: beauties },
   { name: '九霄', pic: haven },
@@ -86,7 +86,7 @@ const doTitleAnimation = (next: boolean) => {
     opacity: '0',
     duration: 0.25
   })
-  // 开始图片退出动画
+  // 开始标题数字退出动画
   animationTimeout = window.setTimeout(() => {
     gsap.to('.title-number', {
       translateX: `${next ? -translateDistance : translateDistance}px`,
@@ -115,13 +115,83 @@ const doTitleAnimation = (next: boolean) => {
     })
   }, 125)
 }
+// 移动端缩略图当前正在显示的图片集
+const currentShowForSmallPic = ref(0)
+const currentSetForSmallPic = computed(() => {
+  const indexes: number[] = []
+  // 上一张图片索引
+  let prev = currentShowForSmallPic.value - 1
+  if (currentShowForSmallPic.value === 0) {
+    prev = picAndNameList.value.length - 1
+  }
+  let prevPrev = prev - 1
+  if (prev === 0) {
+    prevPrev = picAndNameList.value.length - 1
+  }
+  indexes.push(prevPrev, prev, currentShowForSmallPic.value)
+  // 下一张图片索引
+  let next = currentShowForSmallPic.value + 1
+  if (currentShowForSmallPic.value === picAndNameList.value.length - 1) {
+    next = 0
+  }
+  let nextNext = next + 1
+  if (next === picAndNameList.value.length - 1) {
+    nextNext = 0
+  }
+  indexes.push(next, nextNext)
+  return indexes
+})
+// 小图片动画
+const { smallPicInnerStyle, doSmallPicAnimation } = (() => {
+  // 小图片样式参数
+  const args = reactive({
+    x: -(windowWidth.value - 48) / 3
+  })
+  // 小图片样式
+  const style = computed<CSSProperties>(() => ({
+    transform: `translateX(${args.x}px)`
+  }))
+  // 动画开始函数
+  const animation = (next: boolean) => {
+    gsap.fromTo(args, {
+      x: -(windowWidth.value - 48) / 3 - 4
+    }, {
+      x: next ? (-(windowWidth.value - 48) / 3) * 2 - 8 : 0,
+      duration: 0.75,
+      onComplete: () => {
+        currentShowForSmallPic.value = currentIndex.value,
+        args.x = -(windowWidth.value - 48) / 3 - 4
+      }
+    })
+  }
+  return {
+    smallPicInnerStyle: style,
+    doSmallPicAnimation: animation
+  }
+})()
 // 使用分页组件
 const { currentIndex, prevOrNext: switchPic } = usePagination(picAndNameList, (next, prevIndex) => {
   prevPic.value = prevIndex
 }, (next) => {
   doTitleAnimation(next)
   doPicAniamtion(next)
+  doSmallPicAnimation(next)
 })
+const switchPicForMobile = (index: number) => {
+  if (index === currentIndex.value) return
+  switchPic(index < currentIndex.value ? false : true)
+}
+// 切换至某张图片，在手机端时，只有手机端的组件可以触发
+const switchTo = (index: number) => {
+  if (isOnMobile.value) return
+  // 如果当前照片索引与要切换到的索引相同，就不继续了
+  if (currentIndex.value === index) return
+  prevPic.value = currentIndex.value
+  currentIndex.value = index
+  doTitleAnimation(true)
+  doPicAniamtion(true)
+  doSmallPicAnimation(true)
+}
 // 最大倾斜角度
 const maxDeg = 5
 // 整个页面的倾斜样式，纯数字
@@ -131,6 +201,20 @@ const pageStyleNums = ref({
 })
 // 监听鼠标位置的变化
 watch(store.mousePos, (val) => {
+  // 如果在移动端，就停止响应
+  if (isOnMobile.value) {
+    // 停止动画
+    gsap.killTweensOf(pageStyleNums.value)
+    // 开始新的动画
+    gsap.to(pageStyleNums.value, {
+      duration: 1.5,
+      // 计算出倾斜角度
+      x: 0,
+      y: 0,
+      ease: 'power4'
+    })
+    return
+  }
   // 停止动画
   gsap.killTweensOf(pageStyleNums.value)
   // 开始新的动画
@@ -142,6 +226,8 @@ watch(store.mousePos, (val) => {
     ease: 'power4'
   })
 })
+// 透视效果偏移倍数
+const times = computed(() => isOnMobile.value ? 5 : 10)
 // 整个页面的倾斜样式
 const pageStyle = computed<CSSProperties>(() => {
   return {
@@ -152,19 +238,19 @@ const pageStyle = computed<CSSProperties>(() => {
 const layer1Style = computed<CSSProperties>(() => {
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 0)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * times.value}px, ${-pageStyleNums.value.y * times.value}px, 0)`
   }
 })
 const layer2Style = computed<CSSProperties>(() => {
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 20}px, ${-pageStyleNums.value.y * 20}px, 0)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * times.value * 2}px, ${-pageStyleNums.value.y * times.value * 2}px, 0)`
   }
 })
 const layer3Style = computed<CSSProperties>(() => {
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 30}px, ${-pageStyleNums.value.y * 30}px, 0)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * times.value * 3}px, ${-pageStyleNums.value.y * times.value * 3}px, 0)`
   }
 })
 </script>
@@ -178,10 +264,11 @@ const layer3Style = computed<CSSProperties>(() => {
       class="effect"
       :style="pageStyle"
     >
+      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)] <xl:(top-[calc(478px+50vh-407px)] right-[calc(254px+50vw-597px)]) <sm:hidden" />
       <!-- 背景 -->
       <div class="background">
         <div class="flex flex-col gap-8px">
-          <div class="background-line ml-178px">
+          <div class="background-line ml-178px <xl:ml-139px">
             <div class="background-item " />
             <div class="background-item" />
             <div class="background-item" />
@@ -191,7 +278,7 @@ const layer3Style = computed<CSSProperties>(() => {
             <div class="background-item" />
             <div class="background-item" />
           </div>
-          <div class="background-line ml-350px">
+          <div class="background-line ml-350px <xl:ml-267px">
             <div class="background-item" />
             <div class="background-item background-item-empty" />
             <div class="background-item background-item-empty" />
@@ -200,12 +287,12 @@ const layer3Style = computed<CSSProperties>(() => {
       </div>
       <!-- 图片左侧矩阵 -->
       <div
-        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100"
+        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100 <xl:(left-[calc(113px+50vw-597px)] bottom-[calc(266px+50vh-407px)]) <sm:hidden"
         :style="layer1Style"
       />
       <!-- 图片右侧矩阵 -->
       <div
-        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999"
+        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999 <xl:(right-[calc(256px+50vw-597px)] top-[calc(171px+50vh-407px)]) <sm:hidden"
         :style="layer3Style"
       />
       <!-- 标题 -->
@@ -262,6 +349,7 @@ const layer3Style = computed<CSSProperties>(() => {
               v-for="index in picAndNameList.length"
               :key="index"
               :class="index - 1 === currentIndex ? 'archives-indicator-active' : ''"
+              @click="switchTo(index - 1)"
             />
           </div>
         </div>
@@ -272,21 +360,48 @@ const layer3Style = computed<CSSProperties>(() => {
           :style="layer1Style"
         />
       </div>
+      <div class="small-pic-container">
+        <div
+          class="small-pic-inner"
+          :style="smallPicInnerStyle"
+        >
+          <div
+            class="small-pic"
+            v-for="index in currentSetForSmallPic"
+            :key="index + Math.random()"
+            :style="{
+              backgroundImage: `url(${picAndNameList[index].pic})`
+            }"
+            @click="switchPicForMobile(index)"
+          />
+        </div>
+      </div>
       <!-- 页面四角的短横线 -->
-      <div class="short-line short-line-top short-line-left" />
-      <div class="short-line short-line-top short-line-right" />
-      <div class="short-line short-line-bottom short-line-left" />
-      <div class="short-line short-line-bottom short-line-right" />
+      <div class="short-line short-line-top short-line-left <xl:hidden" />
+      <div class="short-line short-line-top short-line-right <xl:hidden" />
+      <div class="short-line short-line-bottom short-line-left <xl:hidden" />
+      <div class="short-line short-line-bottom short-line-right <xl:hidden" />
     </div>
   </div>
 </template>
 <style lang="less" scoped>
+.element-block {
+  background-image: url('../assets/characters-page/character-active.svg');
+}
+
 .effect {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+}
+// 缩略图
+.small-pic-container {
+  display: none;
+  width: calc(100vw - 48px);
+  position: absolute;
+  left: 24px;
 }
 // 主要内容
 .archives {
@@ -298,7 +413,7 @@ const layer3Style = computed<CSSProperties>(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  // TODO: 把上一个下一个按钮抽离成组件
+
   &-prev {
     position: absolute;
     left: calc(250px + 50vw - 960px);
@@ -413,6 +528,160 @@ const layer3Style = computed<CSSProperties>(() => {
         transform: rotate(-45deg);
       }
     }
+  }
+}
+
+// 当宽度低于 1679px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  .title {
+    top: calc(128px + 50vh - 417px);
+    left: calc(109px + 50vw - 597px);
+
+    &-name {
+      font-size: 48px;
+      line-height: 69px;
+    }
+
+    &-number {
+      font-size: 32px;
+      line-height: 48px;
+    }
+  }
+
+  .background {
+    &-item {
+      width: 200px;
+      height: 200px;
+    }
+  }
+
+  .archives {
+    &-center {
+      .archives-pic {
+        @height: 400px;
+        @width: calc(@height / 9 * 16);
+
+        height: @height;
+        width: @width;
+        top: calc(208px + 50vh - 417px);
+        left: calc(194px + 50vw - 597px);
+      }
+    }
+
+    &-indicator {
+      width: 32px;
+    }
+
+    &-indicators {
+      bottom: calc(206px + 50vh - 407px);
+      right: calc(290px + 50vw - 597px);
+      column-gap: 16px;
+    }
+
+    &-prev {
+      top: calc(50vh - 32px);
+      left: calc(50vw + 32px - 597px);
+    }
+
+    &-next {
+      right: calc(153px + 50vw - 597px);
+      top: calc(50vh - 32px);
+    }
+  }
+}
+
+// 当宽度低于 1079px 时，进入手机模式
+@media screen and (max-width: 1079px) {
+  .background {
+    display: none;
+  }
+
+  @pic-width: calc(100vw - 48px);
+  @pic-height: calc(@pic-width / 16 * 9);
+  @indicators-mt: 16px;
+  @title-line-height: 46px;
+  @title-mt: 16px;
+  @title-number-line-height: 36px;
+  @small-pic-mt: 8px;
+  @small-pic-width: calc(calc(100vw - 48px - 32px) / 3);
+  @small-pic-height: calc(@small-pic-width / 16 * 9);
+  @indicator-height: 2px;
+  @all-height: calc(@pic-height + @indicators-mt + @title-line-height + @title-mt + @title-number-line-height + @small-pic-mt + @small-pic-height + @indicator-height);
+  @all-top: calc(50vh - @all-height / 2);
+
+  .archives {
+    &-center {
+      .archives-pic {
+        top: @all-top;
+        left: 24px;
+        width: @pic-width;
+        height: @pic-height;
+      }
+    }
+
+    &-indicators {
+      top: calc(@all-top + @pic-height);
+      left: 24px;
+      margin-top: @indicators-mt;
+      width: @pic-width;
+    }
+
+    &-indicator {
+      width: 24px;
+      height: @indicator-height;
+      column-gap: 8px;
+    }
+
+    &-prev,
+    &-next {
+      top: calc(@all-top + @pic-height / 2 - 17px);
+    }
+
+    &-prev {
+      left: 20px;
+      z-index: 98;
+    }
+
+    &-next {
+      right: 20px;
+    }
+  }
+
+  .title {
+    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt + @title-mt);
+    left: 24px;
+
+    &-name {
+      font-size: 32px;
+      line-height: @title-line-height;
+    }
+
+    &-number {
+      font-size: 24px;
+      line-height: @title-number-line-height;
+    }
+  }
+
+  .small-pic-container {
+    overflow: hidden;
+    display: block;
+    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt + @title-line-height + @title-number-line-height + @title-mt + @small-pic-mt);
+  }
+
+  .small-pic-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    column-gap: 16px;
+  }
+
+  .small-pic {
+    flex-shrink: 0;
+    width: @small-pic-width;
+    height: @small-pic-height;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
   }
 }
 </style>
