@@ -12,7 +12,7 @@ import { usePagination } from '../utils'
 
 // 状态
 const store = useStore()
-const { windowWidth, windowHeight } = storeToRefs(store)
+const { windowWidth, windowHeight, isOnMobile } = storeToRefs(store)
 // TODO: 切换动画方案，遍历图片列表，生成被 transition 组件包裹的图片
 const picAndNameList = ref([
   { name: '花魁们', pic: beauties },
@@ -151,6 +151,8 @@ watch(store.mousePos, (val) => {
     ease: 'power4'
   })
 })
+// 透视效果偏移倍数
+const times = computed(() => isOnMobile.value ? 5 : 10)
 // 整个页面的倾斜样式
 const pageStyle = computed<CSSProperties>(() => {
   return {
@@ -161,19 +163,19 @@ const pageStyle = computed<CSSProperties>(() => {
 const layer1Style = computed<CSSProperties>(() => {
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 10}px, ${-pageStyleNums.value.y * 10}px, 0)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * times.value}px, ${-pageStyleNums.value.y * times.value}px, 0)`
   }
 })
 const layer2Style = computed<CSSProperties>(() => {
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 20}px, ${-pageStyleNums.value.y * 20}px, 0)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * times.value * 2}px, ${-pageStyleNums.value.y * times.value * 2}px, 0)`
   }
 })
 const layer3Style = computed<CSSProperties>(() => {
   return {
     willChange: 'transform',
-    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * 30}px, ${-pageStyleNums.value.y * 30}px, 0)`
+    transform: `perspective(1000px) translate3d(${pageStyleNums.value.x * times.value * 3}px, ${-pageStyleNums.value.y * times.value * 3}px, 0)`
   }
 })
 </script>
@@ -187,11 +189,11 @@ const layer3Style = computed<CSSProperties>(() => {
       class="effect"
       :style="pageStyle"
     >
-      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)]" />
+      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)] <xl:(top-[calc(478px+50vh-407px)] right-[calc(254px+50vw-597px)])" />
       <!-- 背景 -->
       <div class="background">
         <div class="flex flex-col gap-8px">
-          <div class="background-line ml-178px">
+          <div class="background-line ml-178px <xl:ml-139px">
             <div class="background-item " />
             <div class="background-item" />
             <div class="background-item" />
@@ -201,7 +203,7 @@ const layer3Style = computed<CSSProperties>(() => {
             <div class="background-item" />
             <div class="background-item" />
           </div>
-          <div class="background-line ml-350px">
+          <div class="background-line ml-350px <xl:ml-267px">
             <div class="background-item" />
             <div class="background-item background-item-empty" />
             <div class="background-item background-item-empty" />
@@ -210,12 +212,12 @@ const layer3Style = computed<CSSProperties>(() => {
       </div>
       <!-- 图片左侧矩阵 -->
       <div
-        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100"
+        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100 <xl:(left-[calc(113px+50vw-597px)] bottom-[calc(266px+50vh-407px)])"
         :style="layer1Style"
       />
       <!-- 图片右侧矩阵 -->
       <div
-        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999"
+        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999 <xl:(right-[calc(256px+50vw-597px)] top-[calc(171px+50vh-407px)])"
         :style="layer3Style"
       />
       <!-- 标题 -->
@@ -284,10 +286,10 @@ const layer3Style = computed<CSSProperties>(() => {
         />
       </div>
       <!-- 页面四角的短横线 -->
-      <div class="short-line short-line-top short-line-left" />
-      <div class="short-line short-line-top short-line-right" />
-      <div class="short-line short-line-bottom short-line-left" />
-      <div class="short-line short-line-bottom short-line-right" />
+      <div class="short-line short-line-top short-line-left <xl:hidden" />
+      <div class="short-line short-line-top short-line-right <xl:hidden" />
+      <div class="short-line short-line-bottom short-line-left <xl:hidden" />
+      <div class="short-line short-line-bottom short-line-right <xl:hidden" />
     </div>
   </div>
 </template>
@@ -313,7 +315,7 @@ const layer3Style = computed<CSSProperties>(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  // TODO: 把上一个下一个按钮抽离成组件
+
   &-prev {
     position: absolute;
     left: calc(250px + 50vw - 960px);
@@ -427,6 +429,64 @@ const layer3Style = computed<CSSProperties>(() => {
         background-color: rgba(255, 255, 255, 0.5);
         transform: rotate(-45deg);
       }
+    }
+  }
+}
+
+// 当宽度低于 1679px 时，进入平板模式
+@media screen and (max-width: 1679px) {
+  .title {
+    top: calc(128px + 50vh - 417px);
+    left: calc(109px + 50vw - 597px);
+
+    &-name {
+      font-size: 48px;
+      line-height: 69px;
+    }
+
+    &-number {
+      font-size: 32px;
+      line-height: 48px;
+    }
+  }
+
+  .background {
+    &-item {
+      width: 200px;
+      height: 200px;
+    }
+  }
+
+  .archives {
+    &-center {
+      .archives-pic {
+        @height: 400px;
+        @width: calc(@height / 9 * 16);
+
+        height: @height;
+        width: @width;
+        top: calc(208px + 50vh - 417px);
+        left: calc(194px + 50vw - 597px);
+      }
+    }
+
+    &-indicator {
+      width: 32px;
+    }
+
+    &-indicators {
+      bottom: calc(206px + 50vh - 407px);
+      right: calc(290px + 50vw - 597px);
+    }
+
+    &-prev {
+      top: calc(50vh - 32px);
+      left: calc(50vw + 32px - 597px);
+    }
+
+    &-next {
+      right: calc(153px + 50vw - 597px);
+      top: calc(50vh - 32px);
     }
   }
 }
