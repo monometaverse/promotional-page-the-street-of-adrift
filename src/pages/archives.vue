@@ -1,6 +1,6 @@
 <!--档案页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, ref, watch } from 'vue'
+import { computed, CSSProperties, reactive, ref, watch } from 'vue'
 import beauties from '../assets/archive-page/beauties.jpg'
 import haven from '../assets/archive-page/heaven.jpg'
 import anna from '../assets/archive-page/anna.jpg'
@@ -86,7 +86,7 @@ const doTitleAnimation = (next: boolean) => {
     opacity: '0',
     duration: 0.25
   })
-  // 开始图片退出动画
+  // 开始标题数字退出动画
   animationTimeout = window.setTimeout(() => {
     gsap.to('.title-number', {
       translateX: `${next ? -translateDistance : translateDistance}px`,
@@ -115,21 +115,82 @@ const doTitleAnimation = (next: boolean) => {
     })
   }, 125)
 }
+// 移动端缩略图当前正在显示的图片集
+const currentShowForSmallPic = ref(0)
+const currentSetForSmallPic = computed(() => {
+  const indexes: number[] = []
+  // 上一张图片索引
+  let prev = currentShowForSmallPic.value - 1
+  if (currentShowForSmallPic.value === 0) {
+    prev = picAndNameList.value.length - 1
+  }
+  let prevPrev = prev - 1
+  if (prev === 0) {
+    prevPrev = picAndNameList.value.length - 1
+  }
+  indexes.push(prevPrev, prev, currentShowForSmallPic.value)
+  // 下一张图片索引
+  let next = currentShowForSmallPic.value + 1
+  if (currentShowForSmallPic.value === picAndNameList.value.length - 1) {
+    next = 0
+  }
+  let nextNext = next + 1
+  if (next === picAndNameList.value.length - 1) {
+    nextNext = 0
+  }
+  indexes.push(next, nextNext)
+  return indexes
+})
+// 小图片动画
+const { smallPicInnerStyle, doSmallPicAnimation } = (() => {
+  // 小图片样式参数
+  const args = reactive({
+    x: -(windowWidth.value - 48) / 3
+  })
+  // 小图片样式
+  const style = computed<CSSProperties>(() => ({
+    transform: `translateX(${args.x}px)`
+  }))
+  // 动画开始函数
+  const animation = (next: boolean) => {
+    gsap.fromTo(args, {
+      x: -(windowWidth.value - 48) / 3 - 4
+    }, {
+      x: next ? (-(windowWidth.value - 48) / 3) * 2 - 8 : 0,
+      duration: 0.75,
+      onComplete: () => {
+        currentShowForSmallPic.value = currentIndex.value,
+        args.x = -(windowWidth.value - 48) / 3 - 4
+      }
+    })
+  }
+  return {
+    smallPicInnerStyle: style,
+    doSmallPicAnimation: animation
+  }
+})()
 // 使用分页组件
 const { currentIndex, prevOrNext: switchPic } = usePagination(picAndNameList, (next, prevIndex) => {
   prevPic.value = prevIndex
 }, (next) => {
   doTitleAnimation(next)
   doPicAniamtion(next)
+  doSmallPicAnimation(next)
 })
-// 切换至某张图片
+const switchPicForMobile = (index: number) => {
+  if (index === currentIndex.value) return
+  switchPic(index < currentIndex.value ? false : true)
+}
+// 切换至某张图片，在手机端时，只有手机端的组件可以触发
 const switchTo = (index: number) => {
+  if (isOnMobile.value) return
   // 如果当前照片索引与要切换到的索引相同，就不继续了
   if (currentIndex.value === index) return
   prevPic.value = currentIndex.value
   currentIndex.value = index
   doTitleAnimation(true)
   doPicAniamtion(true)
+  doSmallPicAnimation(true)
 }
 // 最大倾斜角度
 const maxDeg = 5
@@ -299,6 +360,22 @@ const layer3Style = computed<CSSProperties>(() => {
           :style="layer1Style"
         />
       </div>
+      <div class="small-pic-container">
+        <div
+          class="small-pic-inner"
+          :style="smallPicInnerStyle"
+        >
+          <div
+            class="small-pic"
+            v-for="index in currentSetForSmallPic"
+            :key="index + Math.random()"
+            :style="{
+              backgroundImage: `url(${picAndNameList[index].pic})`
+            }"
+            @click="switchPicForMobile(index)"
+          />
+        </div>
+      </div>
       <!-- 页面四角的短横线 -->
       <div class="short-line short-line-top short-line-left <xl:hidden" />
       <div class="short-line short-line-top short-line-right <xl:hidden" />
@@ -318,6 +395,13 @@ const layer3Style = computed<CSSProperties>(() => {
   left: 0;
   width: 100%;
   height: 100%;
+}
+// 缩略图
+.small-pic-container {
+  display: none;
+  width: calc(100vw - 48px);
+  position: absolute;
+  left: 24px;
 }
 // 主要内容
 .archives {
@@ -564,7 +648,7 @@ const layer3Style = computed<CSSProperties>(() => {
   }
 
   .title {
-    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt);
+    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt + @title-mt);
     left: 24px;
 
     &-name {
@@ -576,6 +660,28 @@ const layer3Style = computed<CSSProperties>(() => {
       font-size: 24px;
       line-height: @title-number-line-height;
     }
+  }
+
+  .small-pic-container {
+    overflow: hidden;
+    display: block;
+    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt + @title-line-height + @title-number-line-height + @title-mt + @small-pic-mt);
+  }
+
+  .small-pic-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    column-gap: 16px;
+  }
+
+  .small-pic {
+    flex-shrink: 0;
+    width: @small-pic-width;
+    height: @small-pic-height;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
   }
 }
 </style>
