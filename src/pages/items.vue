@@ -10,13 +10,16 @@ import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
-import { ElMessage } from 'element-plus'
+import { useMessage } from '@lemonneko/vuetify-message'
+import '@lemonneko/vuetify-message/dist/style.css'
 import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
 
 // pinia 状态管理
 const store = useStore()
 const { windowHeight, isOnMobile } = storeToRefs(store)
+// 消息组件
+const msg = useMessage()
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<NFTItem[]>([
   {
@@ -173,7 +176,7 @@ const onReserveBtnClick = (index: number) => {
     showReserveSuccessDialog.value = true
     itemsList.value[index].reserved = true
   } else {
-    ElMessage.error(res.message)
+    msg.show(res.message, { color: 'red' })
   }
 }
 // 预约按钮文字元素
@@ -201,7 +204,7 @@ onMounted(() => {
       it.reserved = res.data[it.name]
     }
   } else {
-    ElMessage.error('出现了一些错误')
+    msg.show(res.message, { color: 'red' })
   }
 })
 </script>

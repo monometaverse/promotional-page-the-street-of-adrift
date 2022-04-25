@@ -360,6 +360,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@lemonneko/vuetify-message@^2.1.0-beta.1":
+  version "2.1.0-beta.1"
+  resolved "https://registry.npmjs.org/@lemonneko/vuetify-message/-/vuetify-message-2.1.0-beta.1.tgz#da23c24abb0f3450f68c4641cb2c3b5adb5d48f3"
+  integrity sha512-3ABGkj+ylaSQvTlZkwR4rglL/PQL7TXSbX3H0uU9wc+Ur8vRq1Dsi1gumnQ/anbtO+nMv0/JCGWGXQ8+Le/OBQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmmirror.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -3870,6 +3875,11 @@ vue@^3.2.25:
     "@vue/runtime-dom" "3.2.31"
     "@vue/server-renderer" "3.2.31"
     "@vue/shared" "3.2.31"
+
+vuetify@^3.0.0-beta.1:
+  version "3.0.0-beta.1"
+  resolved "https://registry.npmjs.org/vuetify/-/vuetify-3.0.0-beta.1.tgz#8e3e4e41e00f1f6e00cb0a22b6a8f528581ca3f1"
+  integrity sha512-698CB/Xlvxku2Tm4AsFrmQ7LzMXOjleX7A5tbyQTnhPyt0NI1OTkf5zJUoXL3TNi2TN7DglN+adI6AE69e6CeQ==
 
 which-boxed-primitive@^1.0.1, which-boxed-primitive@^1.0.2:
   version "1.0.2"
