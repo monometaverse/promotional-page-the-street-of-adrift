@@ -8,9 +8,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
-import { useElementSize, useEventListener } from '@vueuse/core'
+import { useElementBounding, useElementSize, useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
+import { Menu as HeadLessMenu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
 // pinia
@@ -23,9 +24,6 @@ const onResourceLoadComplete = (res: LoadedResources) => {
 }
 // i18n 切换语言
 const i18n = useI18n()
-const switchLang = () => {
-  i18n.locale.value = i18n.locale.value === 'zh' ? 'en' : 'zh'
-}
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
   { to: '/', name: '首页' },
@@ -296,6 +294,9 @@ useEventListener(document, 'wheel', (() => {
     }
   }
 })())
+// 语言菜单按钮的引用
+const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
+const langMenuBtnElBounding = useElementBounding(langMenuBtnEl)
 // 当挂载时
 onMounted(() => {
   console.log(firstEnter.value, staticFrameworkAnimationStart.value)
@@ -464,21 +465,53 @@ useStyleTag(hideCursorStyle)
             注册
           </div>
           <!-- 语言切换菜单 -->
-          <el-dropdown>
-            <div class="actions-text actions-dropdown">
-              <span>EN</span>
-              <img
-                src="./assets/static-framework/dropdown.svg"
-                class="actions-dropdown-icon"
+          <div>
+            <head-less-menu v-slot="{ open }">
+              <menu-button
+                class="actions-text actions-dropdown"
+                ref="langMenuBtnEl"
               >
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>English</el-dropdown-item>
-                <el-dropdown-item>中文</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+                <span>{{ i18n.locale.value.toUpperCase() }}</span>
+                <img
+                  src="./assets/static-framework/dropdown.svg"
+                  class="actions-dropdown-icon transition transform transition-transform duration-250"
+                  :class="{
+                    'rotate-z-180': open
+                  }"
+                >
+              </menu-button>
+              <transition
+                enter-from-class="transform -translate-y-20px opacity-0"
+                leave-to-class="transform -translate-y-20px opacity-0"
+                enter-to-class="transform translate-y-0 opacity-100"
+                leave-from-class="transform translate-y-0 opacity-100"
+                enter-active-class="transition transition-transform duration-250"
+                leave-active-class="transition transition-transform duration-250"
+              >
+                <menu-items
+                  class="absolute top-32px flex flex-col bg-[rgba(0,0,0,0.8)] px-16px py-12px right-0"
+                >
+                  <menu-item>
+                    <button
+                      class="font-16px leading-24px font-sans text-left"
+                      @click="i18n.locale.value = 'en'"
+                    >
+                      English
+                    </button>
+                  </menu-item>
+                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <menu-item>
+                    <button
+                      class="font-16px leading-24px font-sans text-left"
+                      @click="i18n.locale.value = 'zh'"
+                    >
+                      中文
+                    </button>
+                  </menu-item>
+                </menu-items>
+              </transition>
+            </head-less-menu>
+          </div>
           <img
             src="./assets/static-framework/share.svg"
             class="actions-share"
@@ -713,6 +746,7 @@ useStyleTag(hideCursorStyle)
 
   &-dropdown {
     display: flex;
+    align-items: center;
   }
 
   &-dropdown-icon {
