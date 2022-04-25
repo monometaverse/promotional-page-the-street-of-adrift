@@ -26,11 +26,11 @@ const onResourceLoadComplete = (res: LoadedResources) => {
 const i18n = useI18n()
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
-  { to: '/', name: '首页' },
-  { to: '/items', name: '物品' },
-  { to: '/characters', name: '角色' },
-  { to: '/settings', name: '设定' },
-  { to: '/archives', name: '档案' },
+  { to: '/', name: 'static.home' },
+  { to: '/items', name: 'static.item' },
+  { to: '/characters', name: 'static.character' },
+  { to: '/settings', name: 'static.settings' },
+  { to: '/archives', name: 'static.archives' },
 ])
 // 获取路由名称
 const getRouteName = (path: string): string => {
