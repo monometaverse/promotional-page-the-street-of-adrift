@@ -41,11 +41,11 @@ export const resources = [
   { name: 'S_UMSSuper', value: S_UMSSuper, type: 'glb', for: 'NFT' },
   { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' },
   // 全局背景，请务必以页面名称开头 + Background
-  { name: 'homeBackground', value: homeBackground, type: 'image', for: 'background' },
-  { name: 'itemsBackground', value: nftBackground, type: 'image', for: 'background' },
-  { name: 'charactersBackground', value: charactersBackground, type: 'image', for: 'background' },
-  { name: 'settingsBackground', value: settingsBackground, type: 'image', for: 'background' },
-  { name: 'archivesBackground', value: archivesBackground, type: 'image', for: 'background' },
+  { name: 'static.homeBackground', value: homeBackground, type: 'image', for: 'background' },
+  { name: 'static.itemBackground', value: nftBackground, type: 'image', for: 'background' },
+  { name: 'static.characterBackground', value: charactersBackground, type: 'image', for: 'background' },
+  { name: 'static.settingsBackground', value: settingsBackground, type: 'image', for: 'background' },
+  { name: 'static.archivesBackground', value: archivesBackground, type: 'image', for: 'background' },
 ] as const
 export type Resources = typeof resources
 export type LoadingResources = { name: Resources[number]['name'], value: HTMLImageElement | GLTF | DataTexture, for: Resources[number]['for'] }[]

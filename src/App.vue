@@ -42,7 +42,7 @@ const getRouteName = (path: string): string => {
   return ''
 }
 // 正在显示的页面名称
-const pageName = ref('')
+const pageName = ref('static.home')
 // 当前路由
 const currentRoute = useRoute()
 const router = useRouter()
@@ -60,9 +60,9 @@ router.beforeEach((to, from, next) => {
   // 获取要前往的路由的背景
   let routeName = ''
   if (to.path === '/') {
-    routeName = 'home'
+    routeName = 'static.home'
   } else {
-    routeName = to.path.substring(1)
+    routeName = getRouteName(to.path)
   }
   const backgroundFound = loadedRes.value.find((it) => it.name === routeName + 'Background')
   if (!backgroundFound) {
@@ -440,13 +440,14 @@ useStyleTag(hideCursorStyle)
         <div
           class="page-title"
         >
-          <!-- TODO: 当 i18n 文案填充好之后，改用 i18n 文案 -->
           <div class="page-title-main">
-            {{ pageName }}
+            {{ i18n.t(pageName).toUpperCase() }}
           </div>
-          <!-- TODO: 当 i18n 文案填充好之后，检查是否是英文状态，并决定要不要隐藏 -->
-          <div class="page-title-small">
-            {{ 'NEED TEXT' }}
+          <div
+            class="page-title-small"
+            v-if="i18n.locale.value !== 'en'"
+          >
+            {{ i18n.getLocaleMessage('en').static[pageName.substring(pageName.indexOf('.') + 1)].toString().toUpperCase() }}
           </div>
         </div>
         <!-- 右上角操作部分 -->
