@@ -102,7 +102,7 @@ onMounted(() => {
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
-        href="https://twitter.com/monoverse_hq"
+        href="https://twitter.com/adriftstreet"
         target="_blank"
       />
     </div>
