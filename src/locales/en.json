@@ -1,11 +1,122 @@
 {
-  "switchLang": "Switch To Chinese",
-  "show": "Show",
-  "hide": "Hide",
-  "helperCanvas": "Helper Canvas",
-  "nextPic": "Next Picture",
-  "prevPic": "Prev Picture",
-  "underDevelopment": "The Street Of Adrift",
-  "prevView": "Show Prev View",
-  "nextView": "Show Next View"
+  "static": {
+    "login": "Login",
+    "register": "Register",
+    "home": "Homepage",
+    "item": "Item",
+    "character": "Character",
+    "settings": "Background",
+    "archives": "Profile",
+    "shareTheGame": "Share「The Street of Adrift」",
+    "saveSahrePic": "Save"
+  },
+  "home": {
+    "gameInfo": "The Street of Adrift, originally called \"Via Exilii\", actually is a commercial building but not a street. \nAfter reading numerous pieces of literature in Fujing official language, The manager translated it as its present name out of its meaning."
+  },
+  "nft": {
+    "goldCoinName": "Kusyou Gold Coins",
+    "sliverCoinName": "Kusyou Silver Coins",
+    "storyBookName": "<THE STORY of MOON PRINCESS>",
+    "storyBookPress": "Fujing Children's Literature Press",
+    "reserveBtnText": "Reserve Now",
+    "reserveSucceed": "Reserve Succeed",
+    "reservedItem1": "「",
+    "reservedItem2": "」Reserved",
+    "receiveEmailCheckboxText": "I'd like to receive emails from The Street of Adrift",
+    "reserveSuccessBtnText": "Acknowledged",
+    "goldCoinInfo": "Kusyou has its own currency system called \"the Kusyou Coins\". These coins can be obtained in two ways: either by exchanging enourmous amounts of Fujing Yuan through the Service Center in Kusyou, or by completing \"special requests\" offered by Kusyou. One Kusyou Gold coin is equivalent to 10 Kusyou Silver coins.",
+    "sliverCoinInfo": "Kusyou has its own currency system called \"the Kusyou Coins\". These coins can be obtained in two ways: either by exchanging enourmous amounts of Fujing Yuan through the Service Center in Kusyou, or by completing \"special requests\" offered by Kusyou. One Kusyou Silver coin is equivalent to 10 Kusyou Bronze Coins."
+  },
+  "characters": {
+    "shiraishi": {
+      "name": "Shiraishi Rosetta",
+      "illustrator": "yannn",
+      "cv": "Fan Xinyuan",
+      "info": "She is the chairman's daughter of the Shiraishi Group.\nIn order to protect her safety, her parents arranged her to study theoretical physics at Fujing University of Technology with the pseudonym called \"Kujo Takigawa\"\n\nHowever, she is always dominated by her parents' will, even though Shiraishi's daily life is extremely superior; Even her major and her job in the future are clearly written on the planning board.\n\nShe doesn't want to give in to the arranged day-to-day life.\n\nShe has always had a dream, that is to use her own strength to help others and make a contribution to this rotten city.\n\nAll along, she has been looking for such an opportunity."
+    },
+    "watanabe": {
+      "name": "Watanabe Yuzu",
+      "illustrator": "Dk.Senie",
+      "cv": "Cotton Candy",
+      "info": "Watanabe Yuzu is one of the famed Head Mistresses of Kusyou.\n Graduated from the Fujing Music Academy, she is versatile in many kinds of performance arts. In countless Kusyou public performances, she has gradually become an artist with a little fame. She has many fans on the social network and is admired and worshipped by many people.\n\nHowever, although she possesses such a bright image outside, in fact, she is a puppet at the mercy of others on the top floor of Kusyou.\n\nAlthough this inconsistent life has brought her a lot of money, a luxurious living environment, and social contacts in upper-class society, she hates it in her heart.\n\nNevertheless, even a person like her who has been turned upside down in the world of mortals also has someone she wants to protect, which is Lin Yumu, another one of the four Head Mistresses.\n\nShe knows that this kind of life she doesn't like won't last long, so she has been secretly planning other ways with Lin Yumu."
+    },
+    "lin": {
+      "name": "Lin Yumu",
+      "illustrator": "Dk.Senie",
+      "cv": "ZhouZhou",
+      "info": "Lin Yumu is one of the four famous Head Mistresses of Kusyou.\n\nGraduated from Fujing Music Academy, she is good at playing a variety of musical instruments and likes writing poetry and painting in her spare time. Because of her tragic past, she felt inferior to everything about herself.\n\nAs an artist who is always inseparable from Watanabe Yuzu, she also has her own fan group in Fujing. But at the same time, she is also like Watanabe, who had such a bright image outside but is at the mercy of others in Kusyou.\n\nLast year, this situation even worsened. She was deeply involved in the pursuit and harassment of an extreme guest. This uneasy situation forced her and Watanabe to consider leaving Kusyou as soon as possible.\n\nAlthough she and Watanabe are inseparable every day, the outside world may not guess that they are lovers in secret."
+    },
+    "christina": {
+      "name": "Christina Jones",
+      "illustrator": "yannn",
+      "cv": "Sone Wakana",
+      "info": "Christina is one of the four famous Head Mistresses of Kusyou.\n\nBecause Kusyou only takes talent and appearance as the standard to evaluate the Mistresses and has no special dress code, her daily clothing is quite casual.\n\nBorn in the Lucifer\"tribe of scavengers outside the city, she has lived a wild and unrestrained life with the motorbike gang since childhood. When she was young, she came into contact with rock and electronic music and soon showed her extraordinary talent. Unfortunately, her band career was full of twists and turns, and she didn't find a good opportunity to show herself until he entered Kusyou.\n\nUnlike Watanabe Yuzu and Lin Yumu, she is very straightforward to the point of ruthless, and her lifestyle is also quite unhindered. Her character and her maniacal performance are like a piece of blue cheese in the eyes of Kusyou guests. Those who like it will indulge in it, while those who don't like it will scoff."
+    },
+    "anna": {
+      "name": "Anna Ivanova",
+      "illustrator": "yannn",
+      "cv": "kyogen",
+      "info": "Anna is one of the four famous Head Mistresses of Kusyou.\n\nBecause Kusyou only takes talent and appearance as the standard to evaluate the Mistresses and has no special dress code, she chose to wear the cosplay costume of her favorite pre-war horror film SAINT.\n\nShe comes from the distant Greywall City, one of the only two cities left in the world after the war. No one knows what she had experienced in that frozen city, but only that she came to Fujing City alone.\n\nIn an accidental interview, her sweet voice and singing skills were recognized by Kusyou, so she entered the clubhouse and was promoted continuously within a few months.\n\nAlthough she always looks like a lively child in front of others, people familiar with her detect a sense of strangeness: it's like an illusion deliberately pretended to cover up something, and what she appears to be is not her own character.\n\nShe may be the only one of the Head Mistresses who has a serious attachment to Kusyou."
+    },
+    "higashiyama": {
+      "name": "Higashiyama Nadeshiko",
+      "illustrator": "yannn",
+      "cv": "Liu Zhixiao",
+      "info": "Higashiyama Nadeshiko is an ordinary student of Fujing public high school. Obviously, she is not a good student.\n\nHer former name was Liu Yiqin. Since her father abandoned her family and left, she changed her surname by her mother's.\n\nHer mother fell ill five months ago and had to spend a lot of money on drugs every month. Now that her family's savings are running out, she has to start thinking about ways to make money. At first, she chose to work part-time, but the income she earned was far less than the cost of buying drugs for her mother.\n\nWhen she was on the verge of despair, her \"good sisters\" jokingly recommended her look for the possibility of seducing \"rich women\" in the Street of Adrift. Naive and eager for money, she did not think much, so she went.\n\nShe would not have expected that it was this choice that would make her meet the person buried in the depths of her memory."
+    },
+    "hannya": {
+      "name": "Hannya",
+      "illustrator": "Yurika-R",
+      "cv": "To Be Announced",
+      "info": "Hannya, whose real name is ■■■■, is the shadowy leader of the notorious Akaoni Gang\" in Fujing.\n\nPerhaps because of her hidden whereabouts and low-key workstyle, compared with the Akaoni Gang, her fame in the outside world is not so high.\n\nHer business include -w%u6838>%u6F51%u72E7%u721Bw ?lu_%u9EA9? ?%u9580zz%u62AB%u54D7%u9B82Z %u70F0%u7EFB?f?*%u5949%u9DCE1$%uE112[??`u%u58D1%u75F5%u7A01%u2532\\I;v%u968DL%u5FBFO? %u70D9%u753E/%u6874%u906AGT%u7B5Be%u57DA%u541Fc\n%u9360%u6EC3%u30BD%u951B%u6C33%u20AC%u4F78%u7D21%u7477%u20AC%u93AF%u546D%u58BD%u951B%u5C84%u53AD%u951B%u5C80%u5130%u9472?%u9358%u5C7E%u4F13%u951B%u6C31%u77D6%u6934%u4F7A%u6B91%u6D5C?%u9427%u6827%u30BD%u951B%u6C2B%u7E5A%u7035?\n\nIf the Shiraishi Group is the God in the sky, then Hannya and the Akaoni Gang are the demons on earth."
+    },
+    "tokugawa": {
+      "name": "Tokugawa Ririko",
+      "illustrator": "Yurika-R",
+      "cv": "Elvira",
+      "info": "She is one of the three last descendants of Tokugawa, a well-known mafia family in Fujing.\n\nLike other peers in her family, she also owns an industry ostensibly used for entertainment but actually used as a black trading center, which is the famous ladies club Kusyou.\n\nIn order to escape the supervision of Fujing's official monetary system, she issued a limited number of Kusyou tokens as the currency for all transactions within Kusyou.\n\nWhether it's external artistic performances, internal prostitution industries, or hidden black transactions, Kusyou's business is lucrative and popular, which made a fortune for Ririko.\n\nIn addition to cultivating Kusyou's existing Head Mistresses, she also likes to find girls who are in a desperate situation and persuade them to work in Kusyou.\n\nIn her own words, \"this is saving them from hell\", but people in the industry think it's just hypocritical rhetoric."
+    }
+  },
+  "settings": {
+    "theShiraishiGroup": {
+      "name": "the Shiraishi Group",
+      "info": "Founded by Shiraishi Shimizu in 1951, the aim of the Shiraishi Group was to become the largest water supplier in the old world. It took him less than 20 years to achieve this goal.\n\nIn 1970, Shiraishi Shimizu observed that the existing public toilet system was inefficient, and came up with the idea of creating a portable toilet channel.\n\nIn 1991, due to long-term exposure to experimental substances in the research, Shiraishi Shimizu had brain cancer and unfortunately died.\n\nHis successor Shiraishi Shizuku did not continue to study the portable toilet channel technology according to his will but used it in the aerospace and military fields. In the following decade, she established a huge research institute with a depth of more than 3000 meters and an area of 2 million square meters underground for secret research of various technologies.\n\nOn October 3, 1998, Shiraishi Group proposed the most ambitious plan in the history of old mankind - \"Moon Princess\". However, as the Void Explosion war broke out soon after its implementation, the plan had to be temporarily sealed. No one knows the content of the plan except the core personnel of the Shiraishi group.\n\nAfter the war, the Shiraishi group came to the ground from the underground base and devoted itself to the reconstruction of the city.\n\nOver the past 45 years, it has led its employees and wanderers on the wasteland to build Fujing City. They have become the savior of mankind in the hearts of Fujing citizens, and the Shiraishi group has naturally become the ruler and monopolist of Fujing City.\n\nFor ordinary people living in Fujing, being able to work in the Shiraishi Tower is probably the dream of their whole life.\n\nShiraishi group is not only a technology company, a giant enterprise but also the creator of Fujing City and the savior to put the devastated world back on track.\n\nPeople are wondering who will inherit this sacred enterprise in the future.\n\nRumors claim that the chairman of Shiraishi group has a daughter who will become the future successor, but there is no evidence to support this claim."
+    },
+    "fujingCity": {
+      "name": "Fujing City",
+      "info": "Fujing City is a city rebuilt after the Void Explosion war, ruled by the giant conglomerate Shiraishi Group.\n\nIts construction began in 2000. Thanks to the most advanced 3D printing and high-tech material technology of the Shiraishi group, it has blossomed into a metropolis in 2045 and a city of hope on the wastelands after the war.\n\nThe nominal ruler of Fujing is the Fujing municipal government, but as we all know, the Fujing municipal government is essentially the executor of the will of the Shiraishi Group.\n\nThe policy of Fujing City is to welcome all outsiders wandering on the wastelands. They have been pouring in for 45 years, becoming citizens of Fujing City and devoting themselves to construction.\n\nBy 2045, the population of Fujing is more than 500000. However, due to the influx of a large number of unregistered outsiders in recent years, the actual population data may be higher."
+    },
+    "kusyou": {
+      "name": "Kusyou",
+      "info": "Established by Tokugawa Ririko from the Tokugawa family in 2033, Kusyou's aim is to become the best ladies' comprehensive clubhouse in Fujing City, and the best in the world.\n\nIts business includes but is not limited to providing the most luxurious entertainment, catering, accommodation, beauty, and social services.\n\nAlthough its business philosophy is ensuring women are welcome as long as they have enough money, regardless of class, due to the Mafia background of the Tokugawa family, Kusyou's customers are mostly gangsters, business elites, and corrupt politicians.\n\nKusyou has its own currency and trading system, called \"Kusyou Tokens\".\n\nKusyou tokens can be directly exchanged by a huge amount of Fujing coins in Kusyou service center, or they can be obtained by accepting and completing some \"special requests\" in Kusyou.\n\nIn addition, Kusyou has an absolute principle: never kill anyone in the confinement of Kusyou."
+    },
+    "theVoidExplosionWar": {
+      "name": "The Void Explosion War",
+      "info": "At 0:10 a.m. on January 6, 1999, in the old calendar, the old humans used void explosive weapons against their respective hostile countries without warning. In the next 30 minutes, 99% of the settlements and facilities of all human beings were devastated, and the civilization of the old humans was completely destroyed.\n\nAmong more than 6 billion people before the Void Explosion war, less than 1 million survived.\n\nVoid explosive weapons and many other pre-war technologies were also completely lost in this war."
+    },
+    "theFourHeadMistresses": {
+      "name": "The four Head Mistresses",
+      "info": "Kusyou is proud of its four Head Mistresses: Watanabe Yuzu, Lin Yumu, Christina Jones, and Anna Ivanova.\n\nThey have gorgeous artistic performances facing the outside world every month. By 2045, they have more than 100000 loyal fans on the social network of Fujing city.\n\nWhat outsiders don't know is that the four provide private services in Kusyou."
+    },
+    "greywallCity": {
+      "name": "Greywall City",
+      "info": "The other city with a certain scale built after the war.\n\nA group of peacekeepers who survived the Void Explosion War led the refugees to establish a pre-war military base in the Arctic circle. However, the officers of these peacekeepers died in the war. Therefore, these soldiers lack a commander with sufficient credibility, just like loose sand. During and after the establishment of the gray wall city, they showed obvious internal splits and oppositions.\n\nThese internal disunities accumulated over time and eventually became the fuse of a civil war.\n\nIn the winter of 2043, the Greywall City Civil War broke out, and a large number of its citizens were displaced. Among them, more than 1000 people chose to leave by truck and drove more than 2000 kilometers on the wastelands to Fujing city. These people are called Greywall City Moses.\n\nIn the end, only 200 of them successfully arrived in Fujing."
+    },
+    "fujingYuan": {
+      "name": "Fujing Yuan",
+      "info": "The official currency of Fujing City.\n\nPe-war lemon soda bottle caps and pre-war bullets been used as currency for trading before Fujing Coin be born.\n\nIn order to end this situation, in 2005, Fujing municipal government issued the first edition of Fujing coins with eight denominations of 0.1 yuan, 0.5 yuan, 1 yuan, 5 yuan, 10 yuan, 50 yuan, 100 yuan, and 1,000 yuan.\n\nIn 2025, Fujing issued the second edition of Fujing coins with new denominations of 5,000 yuan and 10,000 yuan.\n\nThe average income of Fujing City citizens is 9,000 yuan as of May 2045.\n\nDue to the great influence of Fujing city on the wastelands, some settlements or towns outside the city also use this currency for trading."
+    }
+  },
+  "archives": {
+    "theHeadMistresses": "The Head Mistresses",
+    "anna": "Anna",
+    "refrigerator2044": "Refrigerator 2044",
+    "refrigerator2045": "Refrigerator 2045",
+    "tokugawa": "Tokugawa",
+    "planningBoard": "Planning Board",
+    "lin": "Lin",
+    "conceptDesign": "Concept design of the Street of Adrift",
+    "noTitle": "No title",
+    "alcoholAbuse": "Alcohol abuse"
+  }
 }
