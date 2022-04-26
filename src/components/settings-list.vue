@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 const { t, locale } = useI18n()
 // 定义属性
 const props = defineProps<{
-  items: { name: string, smallPic: string }[],
+  items: { name: string, smallPic: HTMLImageElement | null, bigPic: HTMLImageElement | null }[],
   isOverlay: boolean
 }>()
 const last = computed(() => {
@@ -50,7 +50,7 @@ const onItemClick = (index: number) => {
           :key="setting.name"
           @click="onItemClick(items.indexOf(setting))"
           :style="{
-            'background-image': isOverlay ? `url('${last.smallPic}')` : ''
+            'background': isOverlay ? setting.smallPic ? `url('${setting.smallPic.src}')` : 'rgba(255,255,255,0.2)' : ''
           }"
         >
           <!-- 两根线装饰 -->
@@ -61,7 +61,12 @@ const onItemClick = (index: number) => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text clickble">{{ t(`settings.${setting.name}.name`) }}</span>
+          <span
+            class="settings-item-text clickble "
+            :class="{
+              '!text-28px !<xl:text-24px text-center': t(`settings.${setting.name}.name`).length > 10
+            }"
+          >{{ t(`settings.${setting.name}.name`) }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"
@@ -83,7 +88,7 @@ const onItemClick = (index: number) => {
           :key="setting.name"
           @click="onItemClick(items.indexOf(setting))"
           :style="{
-            'background-image': isOverlay ? `url('${last.smallPic}')` : ''
+            'background': isOverlay ? setting.smallPic ? `url('${setting.smallPic.src}')` : 'rgba(255,255,255,0.2)' : ''
           }"
         >
           <!-- 两根线装饰 -->
@@ -94,7 +99,12 @@ const onItemClick = (index: number) => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text clickble">{{ t(`settings.${setting.name}.name`) }}</span>
+          <span
+            :class="{
+              '!text-28px !<xl:text-24px text-center': t(`settings.${setting.name}.name`).length > 10
+            }"
+            class="settings-item-text clickble"
+          >{{ t(`settings.${setting.name}.name`) }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"
@@ -124,7 +134,7 @@ const onItemClick = (index: number) => {
           }"
           @click="onItemClick(items.length - 1)"
           :style="{
-            'background-image': isOverlay ? `url('${last.smallPic}')` : ''
+            'background': isOverlay ? last.smallPic ? `url('${last.smallPic.src}')` : 'rgba(255,255,255,0.2)' : ''
           }"
         >
           <!-- 两根线装饰 -->
@@ -135,7 +145,12 @@ const onItemClick = (index: number) => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text clickble">{{ t(`settings.${last.name}.name`) }}</span>
+          <span
+            :class="{
+              '!text-28px !<xl:text-24px text-center': t(`settings.${last.name}.name`).length > 10
+            }"
+            class="settings-item-text clickble"
+          >{{ t(`settings.${last.name}.name`) }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"

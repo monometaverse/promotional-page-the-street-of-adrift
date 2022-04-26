@@ -3,8 +3,6 @@
 import { computed, onActivated, ref } from 'vue'
 import settingsList from '../components/settings-list.vue'
 import settingsDetail from '../components/settings-detail.vue'
-import jiuxiao from '../assets/settings-page/jiuxiao-temp.png'
-import jiuxiaoBig from '../assets/archive-page/heaven.jpg'
 import { usePagination } from '../utils'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
@@ -13,24 +11,46 @@ import { storeToRefs } from 'pinia'
 const store = useStore()
 const { isOnMobile } = storeToRefs(store)
 
-/**
- * 在 i18n 文件中的样子应该是
- * {
- *    name: string,     // 设定名称
- *    smallPic: string, // 图片名称，包含扩展名，用来显示在列表里
- *    bigPic: string,   // 图片名称，包含扩展名，用来显示在详情页里
- *    desc: string      // 详细信息
- * }[]
- */
-// TODO: 改为从 i18n 文件中获取
-const settings = ref([
-  { name: 'theShiraishiGroup', smallPic: jiuxiao, bigPic: jiuxiaoBig },
-  { name: 'fujingCity', smallPic: jiuxiao, bigPic: jiuxiaoBig },
-  { name: 'kusyou', smallPic: jiuxiao, bigPic: jiuxiaoBig },
-  { name: 'theVoidExplosionWar', smallPic: jiuxiao, bigPic: jiuxiaoBig },
-  { name: 'theFourHeadMistresses', smallPic: jiuxiao, bigPic: jiuxiaoBig },
-  { name: 'greywallCity', smallPic: jiuxiao, bigPic: jiuxiaoBig },
-  { name: 'fujingYuan', smallPic: jiuxiao, bigPic: jiuxiaoBig }
+const settings = ref<{
+  name: string,
+  smallPic: HTMLImageElement | null,
+  bigPic: HTMLImageElement | null
+}[]>([
+  {
+    name: 'theShiraishiGroup',
+    smallPic:store.getRes('theShiraishiGroupSmall', 'settings').value as HTMLImageElement,
+    bigPic: store.getRes('theShiraishiGroup', 'settings').value as HTMLImageElement
+  },
+  {
+    name: 'fujingCity',
+    smallPic: store.getRes('fujingCitySmall', 'settings').value as HTMLImageElement,
+    bigPic: store.getRes('fujingCity', 'settings').value as HTMLImageElement
+  },
+  {
+    name: 'kusyou',
+    smallPic: store.getRes('kusyouSmall', 'settings').value as HTMLImageElement,
+    bigPic: store.getRes('kusyou', 'settings').value as HTMLImageElement,
+  },
+  {
+    name: 'theVoidExplosionWar',
+    smallPic: store.getRes('theVoidExplosionWarSmall', 'settings').value as HTMLImageElement,
+    bigPic: store.getRes('theVoidExplosionWar', 'settings').value as HTMLImageElement
+  },
+  {
+    name: 'theFourHeadMistresses',
+    smallPic: store.getRes('beautiesSmall', 'settings').value as HTMLImageElement,
+    bigPic: store.getRes('beauties', 'settings').value as HTMLImageElement,
+  },
+  {
+    name: 'greywallCity',
+    smallPic: null,
+    bigPic: null,
+  },
+  {
+    name: 'fujingYuan',
+    smallPic: null,
+    bigPic: null,
+  }
 ])
 // 当前正在显示的索引
 const { currentIndex, next, prev } = usePagination(settings)

@@ -22,6 +22,17 @@ import tokugawaPaint from '../../assets/characters-page/tokugawa.png'
 import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
 import S_UMSSuper from '../../assets/nft-page/S_UMSSuper.glb'
 import { DataTexture, Group, Material, Side } from 'three'
+// 设定图片
+import theVoidExplosionWar from '../../assets/settings-page/theVoidExplosionWar.jpg'
+import theShiraishiGroup from '../../assets/settings-page/theShiraishiGroup.jpg'
+import fujingCity from '../../assets/settings-page/fujingCity.jpg'
+import kusyou from '../../assets/settings-page/kusyou.jpg'
+// 设定页小图
+import theVoidExplosionWarSmall from '../../assets/settings-page/theVoidExplosionWarSmall.png'
+import theShiraishiGroupSmall from '../../assets/settings-page/theShiraishiGroupSmall.png'
+import fujingCitySmall from '../../assets/settings-page/fujingCitySmall.png'
+import beautiesSmall from '../../assets/settings-page/beautiesSmall.png'
+import kusyouSmall from '../../assets/settings-page/kusyouSmall.png'
 // 背景图片
 import homeBackground from '../../assets/static-framework/background-home.png'
 import nftBackground from '../../assets/static-framework/background-nft.png'
@@ -69,6 +80,18 @@ export const resources = [
   { name: 'linPaint', value: linPaint, type: 'image', for: 'characterPaint' },
   { name: 'shiraishiPaint', value: shiraishiPaint, type: 'image', for: 'characterPaint' },
   { name: 'watanabePaint', value: watanabePaint, type: 'image', for: 'characterPaint' },
+  // 设定页图片
+  { name: 'theVoidExplosionWar', value: theVoidExplosionWar, type: 'image', for: 'settings' },
+  { name: 'theShiraishiGroup', value: theShiraishiGroup, type: 'image', for: 'settings' },
+  { name: 'fujingCity', value: fujingCity, type: 'image', for: 'settings' },
+  { name: 'kusyou', value: kusyou, type: 'image', for: 'settings' },
+  { name: 'beauties', value: beauties, type: 'image', for: 'settings' },
+  // 设定页小图
+  { name: 'theVoidExplosionWarSmall', value: theVoidExplosionWarSmall, type: 'image', for: 'settings' },
+  { name: 'theShiraishiGroupSmall', value: theShiraishiGroupSmall, type: 'image', for: 'settings' },
+  { name: 'fujingCitySmall', value: fujingCitySmall, type: 'image', for: 'settings' },
+  { name: 'kusyouSmall', value: kusyouSmall, type: 'image', for: 'settings' },
+  { name: 'beautiesSmall', value: beautiesSmall, type: 'image', for: 'settings' },
   // 档案页图片
   { name: 'alcoholAbuse', value: alcoholAbuse, type: 'image', for: 'archive' },
   { name: 'conceptDesign', value: conceptDesign, type: 'image', for: 'archive' },

@@ -7,7 +7,7 @@ import scrollHint from './scroll-hint.vue'
 const { t, locale } = useI18n()
 // 需要父组件传入的部分
 const props = defineProps<{
-  items: { name: string, smallPic: string, bigPic: string }[],
+  items: { name: string, smallPic: HTMLImageElement | null, bigPic: HTMLImageElement | null }[],
   modelValue: number
 }>()
 // 定义会触发的事件
@@ -77,7 +77,7 @@ const prevOrNext = (next: boolean) => {
     <div
       class="details-pic cover-no-repeat-center"
       :style="{
-        'background-image': `url(${items[modelValue].bigPic})`
+        'background-image': items[modelValue].bigPic ? `url(${items[modelValue].bigPic.src})` : 'none'
       }"
     />
     <!-- 详情 -->
@@ -86,7 +86,7 @@ const prevOrNext = (next: boolean) => {
         {{ t(`settings.${items[modelValue].name}.name`) }}
       </div>
       <div class="details-desc-divider" />
-      <div class="details-desc-text">
+      <div class="details-desc-text max-w-40rem max-h-30rem overflow-y-scroll <xl:(max-w-30rem max-h-20rem)">
         {{ t(`settings.${items[modelValue].name}.info`) }}
       </div>
     </div>
@@ -167,6 +167,16 @@ const prevOrNext = (next: boolean) => {
       font-size: 14px;
       line-height: 28px;
       white-space: pre-wrap;
+      scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+
+      &::-webkit-scrollbar {
+        width: 5px;
+        background-color: transparent;
+      }
     }
   }
 }
