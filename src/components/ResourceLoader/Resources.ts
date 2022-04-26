@@ -28,6 +28,17 @@ import nftBackground from '../../assets/static-framework/background-nft.png'
 import charactersBackground from '../../assets/static-framework/background-characters.png'
 import settingsBackground from '../../assets/static-framework/background-settings.png'
 import archivesBackground from '../../assets/static-framework/background-archives.png'
+// 档案页图片
+import alcoholAbuse from '../../assets/archive-page/alcohol-abuse.jpg'
+import conceptDesign from '../../assets/archive-page/concept-design-of-the-street-of-adrift.jpg'
+import linInArchive from '../../assets/archive-page/lin.jpg'
+import noTitle from '../../assets/archive-page/no-title.jpg'
+import planningBoard from '../../assets/archive-page/planning-board.jpg'
+import refrigerator2044 from '../../assets/archive-page/refrigerator-2044.jpg'
+import refrigerator2045 from '../../assets/archive-page/refrigerator-2045.jpg'
+import tokugawaInArchive from '../../assets/archive-page/tokugawa.jpg'
+import annaInArchive from '../../assets/archive-page/anna.jpg'
+import beauties from '../../assets/archive-page/beauties.jpg'
 
 // 要加载的资源
 export const resources = [
@@ -58,6 +69,18 @@ export const resources = [
   { name: 'linPaint', value: linPaint, type: 'image', for: 'characterPaint' },
   { name: 'shiraishiPaint', value: shiraishiPaint, type: 'image', for: 'characterPaint' },
   { name: 'watanabePaint', value: watanabePaint, type: 'image', for: 'characterPaint' },
+  // 档案页图片
+  { name: 'alcoholAbuse', value: alcoholAbuse, type: 'image', for: 'archive' },
+  { name: 'conceptDesign', value: conceptDesign, type: 'image', for: 'archive' },
+  { name: 'linInArchive', value: linInArchive, type: 'image', for: 'archive' },
+  { name: 'noTitle', value: noTitle, type: 'image', for: 'archive' },
+  { name: 'planningBoard', value: planningBoard, type: 'image', for: 'archive' },
+  { name: 'refrigerator2044', value: refrigerator2044, type: 'image', for: 'archive' },
+  { name: 'refrigerator2045', value: refrigerator2045, type: 'image', for: 'archive' },
+  { name: 'tokugawaInArchive', value: tokugawaInArchive, type: 'image', for: 'archive' },
+  { name: 'beauties', value: beauties, type: 'image', for: 'archive' },
+  { name: 'annaInArchive', value: annaInArchive, type: 'image', for: 'archive' },
+
 ] as const
 export type Resources = typeof resources
 export type LoadingResources = { name: Resources[number]['name'], value: HTMLImageElement | GLTF | DataTexture, for: Resources[number]['for'] }[]
