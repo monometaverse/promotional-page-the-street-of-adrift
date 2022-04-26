@@ -226,7 +226,7 @@ const prevOrNext = (next: boolean) => {
     @pic-height: calc(calc(100vw - 48px) / 16 * 9);
 
     &-desc {
-      padding: 24px 24px 0 24px;
+      padding: 24px 8px 0 24px;
       width: 100%;
       top: unset;
       left: unset;
@@ -245,6 +245,8 @@ const prevOrNext = (next: boolean) => {
         margin-top: 8px;
         font-size: 12px;
         line-height: 20px;
+        max-height: 16.25em;
+        overflow-y: scroll;
       }
     }
 
