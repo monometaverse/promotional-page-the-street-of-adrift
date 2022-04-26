@@ -52,9 +52,7 @@ export type LoadingResources = { name: Resources[number]['name'], value: HTMLIma
 export type LoadedResources = Required<LoadingResources>
 export type NFTItem = {
   name: string, // 名称
-  nameEn: string, // 名称的英文
   description: string, // 描述
-  descriptionEn: string, // 英文描述
   reserved: boolean, // 是否已经预约
   model: Group, // 模型组
   customData?: {
