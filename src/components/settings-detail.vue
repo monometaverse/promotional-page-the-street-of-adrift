@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import { gsap } from 'gsap'
+import { useI18n } from 'vue-i18n'
 import scrollHint from './scroll-hint.vue'
 
+// i18n
+const { t, locale } = useI18n()
 // 需要父组件传入的部分
 const props = defineProps<{
-  items: { name: string, smallPic: string, bigPic: string, desc: string }[],
+  items: { name: string, smallPic: string, bigPic: string }[],
   modelValue: number
 }>()
 // 定义会触发的事件
@@ -80,11 +83,11 @@ const prevOrNext = (next: boolean) => {
     <!-- 详情 -->
     <div class="details-desc">
       <div class="details-desc-title">
-        {{ items[modelValue].name }}
+        {{ t(`settings.${items[modelValue].name}.name`) }}
       </div>
       <div class="details-desc-divider" />
       <div class="details-desc-text">
-        {{ items[modelValue].desc }}
+        {{ t(`settings.${items[modelValue].name}.info`) }}
       </div>
     </div>
     <!-- 关闭按钮 -->

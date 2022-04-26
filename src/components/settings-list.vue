@@ -1,7 +1,10 @@
 <script lang="ts" setup>import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+// i18n
+const { t, locale } = useI18n()
 // 定义属性
 const props = defineProps<{
-  items: { name: string, smallPic: string }[], // TODO: 从 i18n 获取类型
+  items: { name: string, smallPic: string }[],
   isOverlay: boolean
 }>()
 const last = computed(() => {
@@ -58,7 +61,7 @@ const onItemClick = (index: number) => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text clickble">{{ setting.name }}</span>
+          <span class="settings-item-text clickble">{{ t(`settings.${setting.name}.name`) }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"
@@ -91,7 +94,7 @@ const onItemClick = (index: number) => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text clickble">{{ setting.name }}</span>
+          <span class="settings-item-text clickble">{{ t(`settings.${setting.name}.name`) }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"
@@ -132,7 +135,7 @@ const onItemClick = (index: number) => {
             <div class="rotated-line rotated-line-1 clickble" />
             <div class="rotated-line rotated-line-2 clickble" />
           </div>
-          <span class="settings-item-text clickble">{{ last.name }}</span>
+          <span class="settings-item-text clickble">{{ t(`settings.${last.name}.name`) }}</span>
           <!-- 两根线装饰 -->
           <div
             class="rotated-lines clickble"

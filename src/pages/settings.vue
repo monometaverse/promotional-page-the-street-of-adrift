@@ -24,13 +24,13 @@ const { isOnMobile } = storeToRefs(store)
  */
 // TODO: 改为从 i18n 文件中获取
 const settings = ref([
-  { name: '白石集团', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
-  { name: '福京市', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
-  { name: '九霄', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
-  { name: '虚爆战争', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
-  { name: '四大花魁', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行'},
-  { name: '灰墙城', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行' },
-  { name: '福京币', smallPic: jiuxiao, bigPic: jiuxiaoBig, desc: '设定详情文案第一行\n设定详情文案第二行\n\n设定详情文案第三行'}
+  { name: 'theShiraishiGroup', smallPic: jiuxiao, bigPic: jiuxiaoBig },
+  { name: 'fujingCity', smallPic: jiuxiao, bigPic: jiuxiaoBig },
+  { name: 'kusyou', smallPic: jiuxiao, bigPic: jiuxiaoBig },
+  { name: 'theVoidExplosionWar', smallPic: jiuxiao, bigPic: jiuxiaoBig },
+  { name: 'theFourHeadMistresses', smallPic: jiuxiao, bigPic: jiuxiaoBig },
+  { name: 'greywallCity', smallPic: jiuxiao, bigPic: jiuxiaoBig },
+  { name: 'fujingYuan', smallPic: jiuxiao, bigPic: jiuxiaoBig }
 ])
 // 当前正在显示的索引
 const { currentIndex, next, prev } = usePagination(settings)
