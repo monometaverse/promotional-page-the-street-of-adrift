@@ -1,6 +1,6 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, onActivated, onDeactivated, ref, watchEffect } from 'vue'
+import { computed, CSSProperties,  onDeactivated, onMounted, ref, watchEffect } from 'vue'
 import { gsap } from 'gsap'
 
 import { useStore } from '../store'
@@ -11,7 +11,6 @@ import { usePagination } from '../utils'
 // pinia 状态管理
 const store = useStore()
 const { res, showingCharacter, allImagesForParticles, infoElPos } = storeToRefs(store)
-// TODO: 从 i18n 获取
 const characters = ref(['shiraishi', 'watanabe', 'lin', 'christina', 'anna', 'higashiyama', 'hannya', 'tokugawa'])
 const characterPaintings = ref([
   store.getRes('shiraishiPaint', 'characterPaint').value as HTMLImageElement,
@@ -142,8 +141,8 @@ const swtichTo = (index: number) => {
   currentShowForNav.value = index
   // 切换粒子图片
   if (allImagesForParticles.value) {
-    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
-    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+    // @ts-ignore
+    showingCharacter.value = store.getRes(characters.value[currentShowForNav.value] + 'Org', 'particle').value as HTMLImageElement
   }
   // 取消所有正在进行的动画和动画定时
   gsap.killTweensOf(paintingArgs.value)
@@ -156,12 +155,10 @@ const swtichTo = (index: number) => {
   infoItemLeaveTimeout = window.setTimeout(doInfoItemAnimation, delay.infoItem, false)
   infoDescLeaveTimeout =  window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
 }
-// 当页面激活时，随机设置一个粒子图片，TODO: 等数据填充好之后，使用第一个
-onActivated(() => {
-  // 切换粒子图片
+onMounted(() => {
+  // 切换到第一个角色的阵营
   if (allImagesForParticles.value) {
-    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
-    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+    showingCharacter.value = store.getRes('shiraishiOrg', 'particle').value as HTMLImageElement
   }
   window.dispatchEvent(new Event('resize'))
 })
