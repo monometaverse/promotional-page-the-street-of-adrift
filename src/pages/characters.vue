@@ -506,7 +506,7 @@ watchEffect(() => {
     right: unset;
     bottom: 64px;
     width: 100%;
-    padding: 24px 24px 0 24px;
+    padding: 24px 8px 0 24px;
 
     &-title {
       font-size: 32px;
@@ -545,6 +545,9 @@ watchEffect(() => {
       font-size: 12px;
       line-height: 24px;
       margin-top: 8px;
+      max-height: 220px;
+      overflow-y: scroll;
+      overflow-x: clip;
     }
   }
 
