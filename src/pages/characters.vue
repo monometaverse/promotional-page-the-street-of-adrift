@@ -8,6 +8,9 @@ import { storeToRefs } from 'pinia'
 import { useElementBounding } from '@vueuse/core'
 import ScrollHint from '../components/scroll-hint.vue'
 import { usePagination } from '../utils'
+import { useI18n } from 'vue-i18n'
+// i18n
+const { t, locale } = useI18n()
 // pinia 状态管理
 const store = useStore()
 const { res, showingCharacter, allImagesForParticles, infoElPos } = storeToRefs(store)
@@ -194,7 +197,7 @@ watchEffect(() => {
       >
         <div class="selector-item-icon clickble" />
         <div class="selector-item-title clickble">
-          {{ characters[index - 1] }}
+          {{ t(`characters.${ characters[index - 1] }.name`) }}
         </div>
       </div>
     </div>
@@ -215,13 +218,14 @@ watchEffect(() => {
         class="info-title"
         :style="nameStyle"
       >
-        {{ characters[currentShow] }}
+        {{ t(`characters.${ characters[currentShow] }.name`) }}
       </div>
       <div
-        class="info-title-en"
+        class="info-title-en uppercase"
         :style="nameEnStyle"
+        v-if="locale === 'zh'"
       >
-        SHIRAISHI ROSETTA
+        {{ t(`characters.${ characters[currentShow] }.name`, 1, { locale: 'en' }) }}
       </div>
       <div class="info-more">
         <div class="info-more-item">
@@ -229,7 +233,7 @@ watchEffect(() => {
             ILLUSTRATOR
           </div>
           <div class="info-more-item-content">
-            yannn
+            {{ t(`characters.${ characters[currentShow] }.illustrator`) }}
           </div>
         </div>
         <div class="info-more-item">
@@ -237,7 +241,7 @@ watchEffect(() => {
             CV
           </div>
           <div class="info-more-item-content">
-            范馨源
+            {{ t(`characters.${ characters[currentShow] }.cv`) }}
           </div>
         </div>
       </div>
@@ -249,11 +253,7 @@ watchEffect(() => {
         }"
       />
       <div class="info-desc">
-        她是巨型企业白石集团董事长的女儿，出于保护人身安全的目的，她的父母为她创造了一个假名[九条泷川]，并让她在福京市理工大学学习，就读理论物理专业。
-        然而，纵使白石的物质生活极度优越，可她却总是被父母的意志所支配，就连学习的专业与未来的工作都在计划板上被写的清清楚楚。
-        她并不愿意屈服于眼前这已经被安排好的日复一日的生活。她一直以来都有一个梦想，那便是用自己的力量，帮助其他人，为这座快要烂掉的城市做出一份贡献。
-
-        一直以来，她都在寻找这样一个契机。
+        {{ t(`characters.${ characters[currentShow] }.info`) }}
       </div>
     </div>
     <scroll-hint class="!sm:hidden" />
