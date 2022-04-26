@@ -52,14 +52,32 @@ const itemsList = ref<NFTItem[]>([
     description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
     descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
     reserved: true,
-    model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
+    model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
     customData: {
-      depthWrite: true,
-      childName: 'polySurface67_Mesh001',
-      side: FrontSide,
-      scale: 1.5,
-      positionY: -1.2
+      childName: 'YX_Gold',
+      scale: 4,
+      positionY: -1.9,
+      correctMaterial: (() => {
+        const material = new MeshPhysicalMaterial()
+        material.metalness = 1
+        material.roughness = 0.14
+        material.clearcoatRoughness = 0.01
+        material.reflectivity = 1
+        material.clearcoat = 1
+        material.fog = true
+        material.color = new Color(0x7A7A7A)
+        return material
+      })()
     }
+    // 已经调好的枪械的模型，不要删掉这段注释
+    // model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
+    // customData: {
+    //   depthWrite: true,
+    //   childName: 'polySurface67_Mesh001',
+    //   side: FrontSide,
+    //   scale: 1.5,
+    //   positionY: -1.2
+    // }
   }
 ])
 // NFT 名称列表
