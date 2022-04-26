@@ -1,17 +1,14 @@
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // 阵营图片素材
-import dennisOrg from '../../assets/dennis-org.png'
-import ivanovaOrg from '../../assets/ivanova-org.png'
-import jonesOrg from '../../assets/jones-org.png'
-import linOrg from '../../assets/lin-org.png'
-import philipOrg from '../../assets/philip-org.png'
-import prajnaOrg from '../../assets/prajna-org.png'
-import rosettaOrg from '../../assets/rosetta-org.png'
-import tokugawaOrg from '../../assets/tokugawa-org.png'
-import touyamaOrg from '../../assets/touyama-org.png'
-import vue3Org from '../../assets/Vue3.png'
-import watanabeOrg from '../../assets/watanabe-org.png'
+import annaOrg from '../../assets/characters-page/anna-org.png'
+import christinaOrg from '../../assets/characters-page/christina-org.png'
+import linOrg from '../../assets/characters-page/lin-org.png'
+import hannyaOrg from '../../assets/characters-page/hannya-org.png'
+import rosettaOrg from '../../assets/characters-page/rosetta-org.png'
+import tokugawaOrg from '../../assets/characters-page/tokugawa-org.png'
+import higashiyamaOrg from '../../assets/characters-page/higashiyama-org.png'
+import watanabeOrg from '../../assets/characters-page/watanabe-org.png'
 // 角色立绘
 import annaPaint from '../../assets/characters-page/anna.png'
 import christinaPaint from '../../assets/characters-page/christina.png'
@@ -24,7 +21,6 @@ import tokugawaPaint from '../../assets/characters-page/tokugawa.png'
 // 九霄金币
 import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
 import S_UMSSuper from '../../assets/nft-page/S_UMSSuper.glb'
-import coinEnviroment from '../../assets/nft-page/coinEnviroment.hdr'
 import { DataTexture, Group, Material, Side } from 'three'
 // 背景图片
 import homeBackground from '../../assets/static-framework/background-home.png'
@@ -35,20 +31,18 @@ import archivesBackground from '../../assets/static-framework/background-archive
 
 // 要加载的资源
 export const resources = [
-  { name: 'dennisOrg', value: dennisOrg, type: 'image', for: 'particle' },
-  { name: 'ivanovaOrg', value: ivanovaOrg, type: 'image', for: 'particle' },
-  { name: 'jonesOrg', value: jonesOrg, type: 'image', for: 'particle' },
+  // 适用于粒子效果的图片
+  { name: 'annaOrg', value: annaOrg, type: 'image', for: 'particle' },
+  { name: 'christinaOrg', value: christinaOrg, type: 'image', for: 'particle' },
   { name: 'linOrg', value: linOrg, type: 'image', for: 'particle' },
-  { name: 'philipOrg', value: philipOrg, type: 'image', for: 'particle' },
-  { name: 'prajnaOrg', value: prajnaOrg, type: 'image', for: 'particle' },
-  { name: 'rosettaOrg', value: rosettaOrg, type: 'image', for: 'particle' },
+  { name: 'hannyaOrg', value: hannyaOrg, type: 'image', for: 'particle' },
+  { name: 'shiraishiOrg', value: rosettaOrg, type: 'image', for: 'particle' },
   { name: 'tokugawaOrg', value: tokugawaOrg, type: 'image', for: 'particle' },
-  { name: 'touyamaOrg', value: touyamaOrg, type: 'image', for: 'particle' },
-  { name: 'vue3Org', value: vue3Org, type: 'image', for: 'particle' },
+  { name: 'higashiyamaOrg', value: higashiyamaOrg, type: 'image', for: 'particle' },
   { name: 'watanabeOrg', value: watanabeOrg, type: 'image', for: 'particle' },
+  // NFT 模型
   { name: 'kusyouCoin', value: kusyouCoin, type: 'glb', for: 'NFT' },
   { name: 'S_UMSSuper', value: S_UMSSuper, type: 'glb', for: 'NFT' },
-  { name: 'coinEnviroment', value: coinEnviroment, type: 'hdr', for: 'NFT' },
   // 全局背景，请务必以页面名称开头 + Background
   { name: 'static.homeBackground', value: homeBackground, type: 'image', for: 'background' },
   { name: 'static.itemBackground', value: nftBackground, type: 'image', for: 'background' },
