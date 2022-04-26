@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import { gsap } from 'gsap'
+import { useI18n } from 'vue-i18n'
 import scrollHint from './scroll-hint.vue'
 
+// i18n
+const { t, locale } = useI18n()
 // 需要父组件传入的部分
 const props = defineProps<{
-  items: { name: string, smallPic: string, bigPic: string, desc: string }[],
+  items: { name: string, smallPic: HTMLImageElement | null, bigPic: HTMLImageElement | null }[],
   modelValue: number
 }>()
 // 定义会触发的事件
@@ -74,17 +77,17 @@ const prevOrNext = (next: boolean) => {
     <div
       class="details-pic cover-no-repeat-center"
       :style="{
-        'background-image': `url(${items[modelValue].bigPic})`
+        'background-image': items[modelValue].bigPic ? `url(${items[modelValue].bigPic!.src})` : 'none'
       }"
     />
     <!-- 详情 -->
     <div class="details-desc">
       <div class="details-desc-title">
-        {{ items[modelValue].name }}
+        {{ t(`settings.${items[modelValue].name}.name`) }}
       </div>
       <div class="details-desc-divider" />
-      <div class="details-desc-text">
-        {{ items[modelValue].desc }}
+      <div class="details-desc-text max-w-40rem max-h-30rem overflow-y-scroll <xl:(max-w-30rem max-h-20rem)">
+        {{ t(`settings.${items[modelValue].name}.info`) }}
       </div>
     </div>
     <!-- 关闭按钮 -->
@@ -164,6 +167,16 @@ const prevOrNext = (next: boolean) => {
       font-size: 14px;
       line-height: 28px;
       white-space: pre-wrap;
+      scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+
+      &::-webkit-scrollbar {
+        width: 5px;
+        background-color: transparent;
+      }
     }
   }
 }
@@ -223,7 +236,7 @@ const prevOrNext = (next: boolean) => {
     @pic-height: calc(calc(100vw - 48px) / 16 * 9);
 
     &-desc {
-      padding: 24px 24px 0 24px;
+      padding: 24px 8px 0 24px;
       width: 100%;
       top: unset;
       left: unset;
@@ -242,6 +255,8 @@ const prevOrNext = (next: boolean) => {
         margin-top: 8px;
         font-size: 12px;
         line-height: 20px;
+        max-height: 16.25em;
+        overflow-y: scroll;
       }
     }
 

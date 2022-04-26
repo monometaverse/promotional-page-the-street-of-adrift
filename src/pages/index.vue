@@ -4,11 +4,14 @@ import { storeToRefs } from 'pinia'
 import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
 import scrollHint from '../components/scroll-hint.vue'
+import { useI18n } from 'vue-i18n'
 
 // states
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll, isOnMobile } = storeToRefs(store)
 
+// i18n
+const { t, locale } = useI18n()
 // logo 图标的引用
 const logoRef = ref<HTMLDivElement | null>(null)
 // logo 图标复制体的样式
@@ -102,7 +105,7 @@ onMounted(() => {
           'social-btns-hide': animationFrom && animationActive,
           '!duration-500 !delay-1000 !transition-all': animationActive
         }"
-        href="https://twitter.com/monoverse_hq"
+        href="https://twitter.com/adriftstreet"
         target="_blank"
       />
     </div>
@@ -119,21 +122,28 @@ onMounted(() => {
       />
       <div class="play-btn cover-no-repeat-center clickble" />
     </div>
-    <div class="description">
+    <div
+      class="description"
+      :class="{
+        '!<sm:bottom-80px': locale === 'en'
+      }"
+    >
       <span
         class="text"
         :class="{
           'text-hide': animationFrom && animationActive,
-          'duration-500 delay-1500 transition-all': animationActive
+          'duration-500 delay-1500 transition-all': animationActive,
+          '!inline': locale === 'en'
         }"
-      >彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。</span>
+      >{{ t('home.gameInfo1') }}</span>
       <span
         class="text"
         :class="{
           'text-hide': animationFrom && animationActive,
-          'duration-500 delay-1750 transition-all': animationActive
+          'duration-500 delay-1750 transition-all': animationActive,
+          '!inline': locale === 'en'
         }"
-      >其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。</span>
+      >{{ t('home.gameInfo2') }}</span>
     </div>
     <scroll-hint
       :class="scrollHintAnimationClass"

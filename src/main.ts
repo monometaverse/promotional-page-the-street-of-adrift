@@ -3,8 +3,6 @@ import App from './App.vue'
 import {i18n} from './locales'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import routes from '~pages'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
 import { createPinia } from 'pinia'
 import 'virtual:windi.css'
 
@@ -16,6 +14,5 @@ const router = createRouter({
 createApp(App)
   .use(i18n)
   .use(router)
-  .use(ElementPlus)
   .use(createPinia())
   .mount('#app')

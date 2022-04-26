@@ -59,7 +59,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
         </div>
         <div class="flex gap-x-24px mt-24px">
           <a
-            href="https://twitter.com/monoverse_hq"
+            href="https://twitter.com/adriftstreet"
             target="_blank"
             class="block"
           >

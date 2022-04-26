@@ -8,9 +8,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
-import { useElementSize, useEventListener } from '@vueuse/core'
+import { useElementBounding, useElementSize, useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
+import { Menu as HeadLessMenu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
 // pinia
@@ -23,16 +24,17 @@ const onResourceLoadComplete = (res: LoadedResources) => {
 }
 // i18n 切换语言
 const i18n = useI18n()
-const switchLang = () => {
-  i18n.locale.value = i18n.locale.value === 'zh' ? 'en' : 'zh'
+const setLocale = (locale: string) => {
+  i18n.locale.value = locale
+  localStorage.setItem('locale', locale)
 }
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
-  { to: '/', name: '首页' },
-  { to: '/items', name: '物品' },
-  { to: '/characters', name: '角色' },
-  { to: '/settings', name: '设定' },
-  { to: '/archives', name: '档案' },
+  { to: '/', name: 'static.home' },
+  { to: '/items', name: 'static.item' },
+  { to: '/characters', name: 'static.character' },
+  { to: '/settings', name: 'static.settings' },
+  { to: '/archives', name: 'static.archives' },
 ])
 // 获取路由名称
 const getRouteName = (path: string): string => {
@@ -44,7 +46,7 @@ const getRouteName = (path: string): string => {
   return ''
 }
 // 正在显示的页面名称
-const pageName = ref('')
+const pageName = ref('static.home')
 // 当前路由
 const currentRoute = useRoute()
 const router = useRouter()
@@ -62,9 +64,9 @@ router.beforeEach((to, from, next) => {
   // 获取要前往的路由的背景
   let routeName = ''
   if (to.path === '/') {
-    routeName = 'home'
+    routeName = 'static.home'
   } else {
-    routeName = to.path.substring(1)
+    routeName = getRouteName(to.path)
   }
   const backgroundFound = loadedRes.value.find((it) => it.name === routeName + 'Background')
   if (!backgroundFound) {
@@ -237,6 +239,8 @@ const mouseInnerStyle = ref<CSSProperties>({
 const mouseClickStyle = ref<CSSProperties>({})
 // 鼠标是否在可点击的物体上
 const isMouseOverClickable = ref(false)
+// 是否在可滚动或可拖动物体上触摸
+const isTouchOverScrollbleOrDragble = ref(false)
 // 监听屏幕内部鼠标移动事件
 watch(store.mousePos, (val) => {
   // 取消正在进行的动画
@@ -273,6 +277,11 @@ useEventListener(window, 'click', (event) => {
 useEventListener(window, 'mouseover', (event) => {
   isMouseOverClickable.value = (event.target as HTMLElement).classList.contains('clickble')
 })
+// 监听触摸移动事件
+useEventListener(window, 'touchmove', (event) => {
+  isTouchOverScrollbleOrDragble.value = window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll'
+  console.log(window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll')
+})
 // 监听鼠标滚动事件以切换页面
 useEventListener(document, 'wheel', (() => {
   let canScroll = true
@@ -296,10 +305,25 @@ useEventListener(document, 'wheel', (() => {
     }
   }
 })())
+// 语言菜单按钮的引用
+const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
+const langMenuBtnElBounding = useElementBounding(langMenuBtnEl)
 // 当挂载时
 onMounted(() => {
-  console.log(firstEnter.value, staticFrameworkAnimationStart.value)
   animationActive.value = true
+  // 尝试获取已保存的语言
+  const locale = localStorage.getItem('locale')
+  if (locale) {
+    i18n.locale.value = locale
+  } else {
+    // 没有保存的语言，获取浏览器语言
+    const browserLocale = navigator.language
+    if (browserLocale === 'zh-CN') {
+      setLocale('zh')
+    } else {
+      setLocale('en')
+    }
+  }
 })
 // 静态框架的引用
 const staticFramworkEl = ref<HTMLDivElement | null>(null)
@@ -308,7 +332,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
   let canScroll = true
   return (e, direction) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value) {
+    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -439,13 +463,14 @@ useStyleTag(hideCursorStyle)
         <div
           class="page-title"
         >
-          <!-- TODO: 当 i18n 文案填充好之后，改用 i18n 文案 -->
           <div class="page-title-main">
-            {{ pageName }}
+            {{ i18n.t(pageName).toUpperCase() }}
           </div>
-          <!-- TODO: 当 i18n 文案填充好之后，检查是否是英文状态，并决定要不要隐藏 -->
-          <div class="page-title-small">
-            {{ 'NEED TEXT' }}
+          <div
+            class="page-title-small"
+            v-if="i18n.locale.value !== 'en'"
+          >
+            {{ i18n.t(pageName, 1, { locale: 'en' }).toUpperCase() }}
           </div>
         </div>
         <!-- 右上角操作部分 -->
@@ -456,29 +481,61 @@ useStyleTag(hideCursorStyle)
             'duration-500 delay-500': animationActive
           }"
         >
-          <div class="actions-text">
-            登录
+          <div class="actions-text clickble">
+            {{ i18n.t('static.login') }}
           </div>
           <div class="actions-divider" />
-          <div class="actions-text">
-            注册
+          <div class="actions-text clickble">
+            {{ i18n.t('static.register') }}
           </div>
           <!-- 语言切换菜单 -->
-          <el-dropdown>
-            <div class="actions-text actions-dropdown">
-              <span>EN</span>
-              <img
-                src="./assets/static-framework/dropdown.svg"
-                class="actions-dropdown-icon"
+          <div>
+            <head-less-menu v-slot="{ open }">
+              <menu-button
+                class="actions-text actions-dropdown clickble"
+                ref="langMenuBtnEl"
               >
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>English</el-dropdown-item>
-                <el-dropdown-item>中文</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+                <span class="clickble">{{ i18n.locale.value.toUpperCase() }}</span>
+                <img
+                  src="./assets/static-framework/dropdown.svg"
+                  class="actions-dropdown-icon transition transform transition-transform duration-250 clickble"
+                  :class="{
+                    'rotate-z-180': open
+                  }"
+                >
+              </menu-button>
+              <transition
+                enter-from-class="transform -translate-y-20px opacity-0"
+                leave-to-class="transform -translate-y-20px opacity-0"
+                enter-to-class="transform translate-y-0 opacity-100"
+                leave-from-class="transform translate-y-0 opacity-100"
+                enter-active-class="transition duration-250"
+                leave-active-class="transition duration-250"
+              >
+                <menu-items
+                  class="absolute top-32px flex flex-col bg-[rgba(0,0,0,0.8)] px-16px py-12px right-0"
+                >
+                  <menu-item>
+                    <button
+                      class="font-16px leading-24px font-sans text-left clickble"
+                      @click="setLocale('en')"
+                    >
+                      English
+                    </button>
+                  </menu-item>
+                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <menu-item>
+                    <button
+                      class="font-16px leading-24px font-sans text-left clickble"
+                      @click="setLocale('zh')"
+                    >
+                      中文
+                    </button>
+                  </menu-item>
+                </menu-items>
+              </transition>
+            </head-less-menu>
+          </div>
           <img
             src="./assets/static-framework/share.svg"
             class="actions-share"
@@ -713,6 +770,7 @@ useStyleTag(hideCursorStyle)
 
   &-dropdown {
     display: flex;
+    align-items: center;
   }
 
   &-dropdown-icon {

@@ -10,20 +10,24 @@ import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
-import { ElMessage } from 'element-plus'
+import { useMessage } from '@lemonneko/vuetify-message'
+import '@lemonneko/vuetify-message/dist/style.css'
 import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
+import { useI18n } from 'vue-i18n'
 
 // pinia 状态管理
 const store = useStore()
 const { windowHeight, isOnMobile } = storeToRefs(store)
+// i18n
+const { t, locale } = useI18n()
+// 消息组件
+const msg = useMessage()
 // TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<NFTItem[]>([
   {
-    name: '九霄金币',
-    nameEn: 'need text',
-    description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
-    descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
+    name: 'nft.goldCoinName',
+    description: 'nft.goldCoinInfo',
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
     customData: {
@@ -44,19 +48,35 @@ const itemsList = ref<NFTItem[]>([
     }
   },
   {
-    name: '九霄银币',
-    nameEn: 'need text',
-    description: 'NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案，NFT 文案',
-    descriptionEn: 'NFT Description, NFT Description, NFT Description, NFT Description',
+    name: 'nft.sliverCoinName',
+    description: 'nft.sliverCoinInfo',
     reserved: true,
-    model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
+    model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
     customData: {
-      depthWrite: true,
-      childName: 'polySurface67_Mesh001',
-      side: FrontSide,
-      scale: 1.5,
-      positionY: -1.2
+      childName: 'YX_Gold',
+      scale: 4,
+      positionY: -1.9,
+      correctMaterial: (() => {
+        const material = new MeshPhysicalMaterial()
+        material.metalness = 1
+        material.roughness = 0.14
+        material.clearcoatRoughness = 0.01
+        material.reflectivity = 1
+        material.clearcoat = 1
+        material.fog = true
+        material.color = new Color(0x7A7A7A)
+        return material
+      })()
     }
+    // 已经调好的枪械的模型，不要删掉这段注释
+    // model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
+    // customData: {
+    //   depthWrite: true,
+    //   childName: 'polySurface67_Mesh001',
+    //   side: FrontSide,
+    //   scale: 1.5,
+    //   positionY: -1.2
+    // }
   }
 ])
 // NFT 名称列表
@@ -164,16 +184,35 @@ const modelContainerEl = ref<HTMLDivElement | null>(null)
 // 模型容器元素的位置高宽信息
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // 预约成功框
-const showReserveSuccessDialog = ref(false)
+const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
+  const show = ref(false)
+  const name = ref('')
+  // 显示预约成功框
+  // 请传入用来进行本地化的键
+  const showDialog = (nftName: string) => {
+    name.value = nftName
+    show.value = true
+  }
+  const closeDialog = () => {
+    name.value = ''
+    show.value = false
+  }
+  return {
+    showReserveSuccessDialog: showDialog,
+    isDialogShow: show,
+    reservedNftName: name,
+    closeReserveSuccessDialog: closeDialog
+  }
+})()
 // 预约按钮事件处理器
 const onReserveBtnClick = (index: number) => {
   if (itemsList.value[index].reserved) return
   const res = API.nft.reserve(itemsList.value[index].name)
   if (isSuccess(res)) {
-    showReserveSuccessDialog.value = true
+    showReserveSuccessDialog(itemsList.value[index].name)
     itemsList.value[index].reserved = true
   } else {
-    ElMessage.error(res.message)
+    msg.show(res.message, { color: 'red' })
   }
 }
 // 预约按钮文字元素
@@ -201,7 +240,7 @@ onMounted(() => {
       it.reserved = res.data[it.name]
     }
   } else {
-    ElMessage.error('出现了一些错误')
+    msg.show(res.message, { color: 'red' })
   }
 })
 </script>
@@ -224,14 +263,15 @@ onMounted(() => {
         class="info-title"
         :style="infoAnimationStyle"
       >
-        {{ itemsList[currentIndexForAnimation].name }}
+        {{ t(itemsList[currentIndexForAnimation].name) }}
       </div>
       <!-- 当切换至英文时，隐藏，但是占空间 -->
       <div
         class="info-title-en"
         :style="infoAnimationStyle"
+        v-if="locale === 'zh'"
       >
-        {{ itemsList[currentIndexForAnimation].nameEn.toUpperCase() }}
+        {{ t(itemsList[currentIndexForAnimation].name, 1, { locale: 'en' }).toUpperCase() }}
       </div>
       <div
         class="info-divider"
@@ -242,14 +282,13 @@ onMounted(() => {
         class="info-desc"
         :style="infoAnimationStyle"
       >
-        {{ itemsList[currentIndexForAnimation].description }}
+        {{ t(itemsList[currentIndexForAnimation].description) }}
       </div>
-      <!-- 预约按钮 TODO: 从 i18n 获取文案 -->
       <div
         class="info-reserve-btn-text"
         :style="reserveBtnAnimationStyle"
       >
-        {{ itemsList[currentIndexForAnimation].reserved ? '已预约' : '立即预约' }}
+        {{ itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') }}
       </div>
     </div>
     <div
@@ -299,41 +338,40 @@ onMounted(() => {
     <div
       class="absolute w-[100%] h-[100%] flex transition-colors justify-center items-center z-998"
       :class="{
-        'bg-[rgba(0,0,0,0.5)]': showReserveSuccessDialog,
-        'pointer-events-none': !showReserveSuccessDialog
+        'bg-[rgba(0,0,0,0.5)]': isDialogShow,
+        'pointer-events-none': !isDialogShow
       }"
     >
       <!-- 提示框主体 -->
       <div
         class="w-576px h-480px bg-black flex flex-col justify-between items-center transition duration-250 <sm:(w-320px h-374px)"
         :class="{
-          'opacity-0': !showReserveSuccessDialog,
-          '-translate-y-50px transform': !showReserveSuccessDialog
+          'opacity-0': !isDialogShow,
+          '-translate-y-50px transform': !isDialogShow
         }"
       >
         <!-- 关闭按钮 -->
         <div class="flex justify-end w-[100%] pt-24px pr-24px">
           <div
             class="close-btn clickble"
-            @click="showReserveSuccessDialog = false"
+            @click="closeReserveSuccessDialog"
           />
         </div>
-        <!-- TODO: 从 i18n 获取文案 -->
-        <span class="font-serif font-900 leading-46px text-32px <sm:(text-24px leading-34px)">预约成功</span>
+        <!-- TODO: 跟进设计稿，添加预约成功的物品名称，和接收邮件的选择框 -->
+        <span class="font-serif font-900 leading-46px text-32px <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
         <!-- 预约成功图片 -->
         <div class="success-pic-container p-14px">
           <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
         </div>
-        <!-- 确定按钮，TODO:从 i18n 获取文案 -->
         <div>
           <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
             <div
               class="reserve-success-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
-              @click="showReserveSuccessDialog = false"
+              @click="closeReserveSuccessDialog"
             />
           </div>
           <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-96px h-32px text-16px leading-23px -translate-y-32px)">
-            知道了
+            {{ t('nft.reserveSuccessBtnText') }}
           </div>
         </div>
       </div>

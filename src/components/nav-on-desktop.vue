@@ -1,5 +1,9 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+
+// 路由
+const route = useRoute()
 
 // 定义要传入的参数
 const props = defineProps<{
@@ -7,8 +11,8 @@ const props = defineProps<{
   animationActive: boolean,
   routes: { name: string, to: string }[]
 }>()
-// 路由
-const route = useRoute()
+// i18n
+const { t } = useI18n()
 // 定义会触发的事件
 const emits = defineEmits<{
   (e: 'itemSelected', to: string): void
@@ -26,7 +30,7 @@ const emits = defineEmits<{
       <!--TODO:替换成 i18n 文案-->
       <a
         v-for="theRoute of routes"
-        class="navigation-item clickble"
+        class="navigation-item clickble flex justify-end"
         :key="theRoute.name"
         :class="{
           'router-link-active': route.path === theRoute.to
@@ -34,7 +38,7 @@ const emits = defineEmits<{
         @click="emits('itemSelected', theRoute.to)"
       >
         <div class="navigation-item-text clickble">
-          {{ theRoute.name }}
+          {{ t(theRoute.name) }}
         </div>
         <div class="navigation-item-icon cover-no-repeat-center clickble" />
       </a>

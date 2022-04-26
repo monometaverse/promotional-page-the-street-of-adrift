@@ -1,24 +1,29 @@
 <!--档案页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, reactive, ref, watch } from 'vue'
-import beauties from '../assets/archive-page/beauties.jpg'
-import haven from '../assets/archive-page/heaven.jpg'
-import anna from '../assets/archive-page/anna.jpg'
-import planning from '../assets/archive-page/planning-board.jpg'
 import { gsap } from 'gsap'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 import { usePagination } from '../utils'
+import { useI18n } from 'vue-i18n'
 
+// i18n
+const { t, locale } = useI18n()
 // 状态
 const store = useStore()
 const { windowWidth, windowHeight, isOnMobile } = storeToRefs(store)
 // TODO: 使用 i18n 替代文案
 const picAndNameList = ref([
-  { name: '花魁们', pic: beauties },
-  { name: '九霄', pic: haven },
-  { name: '安娜', pic: anna },
-  { name: '计划板', pic: planning },
+  { name: 'theHeadMistresses', pic: store.getRes('beauties', 'archive').value as HTMLImageElement },
+  { name: 'refrigerator2044', pic: store.getRes('refrigerator2044', 'archive').value as HTMLImageElement },
+  { name: 'refrigerator2045', pic: store.getRes('refrigerator2045', 'archive').value as HTMLImageElement },
+  { name: 'tokugawa', pic: store.getRes('tokugawaInArchive', 'archive').value as HTMLImageElement },
+  { name: 'planningBoard', pic: store.getRes('planningBoard', 'archive').value as HTMLImageElement },
+  { name: 'lin', pic: store.getRes('linInArchive', 'archive').value as HTMLImageElement },
+  { name: 'conceptDesign', pic: store.getRes('conceptDesign', 'archive').value as HTMLImageElement },
+  { name: 'noTitle', pic: store.getRes('noTitle', 'archive').value as HTMLImageElement },
+  { name: 'alcoholAbuse', pic: store.getRes('alcoholAbuse', 'archive').value as HTMLImageElement },
+  { name: 'anna', pic: store.getRes('annaInArchive', 'archive').value as HTMLImageElement }
 ])
 // 用来显示的名字索引
 const showCurrentNameIndex = ref(0)
@@ -301,10 +306,10 @@ const layer3Style = computed<CSSProperties>(() => {
         :style="layer1Style"
       >
         <div class="title-name">
-          {{ showCurrentName }}
+          {{ t('archives.' + showCurrentName) }}
         </div>
         <div class="title-number">
-          0{{ showCurrentNameIndex + 1 }}
+          {{ showCurrentNameIndex + 1 > 9 ? '' : '0' }}{{ showCurrentNameIndex + 1 }}
         </div>
       </div>
       <!-- 主要内容 -->
@@ -318,22 +323,22 @@ const layer3Style = computed<CSSProperties>(() => {
         <div class="archives-center">
           <!-- 图片 -->
           <a
-            :href="picAndNameList[showCurrentNameIndex].pic"
+            :href="picAndNameList[showCurrentNameIndex].pic.src"
             target="_blank"
             class="archives-pic cover-no-repeat-center block clickble"
             :style="{
-              'background-image': `url(${picAndNameList[currentIndex].pic})`,
+              'background-image': `url(${picAndNameList[currentIndex].pic.src})`,
               transform: layer2Style.transform + ' ' + picAnimationStyleNext.transform,
               willChange: layer2Style.willChange,
               transformOrigin: picAnimationStyleNext.transformOrigin
             }"
           />
           <a
-            :href="picAndNameList[showCurrentNameIndex].pic"
+            :href="picAndNameList[showCurrentNameIndex].pic.src"
             target="_blank"
             class="archives-pic cover-no-repeat-center block clickble"
             :style="{
-              'background-image': `url(${picAndNameList[prevPic].pic})`,
+              'background-image': `url(${picAndNameList[prevPic].pic.src})`,
               transform: layer2Style.transform + ' ' + picAnimationStyle.transform,
               willChange: layer2Style.willChange,
               transformOrigin: picAnimationStyle.transformOrigin
@@ -360,6 +365,7 @@ const layer3Style = computed<CSSProperties>(() => {
           :style="layer1Style"
         />
       </div>
+      <!-- 只有手机端会显示的小图 -->
       <div class="small-pic-container">
         <div
           class="small-pic-inner"
@@ -370,7 +376,7 @@ const layer3Style = computed<CSSProperties>(() => {
             v-for="index in currentSetForSmallPic"
             :key="index + Math.random()"
             :style="{
-              backgroundImage: `url(${picAndNameList[index].pic})`
+              backgroundImage: `url(${picAndNameList[index].pic.src})`
             }"
             @click="switchPicForMobile(index)"
           />

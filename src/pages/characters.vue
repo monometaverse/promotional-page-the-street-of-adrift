@@ -1,20 +1,30 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, onActivated, onDeactivated, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { computed, CSSProperties,  onDeactivated, onMounted, ref, watchEffect } from 'vue'
 import { gsap } from 'gsap'
 
-import rosetta from '../assets/characters-page/rosetta.png'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 import { useElementBounding } from '@vueuse/core'
 import ScrollHint from '../components/scroll-hint.vue'
 import { usePagination } from '../utils'
+import { useI18n } from 'vue-i18n'
+// i18n
+const { t, locale } = useI18n()
 // pinia 状态管理
 const store = useStore()
 const { res, showingCharacter, allImagesForParticles, infoElPos } = storeToRefs(store)
-// TODO: 从 i18n 获取
-const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里斯蒂娜 琼斯', '安娜 伊凡诺娃', '东山 抚子', '般若', '德川璃璃子'])
-const characterPaintings = ref([rosetta])
+const characters = ref(['shiraishi', 'watanabe', 'lin', 'christina', 'anna', 'higashiyama', 'hannya', 'tokugawa'])
+const characterPaintings = ref([
+  store.getRes('shiraishiPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('watanabePaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('linPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('christinaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('annaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('higashiyamaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('hannyaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('tokugawaPaint', 'characterPaint').value as HTMLImageElement,
+])
 const currentShow = ref(0)
 const currentShowForNav = ref(0)
 // 页面切换器，仅在手机端使用
@@ -134,8 +144,8 @@ const swtichTo = (index: number) => {
   currentShowForNav.value = index
   // 切换粒子图片
   if (allImagesForParticles.value) {
-    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
-    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+    // @ts-ignore
+    showingCharacter.value = store.getRes(characters.value[currentShowForNav.value] + 'Org', 'particle').value as HTMLImageElement
   }
   // 取消所有正在进行的动画和动画定时
   gsap.killTweensOf(paintingArgs.value)
@@ -148,12 +158,10 @@ const swtichTo = (index: number) => {
   infoItemLeaveTimeout = window.setTimeout(doInfoItemAnimation, delay.infoItem, false)
   infoDescLeaveTimeout =  window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
 }
-// 当页面激活时，随机设置一个粒子图片，TODO: 等数据填充好之后，使用第一个
-onActivated(() => {
-  // 切换粒子图片
+onMounted(() => {
+  // 切换到第一个角色的阵营
   if (allImagesForParticles.value) {
-    const randomPicIndex = Math.floor(Math.random() * allImagesForParticles.value.length)
-    showingCharacter.value = allImagesForParticles.value[randomPicIndex].value as HTMLImageElement
+    showingCharacter.value = store.getRes('shiraishiOrg', 'particle').value as HTMLImageElement
   }
   window.dispatchEvent(new Event('resize'))
 })
@@ -174,7 +182,7 @@ watchEffect(() => {
 })
 </script>
 <template>
-  <div class="route-page">
+  <div class="route-page character">
     <div class="element-x" />
     <div class="matrix matrix-left-bottom" />
     <div class="matrix matrix-behind-pic <sm:hidden" />
@@ -189,7 +197,7 @@ watchEffect(() => {
       >
         <div class="selector-item-icon clickble" />
         <div class="selector-item-title clickble">
-          {{ characters[index - 1] }}
+          {{ t(`characters.${ characters[index - 1] }.name`) }}
         </div>
       </div>
     </div>
@@ -197,10 +205,12 @@ watchEffect(() => {
     <div
       class="character-painting"
       :style="{
-        backgroundImage: `url('${characterPaintings[0]}')`,
+        backgroundImage: `url('${characterPaintings[currentShow].src}')`,
         ...paintingStyle
       }"
     />
+    <!-- 手机端才有的遮罩 -->
+    <div class="w-[100vw] h-30rem absolute bottom-0 hidden <sm:block mask-on-mobile" />
     <!-- 角色介绍 -->
     <div
       class="info"
@@ -210,13 +220,14 @@ watchEffect(() => {
         class="info-title"
         :style="nameStyle"
       >
-        {{ characters[currentShow] }}
+        {{ t(`characters.${ characters[currentShow] }.name`) }}
       </div>
       <div
-        class="info-title-en"
+        class="info-title-en uppercase"
         :style="nameEnStyle"
+        v-if="locale === 'zh'"
       >
-        SHIRAISHI ROSETTA
+        {{ t(`characters.${ characters[currentShow] }.name`, 1, { locale: 'en' }) }}
       </div>
       <div class="info-more">
         <div class="info-more-item">
@@ -224,7 +235,7 @@ watchEffect(() => {
             ILLUSTRATOR
           </div>
           <div class="info-more-item-content">
-            yannn
+            {{ t(`characters.${ characters[currentShow] }.illustrator`) }}
           </div>
         </div>
         <div class="info-more-item">
@@ -232,7 +243,7 @@ watchEffect(() => {
             CV
           </div>
           <div class="info-more-item-content">
-            范馨源
+            {{ t(`characters.${ characters[currentShow] }.cv`) }}
           </div>
         </div>
       </div>
@@ -244,11 +255,7 @@ watchEffect(() => {
         }"
       />
       <div class="info-desc">
-        她是巨型企业白石集团董事长的女儿，出于保护人身安全的目的，她的父母为她创造了一个假名[九条泷川]，并让她在福京市理工大学学习，就读理论物理专业。
-        然而，纵使白石的物质生活极度优越，可她却总是被父母的意志所支配，就连学习的专业与未来的工作都在计划板上被写的清清楚楚。
-        她并不愿意屈服于眼前这已经被安排好的日复一日的生活。她一直以来都有一个梦想，那便是用自己的力量，帮助其他人，为这座快要烂掉的城市做出一份贡献。
-
-        一直以来，她都在寻找这样一个契机。
+        {{ t(`characters.${ characters[currentShow] }.info`) }}
       </div>
     </div>
     <scroll-hint class="!sm:hidden" />
@@ -323,7 +330,7 @@ watchEffect(() => {
 .character-painting {
   position: absolute;
   width: 800px;
-  height: calc(800px / 900 * 1500);
+  height: calc(800px / 800 * 1136);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -452,7 +459,7 @@ watchEffect(() => {
   .character-painting {
     position: absolute;
     width: 576px;
-    height: calc(576px / 900 * 1500);
+    height: calc(576px / 800 * 1136);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -482,6 +489,21 @@ watchEffect(() => {
 
 // 当宽度低于 1080px 时，进入手机模式
 @media screen and (max-width: 1079px) {
+  .mask-on-mobile {
+    background-image:
+      linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 18.49%, rgba(0, 0, 0, 0.7) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size:
+      100vw 30rem,
+      100vw 15rem;
+  }
+
+  .route-page.character {
+    background-image: none;
+  }
+
   .selector {
     display: none;
   }
@@ -489,7 +511,7 @@ watchEffect(() => {
   .character-painting {
     position: absolute;
     width: 512px;
-    height: calc(512px / 900 * 1500);
+    height: calc(512px / 800 * 1136);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -501,7 +523,7 @@ watchEffect(() => {
     right: unset;
     bottom: 64px;
     width: 100%;
-    padding: 24px 24px 0 24px;
+    padding: 24px 8px 0 24px;
 
     &-title {
       font-size: 32px;
@@ -540,6 +562,9 @@ watchEffect(() => {
       font-size: 12px;
       line-height: 24px;
       margin-top: 8px;
+      max-height: 220px;
+      overflow-y: scroll;
+      overflow-x: clip;
     }
   }
 
