@@ -447,7 +447,7 @@ useStyleTag(hideCursorStyle)
             class="page-title-small"
             v-if="i18n.locale.value !== 'en'"
           >
-            {{ i18n.getLocaleMessage('en').static[pageName.substring(pageName.indexOf('.') + 1)].toString().toUpperCase() }}
+            {{ i18n.t(pageName, 1, { locale: 'en' }).toUpperCase() }}
           </div>
         </div>
         <!-- 右上角操作部分 -->
