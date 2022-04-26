@@ -182,7 +182,7 @@ watchEffect(() => {
 })
 </script>
 <template>
-  <div class="route-page">
+  <div class="route-page character">
     <div class="element-x" />
     <div class="matrix matrix-left-bottom" />
     <div class="matrix matrix-behind-pic <sm:hidden" />
@@ -209,6 +209,8 @@ watchEffect(() => {
         ...paintingStyle
       }"
     />
+    <!-- 手机端才有的遮罩 -->
+    <div class="w-[100vw] h-30rem absolute bottom-0 hidden <sm:block mask-on-mobile" />
     <!-- 角色介绍 -->
     <div
       class="info"
@@ -487,6 +489,21 @@ watchEffect(() => {
 
 // 当宽度低于 1080px 时，进入手机模式
 @media screen and (max-width: 1079px) {
+  .mask-on-mobile {
+    background-image:
+      linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 18.49%, rgba(0, 0, 0, 0.7) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.515625) 26.56%, #000 100%);
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size:
+      100vw 30rem,
+      100vw 15rem;
+  }
+
+  .route-page.character {
+    background-image: none;
+  }
+
   .selector {
     display: none;
   }
