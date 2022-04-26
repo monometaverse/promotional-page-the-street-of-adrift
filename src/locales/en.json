@@ -11,7 +11,8 @@
     "saveSahrePic": "Save"
   },
   "home": {
-    "gameInfo": "The Street of Adrift, originally called \"Via Exilii\", actually is a commercial building but not a street. \nAfter reading numerous pieces of literature in Fujing official language, The manager translated it as its present name out of its meaning."
+    "gameInfo1": "The Street of Adrift, originally called \"Via Exilii\", actually is a commercial building but not a street. ",
+    "gameInfo2": "After reading numerous pieces of literature in Fujing official language, The manager translated it as its present name out of its meaning."
   },
   "nft": {
     "goldCoinName": "Kusyou Gold Coins",

@@ -11,7 +11,8 @@
     "saveSahrePic": "保存图片"
   },
   "home": {
-    "gameInfo": "彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。"
+    "gameInfo1": "彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。",
+    "gameInfo2": "其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。"
   },
   "nft": {
     "goldCoinName": "九霄金币",

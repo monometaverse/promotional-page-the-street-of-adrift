@@ -474,12 +474,12 @@ useStyleTag(hideCursorStyle)
             'duration-500 delay-500': animationActive
           }"
         >
-          <div class="actions-text">
-            登录
+          <div class="actions-text clickble">
+            {{ i18n.t('static.login') }}
           </div>
           <div class="actions-divider" />
-          <div class="actions-text">
-            注册
+          <div class="actions-text clickble">
+            {{ i18n.t('static.register') }}
           </div>
           <!-- 语言切换菜单 -->
           <div>
