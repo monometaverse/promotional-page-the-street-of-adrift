@@ -24,6 +24,10 @@ const onResourceLoadComplete = (res: LoadedResources) => {
 }
 // i18n 切换语言
 const i18n = useI18n()
+const setLocale = (locale: string) => {
+  i18n.locale.value = locale
+  localStorage.setItem('locale', locale)
+}
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
   { to: '/', name: 'static.home' },
@@ -299,8 +303,20 @@ const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
 const langMenuBtnElBounding = useElementBounding(langMenuBtnEl)
 // 当挂载时
 onMounted(() => {
-  console.log(firstEnter.value, staticFrameworkAnimationStart.value)
   animationActive.value = true
+  // 尝试获取已保存的语言
+  const locale = localStorage.getItem('locale')
+  if (locale) {
+    i18n.locale.value = locale
+  } else {
+    // 没有保存的语言，获取浏览器语言
+    const browserLocale = navigator.language
+    if (browserLocale === 'zh-CN') {
+      setLocale('zh')
+    } else {
+      setLocale('en')
+    }
+  }
 })
 // 静态框架的引用
 const staticFramworkEl = ref<HTMLDivElement | null>(null)
@@ -495,7 +511,7 @@ useStyleTag(hideCursorStyle)
                   <menu-item>
                     <button
                       class="font-16px leading-24px font-sans text-left"
-                      @click="i18n.locale.value = 'en'"
+                      @click="setLocale('en')"
                     >
                       English
                     </button>
@@ -504,7 +520,7 @@ useStyleTag(hideCursorStyle)
                   <menu-item>
                     <button
                       class="font-16px leading-24px font-sans text-left"
-                      @click="i18n.locale.value = 'zh'"
+                      @click="setLocale('zh')"
                     >
                       中文
                     </button>
