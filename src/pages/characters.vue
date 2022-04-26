@@ -1,9 +1,8 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, onActivated, onDeactivated, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { computed, CSSProperties, onActivated, onDeactivated, ref, watchEffect } from 'vue'
 import { gsap } from 'gsap'
 
-import rosetta from '../assets/characters-page/rosetta.png'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 import { useElementBounding } from '@vueuse/core'
@@ -13,8 +12,17 @@ import { usePagination } from '../utils'
 const store = useStore()
 const { res, showingCharacter, allImagesForParticles, infoElPos } = storeToRefs(store)
 // TODO: 从 i18n 获取
-const characters = ref(['白石 罗塞塔', '渡边 柚', '林 雨幕', '克里斯蒂娜 琼斯', '安娜 伊凡诺娃', '东山 抚子', '般若', '德川璃璃子'])
-const characterPaintings = ref([rosetta])
+const characters = ref(['shiraishi', 'watanabe', 'lin', 'christina', 'anna', 'higashiyama', 'hannya', 'tokugawa'])
+const characterPaintings = ref([
+  store.getRes('shiraishiPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('watanabePaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('linPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('christinaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('annaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('higashiyamaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('hannyaPaint', 'characterPaint').value as HTMLImageElement,
+  store.getRes('tokugawaPaint', 'characterPaint').value as HTMLImageElement,
+])
 const currentShow = ref(0)
 const currentShowForNav = ref(0)
 // 页面切换器，仅在手机端使用
@@ -197,7 +205,7 @@ watchEffect(() => {
     <div
       class="character-painting"
       :style="{
-        backgroundImage: `url('${characterPaintings[0]}')`,
+        backgroundImage: `url('${characterPaintings[currentShow].src}')`,
         ...paintingStyle
       }"
     />

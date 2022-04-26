@@ -12,6 +12,15 @@ import tokugawaOrg from '../../assets/tokugawa-org.png'
 import touyamaOrg from '../../assets/touyama-org.png'
 import vue3Org from '../../assets/Vue3.png'
 import watanabeOrg from '../../assets/watanabe-org.png'
+// 角色立绘
+import annaPaint from '../../assets/characters-page/anna.png'
+import christinaPaint from '../../assets/characters-page/christina.png'
+import shiraishiPaint from '../../assets/characters-page/rosetta.png'
+import watanabePaint from '../../assets/characters-page/watanabe.png'
+import linPaint from '../../assets/characters-page/lin.png'
+import higashiyamaPaint from '../../assets/characters-page/higashiyama.png'
+import hannyaPaint from '../../assets/characters-page/hannya.png'
+import tokugawaPaint from '../../assets/characters-page/tokugawa.png'
 // 九霄金币
 import kusyouCoin from '../../assets/nft-page/kusyouCoin.glb'
 import S_UMSSuper from '../../assets/nft-page/S_UMSSuper.glb'
@@ -46,6 +55,15 @@ export const resources = [
   { name: 'static.characterBackground', value: charactersBackground, type: 'image', for: 'background' },
   { name: 'static.settingsBackground', value: settingsBackground, type: 'image', for: 'background' },
   { name: 'static.archivesBackground', value: archivesBackground, type: 'image', for: 'background' },
+  // 角色立绘
+  { name: 'annaPaint', value: annaPaint, type: 'image', for: 'characterPaint' },
+  { name: 'tokugawaPaint', value: tokugawaPaint, type: 'image', for: 'characterPaint' },
+  { name: 'hannyaPaint', value: hannyaPaint, type: 'image', for: 'characterPaint' },
+  { name: 'higashiyamaPaint', value: higashiyamaPaint, type: 'image', for: 'characterPaint' },
+  { name: 'christinaPaint', value: christinaPaint, type: 'image', for: 'characterPaint' },
+  { name: 'linPaint', value: linPaint, type: 'image', for: 'characterPaint' },
+  { name: 'shiraishiPaint', value: shiraishiPaint, type: 'image', for: 'characterPaint' },
+  { name: 'watanabePaint', value: watanabePaint, type: 'image', for: 'characterPaint' },
 ] as const
 export type Resources = typeof resources
 export type LoadingResources = { name: Resources[number]['name'], value: HTMLImageElement | GLTF | DataTexture, for: Resources[number]['for'] }[]
