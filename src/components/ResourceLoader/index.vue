@@ -113,7 +113,7 @@ onMounted(() => {
       switch (res.type) {
         case 'image': loadImageResource(res); break
         case 'glb': loadGltfResource(res); break
-        case 'hdr': loadHdrResource(res); break
+        // case 'hdr': loadHdrResource(res); break
       }
     }
   }
