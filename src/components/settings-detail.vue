@@ -77,7 +77,7 @@ const prevOrNext = (next: boolean) => {
     <div
       class="details-pic cover-no-repeat-center"
       :style="{
-        'background-image': items[modelValue].bigPic ? `url(${items[modelValue].bigPic.src})` : 'none'
+        'background-image': items[modelValue].bigPic ? `url(${items[modelValue].bigPic!.src})` : 'none'
       }"
     />
     <!-- 详情 -->
