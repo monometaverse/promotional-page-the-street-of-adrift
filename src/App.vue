@@ -239,6 +239,8 @@ const mouseInnerStyle = ref<CSSProperties>({
 const mouseClickStyle = ref<CSSProperties>({})
 // 鼠标是否在可点击的物体上
 const isMouseOverClickable = ref(false)
+// 是否在可滚动或可拖动物体上触摸
+const isTouchOverScrollbleOrDragble = ref(false)
 // 监听屏幕内部鼠标移动事件
 watch(store.mousePos, (val) => {
   // 取消正在进行的动画
@@ -274,6 +276,11 @@ useEventListener(window, 'click', (event) => {
 // 监听鼠标移入事件
 useEventListener(window, 'mouseover', (event) => {
   isMouseOverClickable.value = (event.target as HTMLElement).classList.contains('clickble')
+})
+// 监听触摸移动事件
+useEventListener(window, 'touchmove', (event) => {
+  isTouchOverScrollbleOrDragble.value = window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll'
+  console.log(window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll')
 })
 // 监听鼠标滚动事件以切换页面
 useEventListener(document, 'wheel', (() => {
@@ -325,7 +332,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
   let canScroll = true
   return (e, direction) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value) {
+    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
