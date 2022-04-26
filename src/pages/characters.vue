@@ -328,7 +328,7 @@ watchEffect(() => {
 .character-painting {
   position: absolute;
   width: 800px;
-  height: calc(800px / 900 * 1500);
+  height: calc(800px / 800 * 1136);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -457,7 +457,7 @@ watchEffect(() => {
   .character-painting {
     position: absolute;
     width: 576px;
-    height: calc(576px / 900 * 1500);
+    height: calc(576px / 800 * 1136);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -494,7 +494,7 @@ watchEffect(() => {
   .character-painting {
     position: absolute;
     width: 512px;
-    height: calc(512px / 900 * 1500);
+    height: calc(512px / 800 * 1136);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
