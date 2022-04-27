@@ -573,7 +573,7 @@ useStyleTag(hideCursorStyle)
             >
               <div class="pt-1.5rem pr-1.5rem w-[100%]">
                 <div
-                  class="close-btn float-right"
+                  class="close-btn float-right clickble"
                   @click="isShareDialogShow = false"
                 />
               </div>
