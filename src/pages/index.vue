@@ -5,6 +5,7 @@ import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
 import scrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
+import { useMediaControls } from '@vueuse/core'
 
 // states
 const store = useStore()
@@ -57,6 +58,18 @@ const scrollHintAnimationClass = computed<string>(() => {
 const onScrollHintTransitionEnd = () => {
   firstEnter.value = false
   allowScroll.value = true
+}
+// 视频播放相关
+const isVideoShow = ref(false)
+const videoEl = ref<HTMLMediaElement>()
+const { playing: isVideoPlaying } = useMediaControls(videoEl)
+const showVideo = () => {
+  isVideoShow.value = true
+  isVideoPlaying.value = true
+}
+const hideVideo = () => {
+  isVideoShow.value = false
+  isVideoPlaying.value = false
 }
 // 定义挂载的时候执行的操作
 onMounted(() => {
@@ -120,7 +133,10 @@ onMounted(() => {
         class="logo cover-no-repeat-center"
         ref="logoRef"
       />
-      <div class="play-btn cover-no-repeat-center clickble" />
+      <div
+        class="play-btn cover-no-repeat-center clickble"
+        @click="showVideo"
+      />
     </div>
     <div
       class="description"
@@ -149,6 +165,41 @@ onMounted(() => {
       :class="scrollHintAnimationClass"
       @transitionend="onScrollHintTransitionEnd"
     />
+    <!-- 视频容器 -->
+    <div
+      class="position absolute w-[100vw] h-[100vh] flex justify-center items-center duration-250 transition-colors"
+      :class="{
+        'pointer-events-none': !isVideoShow,
+        'bg-[rgba(0,0,0,0.5)]': isVideoShow
+      }"
+    >
+      <div
+        class="transition duration-250 flex flex-col"
+        :class="{
+          'opacity-0 transform -translate-y-1.5rem': !isVideoShow,
+        }"
+      >
+        <div class="pb-1.5rem w-[100%]">
+          <div
+            class="close-btn float-right clickble"
+            @click="hideVideo"
+          />
+        </div>
+        <div
+          class="video-container"
+        >
+          <video
+            ref="videoEl"
+            src="../assets/home-page/game-video.mp4"
+            class="w-[100%]"
+            type="video/mp4"
+            preload="metadata"
+            autoplay
+            controls
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <style lang="less" scoped>
@@ -157,6 +208,11 @@ onMounted(() => {
 @logo-and-play-top: calc(50% - calc(@logo-height + 64px) / 2);
 @logo-margin-right: 16px;
 @play-btn-size: 90px;
+// 视频容器
+.video-container {
+  width: 50vw;
+  height: calc(50vw / 16 * 9);
+}
 // logo 的复制体
 .logo-copy {
   width: @logo-width;
