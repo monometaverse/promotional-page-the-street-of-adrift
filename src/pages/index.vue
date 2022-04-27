@@ -431,5 +431,10 @@ onMounted(() => {
     bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 64px + @logo-height + 18px);
     left: 20px;
   }
+
+  .video-container {
+    width: 100vw;
+    height: (100vw / 16 * 9);
+  }
 }
 </style>
