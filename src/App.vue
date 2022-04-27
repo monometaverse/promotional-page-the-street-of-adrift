@@ -287,7 +287,7 @@ useEventListener(document, 'wheel', (() => {
   let canScroll = true
   return (event: WheelEvent) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value) {
+    if (canScroll && allowScroll.value && !isShareDialogShow.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -307,7 +307,8 @@ useEventListener(document, 'wheel', (() => {
 })())
 // 语言菜单按钮的引用
 const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
-const langMenuBtnElBounding = useElementBounding(langMenuBtnEl)
+// 分享框
+const isShareDialogShow = ref(false)
 // 当挂载时
 onMounted(() => {
   animationActive.value = true
@@ -332,7 +333,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
   let canScroll = true
   return (e, direction) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value) {
+    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -538,9 +539,10 @@ useStyleTag(hideCursorStyle)
           </div>
           <img
             src="./assets/static-framework/share.svg"
-            class="actions-share"
+            class="actions-share clickble"
             width="16"
             height="16"
+            @click="isShareDialogShow = true"
           >
         </div>
         <transition
@@ -550,6 +552,56 @@ useStyleTag(hideCursorStyle)
             <component :is="Component" />
           </keep-alive>
         </transition>
+        <!-- 分享框 -->
+        <div
+          class="w-[100vw] h-[100vh] flex justify-center items-center absolute transition-colors duration-250 z-998"
+          :class="{
+            'bg-[rgba(0,0,0,0.5)]': isShareDialogShow,
+            'pointer-events-none': !isShareDialogShow
+          }"
+        >
+          <transition
+            leave-active-class="transition duration-250"
+            enter-active-class="transition duration-250"
+            leave-to-class="transform -translate-y-1.5rem opacity-0"
+            enter-from-class="transform -translate-y-1.5rem opacity-0"
+          >
+            <div
+              class="w-36rem h-40.5rem bg-[#0f0f0f] flex flex-col justify-between items-center"
+              v-if="isShareDialogShow"
+            >
+              <div class="pt-1.5rem pr-1.5rem w-[100%]">
+                <div
+                  class="close-btn float-right"
+                  @click="isShareDialogShow = false"
+                />
+              </div>
+              <span class="leading-2.875rem text-2rem font-serif">
+                {{ i18n.t('static.shareTheGame') }}
+              </span>
+              <!-- 分享图片预览 -->
+              <div class="w-17rem h-23.125rem overflow-y-scroll custom-scrollbar">
+                <img
+                  class="w-[100%]"
+                  src="./assets/static-framework/share-pic.png"
+                >
+              </div>
+              <!-- 保存按钮 -->
+              <div>
+                <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
+                  <a
+                    href="./assets/static-framework/share-pic.png"
+                    download="share-pic.png"
+                    class="block btn-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
+                  />
+                </div>
+                <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-96px h-32px text-16px leading-23px -translate-y-32px)">
+                  {{ i18n.t('static.saveSahrePic') }}
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
       </div>
     </transition>
   </router-view>

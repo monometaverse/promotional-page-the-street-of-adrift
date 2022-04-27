@@ -218,6 +218,25 @@ body {
   }
 }
 
+// 自定义滚动条样式
+.custom-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// 按钮背景
+.btn-bg {
+  background-image: url('./assets/nft-page/reserve-btn-background.svg');
+}
+
 // 当宽度小于 1680px 时，进入平板模式
 @media screen and (max-width: 1679px) {
   .matrix {
