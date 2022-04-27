@@ -14,6 +14,7 @@ import { useStyleTag } from '@vueuse/core'
 import { Menu as HeadLessMenu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
+import sharePic from './assets/static-framework/share-pic.png'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent } = storeToRefs(store)
@@ -583,14 +584,14 @@ useStyleTag(hideCursorStyle)
               <div class="w-17rem h-23.125rem overflow-y-scroll custom-scrollbar">
                 <img
                   class="w-[100%]"
-                  src="./assets/static-framework/share-pic.png"
+                  :src="sharePic"
                 >
               </div>
               <!-- 保存按钮 -->
               <div>
                 <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
                   <a
-                    href="./assets/static-framework/share-pic.png"
+                    :href="sharePic"
                     download="share-pic.png"
                     class="block btn-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
                   />
