@@ -568,7 +568,7 @@ useStyleTag(hideCursorStyle)
             enter-from-class="transform -translate-y-1.5rem opacity-0"
           >
             <div
-              class="w-36rem h-40.5rem bg-[#0f0f0f] flex flex-col justify-between items-center"
+              class="w-36rem h-40.5rem bg-[#0f0f0f] flex flex-col justify-between items-center <sm:(w-20rem h-34.25rem)"
               v-if="isShareDialogShow"
             >
               <div class="pt-1.5rem pr-1.5rem w-[100%]">
@@ -577,7 +577,7 @@ useStyleTag(hideCursorStyle)
                   @click="isShareDialogShow = false"
                 />
               </div>
-              <span class="leading-2.875rem text-2rem font-serif">
+              <span class="leading-2.875rem text-2rem font-serif <sm:(leading-2.125rem text-1.5rem)">
                 {{ i18n.t('static.shareTheGame') }}
               </span>
               <!-- 分享图片预览 -->
