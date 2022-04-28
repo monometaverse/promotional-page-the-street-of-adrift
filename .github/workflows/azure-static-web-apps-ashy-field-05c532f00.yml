@@ -126,14 +126,14 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         uses: azure/CLI@v1
         with:
-          inlineScript: az storage blob upload-batch --account-name tsoastatictest --auth-mode key -d '$web' -s ./dist
+          inlineScript: az storage blob upload-batch --account-name tsoastatictest --auth-mode key -d '$web' -s ./dist --overwrite
       # 上传 pr 产物
       - name: 上传 PR 产物
         id: upload_pr
         if: ${{ github.event_name == 'pull_request' }}
         uses: azure/CLI@v1
         with:
-          inlineScript: az storage blob upload-batch --account-name tsoastatictestpreview --auth-mode key -d '$web' -s ./dist
+          inlineScript: az storage blob upload-batch --account-name tsoastatictestpreview --auth-mode key -d '$web' -s ./dist --overwrite
       # 清除主分支终结点
       - name: Purge CDN endpoint
         if: ${{ github.event_name != 'pull_request' }}
