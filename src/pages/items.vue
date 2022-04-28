@@ -205,9 +205,9 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
   }
 })()
 // 预约按钮事件处理器
-const onReserveBtnClick = (index: number) => {
+const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
-  const res = API.nft.reserve(itemsList.value[index].name)
+  const res = await API.nft.reserve(itemsList.value[index].name)
   if (isSuccess(res)) {
     showReserveSuccessDialog(itemsList.value[index].name)
     itemsList.value[index].reserved = true
