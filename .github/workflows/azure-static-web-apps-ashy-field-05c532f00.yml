@@ -57,6 +57,7 @@ jobs:
           echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
           sudo apt-get update
           sudo apt-get install azure-cli
+          az version
 
       # 获取 yarn 缓存目录
       - name: 获取 yarn 缓存目录
