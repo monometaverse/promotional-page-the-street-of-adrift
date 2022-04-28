@@ -1,4 +1,4 @@
-name: Azure Static Web Apps CI/CD
+name: 构建并上传至 Azure Blob
 
 on:
   push:
@@ -15,19 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     name: 发送构建开始的消息到 Slack
     steps:
-      # 代码签出
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      # 导出触发此次构建的提交的信息和构建开始时间
-      - name: Export commit info and start time
-        id: commit
-        run: |
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
-          echo "::set-output name=msg::$(git log -1 --format=%s)"
-          echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
       # 发送开始构建的消息到 Slack
-      - name: Send Build Start Message to Slack Channel
+      - name: 发送开始构建的消息到 Slack（Send Build Start Message to Slack Channel）
         uses: slackapi/slack-github-action@v1.17.0
         if: github.event_name != 'pull_request'
         with:
@@ -40,7 +29,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页开始进行构建\n===================\n\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})"
+                    "text": "===================\n构建开始\n名称: 彷徨之街宣传页\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].message }}（${{ github.event.commits[0].author.name }}）"
                   }
                 }
               ]
@@ -50,42 +39,49 @@ jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: 构建和部署 Build And Deploy
     steps:
       # 代码签出
       - uses: actions/checkout@v2
         with:
           submodules: true
-      # 导出触发此次构建的提交的信息和构建开始时间
-      - name: Export commit info and start time
+      - name: 设置 Node 环境（Setup Node）
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      # 获取 yarn 缓存目录
+      - name: 获取 yarn 缓存目录
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # 缓存依赖
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      # 安装依赖
+      - name: 安装依赖
+        run: yarn --prefer-offline
+      # 导出构建开始时间
+      - name: 导出构建开始的时间 Export start time
         id: commit
         run: |
           echo "::set-output name=startTime::$(date +%s)"
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
-          echo "::set-output name=msg::$(git log -1 --format=%s)"
-          echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
-      # 通过 Azure 静态网站构建和部署
-      - name: Build And Deploy
-        id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ASHY_FIELD_05C532F00 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
-          action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
-          ###### End of Repository/Build Configurations ######
+      # 构建
+      - name: 构建 Build
+        id: build
+        run: yarn build:prod
       # 导出构建完成的时间
-      - name: Export end time
+      - name: 导出构建结束的时间 Export end time
+        if: ${{ github.event_name != 'pull_request' }}
         id: endTime
         run: echo "::set-output name=time::$(nowtime=$(date +%s);echo $(expr $nowtime - ${{ steps.commit.outputs.startTime }}))"
-      # 发送构建成功的消息到 Slack
+      # 发送构建完成的消息到 Slack
       - name: Send Build Success Message to Slack Channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ steps.builddeploy.outputs.static_web_app_url && github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -96,43 +92,62 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 成功\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})\n当前静态页面的地址: ${{ steps.builddeploy.outputs.static_web_app_url }}"
+                    "text": "===================\n构建结束\n名称: 彷徨之街宣传页\n是否成功: ${{ !!steps.build.outcome == 'success' }}\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].message }}（${{ github.event.commits[0].author.name }}）"
                   }
                 }
               ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      # 发送构建失败的消息到 Slack
-      - name: Send Build Failed Message to Slack Channel
+      # 登录到 azure，为部署做好准备
+      - name: 登录到 Azure（Login to Azure）
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.AZURE_LOGIN_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_LOGIN_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_LOGIN_SUBSCRIPTION_ID }}
+      # 上传主分支产物
+      - name: 上传主分支产物
+        id: upload_main
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: azure/CLI@v1
+        with:
+          inline-script: az storage azcopy blob upload --account-name tsoastatictest -s dist/* --recursive -c $web
+      # 上传 pr 产物
+      - name: 上传 PR 产物
+        id: upload_pr
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: azure/CLI@v1
+        with:
+          inline-script: az storage azcopy blob upload --account-name tsoastatictestpreview -s dist/* --recursive -c $web
+      # 清除主分支终结点
+      - name: Purge CDN endpoint
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: azure/CLI@v1
+        with:
+          inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "tsoa-test-cdn" --name "tsoa-test.azureedge.net" --resource-group "gushiji-mono-subprojects"
+      # 发送上传完成的消息到 Slack
+      - name: Send upload done message to slack channel
         uses: slackapi/slack-github-action@v1.17.0
-        if: ${{ !steps.builddeploy.outputs.static_web_app_url && github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "《彷徨之街》宣传网站测试页通过 Azure 静态网站服务构建失败",
+              "text": "《彷徨之街》宣传网站测试页通过 Azure 静态网站服务构建成功",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n《彷徨之街》宣传网站测试页构建完成\n===================\n\n状态: 失败\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: \n提交 SHA: ${{ steps.commit.outputs.sha }}\n提交消息: ${{ steps.commit.outputs.msg }} (${{ steps.commit.outputs.author }})"
+                    "text": "===================\n产物上传完成\n名称: 彷徨之街宣传页\n是否成功: ${{ !!steps.upload_main.outcome == 'success' }}\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].message }}（${{ github.event.commits[0].author.name }}）"
                   }
                 }
               ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ASHY_FIELD_05C532F00 }}
-          action: "close"
+      # 从 auzre 退出，消除登录状态
+      - name: 从 Azure 退出（Login out from Azure）
+        run: az logout
+        if: always()
