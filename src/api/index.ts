@@ -44,6 +44,7 @@ export enum interceptorsErrorCode {
 // 经过处理的 Axios
 interface MonoAxios extends AxiosInstance {
   get<T, R = MonoResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>
+  post<T, R = MonoResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>
 }
 
 const monoAxios: MonoAxios = (() => {
@@ -96,6 +97,9 @@ export default {
     getLoginInfo: () => {
       return monoAxios.get<LoginInfo>('/v1/user/info')
     },
+    logout: () => {
+      return monoAxios.post<null>('/v1/user/logout')
+    }
   },
   nft: {
     /**

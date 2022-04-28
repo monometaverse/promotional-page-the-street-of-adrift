@@ -18,7 +18,7 @@ import { Menu as HeadLessMenu, MenuButton, MenuItem, MenuItems } from '@headless
       leave-active-class="transition duration-250"
     >
       <menu-items
-        class="absolute top-32px flex flex-col bg-[rgba(0,0,0,0.8)] px-16px py-12px right-0"
+        class="absolute top-32px flex flex-col bg-[rgba(0,0,0,0.8)] px-16px py-12px"
       >
         <slot name="menuItems" />
       </menu-items>
