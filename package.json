@@ -12,6 +12,7 @@
     "@headlessui/vue": "^1.5.0",
     "@lemonneko/vuetify-message": "^2.1.0-beta.1",
     "@vueuse/core": "^8.2.5",
+    "axios": "^0.27.2",
     "gsap": "^3.9.1",
     "lodash": "^4.17.21",
     "pinia": "^2.0.12",
