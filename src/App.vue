@@ -492,31 +492,24 @@ useStyleTag(hideCursorStyle)
           </div>
           <!-- 语言切换菜单 -->
           <div>
-            <head-less-menu v-slot="{ open }">
-              <menu-button
-                class="actions-text actions-dropdown clickble"
-                ref="langMenuBtnEl"
-              >
-                <span class="clickble">{{ i18n.locale.value.toUpperCase() }}</span>
-                <img
-                  src="./assets/static-framework/dropdown.svg"
-                  class="actions-dropdown-icon transition transform transition-transform duration-250 clickble"
-                  :class="{
-                    'rotate-z-180': open
-                  }"
+            <dropdown-menu>
+              <template #trigger="{ open }">
+                <div
+                  class="actions-text actions-dropdown clickble"
+                  ref="langMenuBtnEl"
                 >
-              </menu-button>
-              <transition
-                enter-from-class="transform -translate-y-20px opacity-0"
-                leave-to-class="transform -translate-y-20px opacity-0"
-                enter-to-class="transform translate-y-0 opacity-100"
-                leave-from-class="transform translate-y-0 opacity-100"
-                enter-active-class="transition duration-250"
-                leave-active-class="transition duration-250"
-              >
-                <menu-items
-                  class="absolute top-32px flex flex-col bg-[rgba(0,0,0,0.8)] px-16px py-12px right-0"
-                >
+                  <span class="clickble">{{ i18n.locale.value.toUpperCase() }}</span>
+                  <img
+                    src="./assets/static-framework/dropdown.svg"
+                    class="actions-dropdown-icon transition transform transition-transform duration-250 clickble"
+                    :class="{
+                      'rotate-z-180': open
+                    }"
+                  >
+                </div>
+              </template>
+              <template #menuItems>
+                <div>
                   <menu-item>
                     <button
                       class="font-16px leading-24px font-sans text-left clickble"
@@ -534,9 +527,9 @@ useStyleTag(hideCursorStyle)
                       中文
                     </button>
                   </menu-item>
-                </menu-items>
-              </transition>
-            </head-less-menu>
+                </div>
+              </template>
+            </dropdown-menu>
           </div>
           <img
             src="./assets/static-framework/share.svg"
