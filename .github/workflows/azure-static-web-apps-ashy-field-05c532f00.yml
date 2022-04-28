@@ -1,5 +1,9 @@
 name: 构建并上传至 Azure Blob
 
+permissions:
+      id-token: write
+      contents: read
+
 on:
   push:
     branches:
