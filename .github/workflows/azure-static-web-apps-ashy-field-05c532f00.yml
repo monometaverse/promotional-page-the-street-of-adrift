@@ -49,6 +49,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: 安装 Azure CLI
+        run: |
+          sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
+          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+          AZ_REPO=$(lsb_release -cs)
+          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+          sudo apt-get update
+          sudo apt-get install azure-cli
+
       # 获取 yarn 缓存目录
       - name: 获取 yarn 缓存目录
         id: yarn-cache-dir-path
