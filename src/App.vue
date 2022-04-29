@@ -353,11 +353,11 @@ const goLoginPageAndWaitForMessage = (() => {
           userInfo.value = res.data
           childWindow?.close()
           console.log('window closed')
+          // 注销消息接收器
+          window.removeEventListener('message', messageHandler)
           // TODO: 继续获取用户对于 NFT 的预约情况
         }
       }
-      // 注销消息接收器
-      window.removeEventListener('message', messageHandler)
     }
   }
   return () => {
