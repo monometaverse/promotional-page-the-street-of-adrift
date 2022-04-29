@@ -339,13 +339,10 @@ onMounted(async () => {
 // 消息组件
 const message = useMessage()
 // 前往登录页，并等待登录消息
-const goLoginPageAndWaitForMessage = () => {
-  const childWindow = window.open('https://uat.mono.fun/login', '_blank')
-  if(!childWindow) { // 如果没有获取到跳转后的窗口
-    message.show(i18n.t('static.failedToOpenLoginWindow'), { color: 'red' })
-    return
-  }
-  window.addEventListener('message', async (ev) => {
+const goLoginPageAndWaitForMessage = (() => {
+  let childWindow: Window | null = null
+  // 消息接收器
+  const messageHandler = async (ev: MessageEvent) => {
     console.log(ev)
     // 检查来源，避免被跨站攻击
     if (ev.origin === 'https://uat.mono.fun') {
@@ -354,14 +351,25 @@ const goLoginPageAndWaitForMessage = () => {
         const res = await api.user.getLoginInfo()
         if (isSuccess(res)) {
           userInfo.value = res.data
-          childWindow.close()
+          childWindow?.close()
           console.log('window closed')
           // TODO: 继续获取用户对于 NFT 的预约情况
         }
       }
+      // 注销消息接收器
+      window.removeEventListener('message', messageHandler)
     }
-  }, { once: true })
-}
+  }
+  return () => {
+    childWindow = window.open('https://uat.mono.fun/login', '_blank')
+    if(!childWindow) { // 如果没有获取到跳转后的窗口
+      message.show(i18n.t('static.failedToOpenLoginWindow'), { color: 'red' })
+      return
+    }
+    // 注册消息接收器
+    window.addEventListener('message', messageHandler)
+  }
+})()
 // 登出
 const logout = async () => {
   const res = await api.user.logout()
