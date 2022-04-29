@@ -10,7 +10,9 @@
     "shareTheGame": "Share「The Street of Adrift」",
     "saveSahrePic": "Save",
     "toMyProfile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "logoutSuccess": "Logged out",
+    "failedToOpenLoginWindow": "Failed to open login window"
   },
   "home": {
     "gameInfo1": "The Street of Adrift, originally called \"Via Exilii\", actually is a commercial building but not a street. ",

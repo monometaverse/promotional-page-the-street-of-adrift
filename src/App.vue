@@ -340,7 +340,11 @@ onMounted(async () => {
 const message = useMessage()
 // 前往登录页，并等待登录消息
 const goLoginPageAndWaitForMessage = () => {
-  window.open('https://uat.mono.fun/login', '_blank')
+  const childWindow = window.open('https://uat.mono.fun/login', '_blank')
+  if(!childWindow) { // 如果没有获取到跳转后的窗口
+    message.show(i18n.t('static.failedToOpenLoginWindow'), { color: 'red' })
+    return
+  }
   window.addEventListener('message', async (ev) => {
     // 检查来源，避免被跨站攻击
     if (ev.origin !== 'https://uat.mono.fun') {
@@ -349,6 +353,7 @@ const goLoginPageAndWaitForMessage = () => {
         const res = await api.user.getLoginInfo()
         if (isSuccess(res)) {
           userInfo.value = res.data
+          childWindow.close()
           // TODO: 继续获取用户对于 NFT 的预约情况
         }
       }
@@ -360,6 +365,7 @@ const logout = async () => {
   const res = await api.user.logout()
   if (isSuccess(res)) {
     userInfo.value = null
+    message.show(i18n.t('static.logoutSuccess'), { color: 'green' })
   } else {
     console.log(res.message)
     message.show(res.message, { color: 'red' })

@@ -10,7 +10,9 @@
     "shareTheGame": "分享「彷徨之街」",
     "saveSahrePic": "保存图片",
     "toMyProfile": "查看个人主页",
-    "logout": "退出账户"
+    "logout": "退出账户",
+    "logoutSuccess": "退出成功",
+    "failedToOpenLoginWindow": "开启登录窗口失败"
   },
   "home": {
     "gameInfo1": "彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。",
