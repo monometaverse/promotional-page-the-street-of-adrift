@@ -34,6 +34,13 @@ export interface LoginInfo {
   intro: string
 }
 
+/**
+ * 预约状态
+ */
+export interface ReserveStatus {
+  status: 1 | 2
+}
+
 // 拦截器拦下来的错误的编号
 export enum interceptorsErrorCode {
   unknown = -1, // 未知错误
@@ -44,7 +51,7 @@ export enum interceptorsErrorCode {
 // 经过处理的 Axios
 interface MonoAxios extends AxiosInstance {
   get<T, R = MonoResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>
-  post<T, R = MonoResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>
+  post<T, R = MonoResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>
 }
 
 const monoAxios: MonoAxios = (() => {
@@ -105,24 +112,20 @@ export default {
     /**
      * NFT 预约
      */
-    reserve: (nftName: string) => {
-      return monoAxios.get<string>('/v1/project/reserve')
+    reserve: (nftName: string, projectId: string) => {
+      return monoAxios.post<string>('/v1/project/reserve', {
+        nft_id: nftName,
+        project_id: projectId
+      })
     },
     /**
      * 获取 NFT 预约状态
-     * @param nftNames NFT 名称
-     * TODO: 目前也是 mock 逻辑
+     * @param nft 名称（暂时随意）
+     * @param projectId 项目 id
+     * @param userId 用户 id
      */
-    getReservedState: (nftNames: string[]): MonoResponse<{ [p: string]: boolean }> => {
-      const dataRes: { [p: string]: boolean } = {}
-      for (let name of nftNames) {
-        dataRes[name] = localStorage.getItem(`NFTReserved:${name}`) === 'true'
-      }
-      return {
-        code: 0,
-        message: '获取完成',
-        data: dataRes
-      }
+    getReservedState: (nftName: string, projectId: string, userId: string) => {
+      return monoAxios.get<ReserveStatus>(`/v1/project/reserve_status?nft_id=${encodeURIComponent(nftName)}&project_id=${encodeURIComponent(projectId)}&user_id=${encodeURIComponent(userId)}`)
     }
   }
 }
