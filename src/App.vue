@@ -345,7 +345,7 @@ const goLoginPageAndWaitForMessage = (() => {
   const messageHandler = async (ev: MessageEvent) => {
     console.log(ev)
     // 检查来源，避免被跨站攻击
-    if (ev.origin === 'https://uat.mono.fun') {
+    if (ev.origin === 'https://uat.mono.fun' || ev.origin === 'https://uat-preview.mono.fun') {
       if (ev.data.isLogin) {
         // 登录成功了，尝试获取一下用户信息
         const res = await api.user.getLoginInfo()
