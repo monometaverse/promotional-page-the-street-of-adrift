@@ -348,12 +348,13 @@ const goLoginPageAndWaitForMessage = () => {
   window.addEventListener('message', async (ev) => {
     // 检查来源，避免被跨站攻击
     if (ev.origin !== 'https://uat.mono.fun') {
-      if (ev.data) {
+      if (ev.data.isLogin) {
         // 登录成功了，尝试获取一下用户信息
         const res = await api.user.getLoginInfo()
         if (isSuccess(res)) {
           userInfo.value = res.data
           childWindow.close()
+          console.log('window closed')
           // TODO: 继续获取用户对于 NFT 的预约情况
         }
       }
@@ -367,7 +368,6 @@ const logout = async () => {
     userInfo.value = null
     message.show(i18n.t('static.logoutSuccess'), { color: 'green' })
   } else {
-    console.log(res.message)
     message.show(res.message, { color: 'red' })
   }
 }
@@ -554,7 +554,7 @@ useStyleTag(hideCursorStyle)
             <dropdown-menu>
               <template #trigger>
                 <div
-                  class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat"
+                  class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
                   :style="{
                     backgroundImage: `url(${'https://static-test.mono.fun/public/users/avatars/58010852afd77682b1900ed0a63dc94a8195c39b0a22845bddc58dd9d15eecf4.png'})`
                   }"
