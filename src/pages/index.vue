@@ -194,7 +194,6 @@ onMounted(() => {
             class="w-[100%]"
             type="video/mp4"
             preload="metadata"
-            autoplay
             controls
           />
         </div>

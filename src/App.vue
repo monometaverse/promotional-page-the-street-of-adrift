@@ -11,13 +11,16 @@ import { storeToRefs } from 'pinia'
 import { useElementBounding, useElementSize, useEventListener } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
-import { Menu as HeadLessMenu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { MenuItem } from '@headlessui/vue'
+import DropdownMenu from './components/dropdown-menu.vue'
 import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.png'
+import api, { isSuccess } from './api'
+import { useMessage } from '@lemonneko/vuetify-message'
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
@@ -311,7 +314,7 @@ const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
 // 分享框
 const isShareDialogShow = ref(false)
 // 当挂载时
-onMounted(() => {
+onMounted(async () => {
   animationActive.value = true
   // 尝试获取已保存的语言
   const locale = localStorage.getItem('locale')
@@ -326,7 +329,55 @@ onMounted(() => {
       setLocale('en')
     }
   }
+  // 尝试获取用户账户信息
+  const res = await api.user.getLoginInfo()
+  if (isSuccess(res)) {
+    userInfo.value = res.data
+  }
 })
+// 消息组件
+const message = useMessage()
+// 前往登录页，并等待登录消息
+const goLoginPageAndWaitForMessage = (() => {
+  let childWindow: Window | null = null
+  // 消息接收器
+  const messageHandler = async (ev: MessageEvent) => {
+    console.log(ev)
+    // 检查来源，避免被跨站攻击
+    if (ev.origin === 'https://uat.mono.fun' || ev.origin === 'https://uat-preview.mono.fun') {
+      if (ev.data.isLogin) {
+        // 登录成功了，尝试获取一下用户信息
+        const res = await api.user.getLoginInfo()
+        if (isSuccess(res)) {
+          userInfo.value = res.data
+          childWindow?.close()
+          console.log('window closed')
+          // 注销消息接收器
+          window.removeEventListener('message', messageHandler)
+        }
+      }
+    }
+  }
+  return () => {
+    childWindow = window.open('https://uat.mono.fun/login', '_blank')
+    if(!childWindow) { // 如果没有获取到跳转后的窗口
+      message.show(i18n.t('static.failedToOpenLoginWindow'), { color: 'red' })
+      return
+    }
+    // 注册消息接收器
+    window.addEventListener('message', messageHandler)
+  }
+})()
+// 登出
+const logout = async () => {
+  const res = await api.user.logout()
+  if (isSuccess(res)) {
+    userInfo.value = null
+    message.show(i18n.t('static.logoutSuccess'), { color: 'green' })
+  } else {
+    message.show(res.message, { color: 'red' })
+  }
+}
 // 静态框架的引用
 const staticFramworkEl = ref<HTMLDivElement | null>(null)
 // 检测是否在静态框架上滑动
@@ -483,40 +534,83 @@ useStyleTag(hideCursorStyle)
             'duration-500 delay-500': animationActive
           }"
         >
-          <div class="actions-text clickble">
-            {{ i18n.t('static.login') }}
+          <!-- 登录和登录后的用户头像 -->
+          <div
+            v-if="!userInfo"
+            class="flex items-center justify-center"
+          >
+            <div
+              class="actions-text clickble"
+              @click="goLoginPageAndWaitForMessage"
+            >
+              {{ i18n.t('static.login') }}
+            </div>
+            <div class="actions-divider" />
+            <a
+              class="actions-text clickble"
+              href="https://uat.mono.fun/login"
+              target="blank"
+            >
+              {{ i18n.t('static.register') }}
+            </a>
           </div>
-          <div class="actions-divider" />
-          <div class="actions-text clickble">
-            {{ i18n.t('static.register') }}
+          <div
+            v-else
+            class="mr-3rem"
+          >
+            <dropdown-menu>
+              <template #trigger>
+                <div
+                  class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
+                  :style="{
+                    backgroundImage: `url(${'https://static-test.mono.fun/public/users/avatars/58010852afd77682b1900ed0a63dc94a8195c39b0a22845bddc58dd9d15eecf4.png'})`
+                  }"
+                />
+              </template>
+              <template #menuItems>
+                <div>
+                  <menu-item>
+                    <a
+                      class="font-16px leading-24px font-sans text-left clickble"
+                      :href="`https://uat.mono.fun/user/${userInfo?.id}`"
+                      target="_blank"
+                    >
+                      {{ i18n.t('static.toMyProfile') }}
+                    </a>
+                  </menu-item>
+                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <menu-item>
+                    <button
+                      class="font-16px leading-24px font-sans text-left clickble"
+                      @click="logout"
+                    >
+                      {{ i18n.t('static.logout') }}
+                    </button>
+                  </menu-item>
+                </div>
+              </template>
+            </dropdown-menu>
           </div>
           <!-- 语言切换菜单 -->
           <div>
-            <head-less-menu v-slot="{ open }">
-              <menu-button
-                class="actions-text actions-dropdown clickble"
-                ref="langMenuBtnEl"
-              >
-                <span class="clickble">{{ i18n.locale.value.toUpperCase() }}</span>
-                <img
-                  src="./assets/static-framework/dropdown.svg"
-                  class="actions-dropdown-icon transition transform transition-transform duration-250 clickble"
-                  :class="{
-                    'rotate-z-180': open
-                  }"
+            <dropdown-menu>
+              <template #trigger="{ open }">
+                <div
+                  class="actions-text actions-dropdown clickble flex items-center"
+                  ref="langMenuBtnEl"
                 >
-              </menu-button>
-              <transition
-                enter-from-class="transform -translate-y-20px opacity-0"
-                leave-to-class="transform -translate-y-20px opacity-0"
-                enter-to-class="transform translate-y-0 opacity-100"
-                leave-from-class="transform translate-y-0 opacity-100"
-                enter-active-class="transition duration-250"
-                leave-active-class="transition duration-250"
-              >
-                <menu-items
-                  class="absolute top-32px flex flex-col bg-[rgba(0,0,0,0.8)] px-16px py-12px right-0"
-                >
+                  <span class="clickble block">{{ i18n.locale.value.toUpperCase() }}</span>
+                  <img
+                    src="./assets/static-framework/dropdown.svg"
+                    class="actions-dropdown-icon transition transform transition-transform duration-250 clickble block"
+                    :class="{
+                      'rotate-z-180': open
+                    }"
+                  >
+                </div>
+              </template>
+              <template #menuItems>
+                <div>
                   <menu-item>
                     <button
                       class="font-16px leading-24px font-sans text-left clickble"
@@ -534,9 +628,9 @@ useStyleTag(hideCursorStyle)
                       中文
                     </button>
                   </menu-item>
-                </menu-items>
-              </transition>
-            </head-less-menu>
+                </div>
+              </template>
+            </dropdown-menu>
           </div>
           <img
             src="./assets/static-framework/share.svg"

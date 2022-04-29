@@ -18,7 +18,7 @@ import { useI18n } from 'vue-i18n'
 
 // pinia 状态管理
 const store = useStore()
-const { windowHeight, isOnMobile } = storeToRefs(store)
+const { windowHeight, isOnMobile, userInfo } = storeToRefs(store)
 // i18n
 const { t, locale } = useI18n()
 // 消息组件
@@ -30,6 +30,7 @@ const itemsList = ref<NFTItem[]>([
     description: 'nft.goldCoinInfo',
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
+    canBeReserved: true,
     customData: {
       childName: 'YX_Gold',
       scale: 4,
@@ -50,8 +51,9 @@ const itemsList = ref<NFTItem[]>([
   {
     name: 'nft.sliverCoinName',
     description: 'nft.sliverCoinInfo',
-    reserved: true,
+    reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
+    canBeReserved: true,
     customData: {
       childName: 'YX_Gold',
       scale: 4,
@@ -205,9 +207,14 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
   }
 })()
 // 预约按钮事件处理器
-const onReserveBtnClick = (index: number) => {
+const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
-  const res = API.nft.reserve(itemsList.value[index].name)
+  if (!userInfo.value) {
+    // TODO: 替换 i18n 文案
+    msg.show('需要先登录 Mono 账号，才能继续预约', { color: 'red' })
+    return
+  }
+  const res = await API.nft.reserve(itemsList.value[index].name, '03f3e7eb-fa25-485d-b224-b81105feca19')
   if (isSuccess(res)) {
     showReserveSuccessDialog(itemsList.value[index].name)
     itemsList.value[index].reserved = true
@@ -229,19 +236,38 @@ const reserveBtnPosition = computed<CSSProperties>(() => {
     top: `${top}px`
   }
 })
-// 当挂载时，显示第一个模型
-onMounted(() => {
-  modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
-  // 获取 NFT 预约状态
-  const res = API.nft.getReservedState(nftNames.value)
-  if (isSuccess(res)) {
-    console.log(res.data)
-    for (let it of itemsList.value) {
-      it.reserved = res.data[it.name]
-    }
-  } else {
-    msg.show(res.message, { color: 'red' })
+const getNFTReservedStatus = async () => {
+  if (!userInfo.value) {
+    return
   }
+
+  // 获取 NFT 预约状态，需要是已经登录的状态
+  for (let it of itemsList.value) {
+    if (!it.canBeReserved) continue // 如果是不能被预约的项目，跳过
+    const res = await API.nft.getReservedState(it.name, '03f3e7eb-fa25-485d-b224-b81105feca19', userInfo.value.id)
+    if (isSuccess(res)) {
+      it.reserved = res.data.status === 1
+    } else {
+      console.log(`NFT 预约状态获取失败，原因 ${res.message}， NFT 名称 ${it.name}`)
+    }
+  }
+}
+
+// 当挂载时，显示第一个模型
+onMounted(async () => {
+  modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
+  getNFTReservedStatus()
+})
+// 监听用户登录状态，一旦用户登录了，就获取 NFT 预约状态
+watchEffect(() => {
+  if (!userInfo.value) {
+    // 清除预约状态
+    for (let it of itemsList.value) {
+      it.reserved = false
+    }
+    return
+  }
+  getNFTReservedStatus()
 })
 </script>
 <template>

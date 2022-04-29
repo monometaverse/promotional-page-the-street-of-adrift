@@ -1,3 +1,4 @@
+import { LoginInfo } from './api/index'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
@@ -41,6 +42,8 @@ export const useStore = defineStore('main', () => {
     const device = new UAParser(navigator.userAgent).getDevice()
     return device.type === 'mobile' || device.type === 'tablet'
   })
+  // 用户信息
+  const userInfo = ref<LoginInfo | null>(null)
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -56,6 +59,7 @@ export const useStore = defineStore('main', () => {
     infoElPos,
     isOnMobile,
     isOnTablet,
-    isOnMobileByUserAgent
+    isOnMobileByUserAgent,
+    userInfo
   }
 })
