@@ -51,7 +51,7 @@ const itemsList = ref<NFTItem[]>([
   {
     name: 'nft.sliverCoinName',
     description: 'nft.sliverCoinInfo',
-    reserved: true,
+    reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
     canBeReserved: true,
     customData: {
@@ -237,7 +237,12 @@ const reserveBtnPosition = computed<CSSProperties>(() => {
   }
 })
 const getNFTReservedStatus = async () => {
-  if (!userInfo.value) return
+  if (!userInfo.value) {
+    // 清除预约状态
+    for (let it of itemsList.value) {
+      it.reserved = false
+    }
+  }
 
   // 获取 NFT 预约状态，需要是已经登录的状态
   for (let it of itemsList.value) {
