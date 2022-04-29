@@ -238,10 +238,7 @@ const reserveBtnPosition = computed<CSSProperties>(() => {
 })
 const getNFTReservedStatus = async () => {
   if (!userInfo.value) {
-    // 清除预约状态
-    for (let it of itemsList.value) {
-      it.reserved = false
-    }
+    return
   }
 
   // 获取 NFT 预约状态，需要是已经登录的状态
@@ -263,7 +260,13 @@ onMounted(async () => {
 })
 // 监听用户登录状态，一旦用户登录了，就获取 NFT 预约状态
 watchEffect(() => {
-  if (!userInfo.value) return
+  if (!userInfo.value) {
+    // 清除预约状态
+    for (let it of itemsList.value) {
+      it.reserved = false
+    }
+    return
+  }
   getNFTReservedStatus()
 })
 </script>
