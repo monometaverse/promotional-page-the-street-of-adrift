@@ -141,6 +141,10 @@ const doInfoDescAnimation = (enter: boolean, index: number) => {
 }
 // 切换函数
 const swtichTo = (index: number) => {
+  if (index === currentShowForNav.value) {
+    // 如果点击的是当前的角色，不播放动画
+    return
+  }
   currentShowForNav.value = index
   // 切换粒子图片
   if (allImagesForParticles.value) {
