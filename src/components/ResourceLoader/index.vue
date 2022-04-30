@@ -10,6 +10,9 @@ import draco1Encoder from '../../assets/draco/gltf/draco_encoder.js?url'
 import { computed, CSSProperties, onMounted, ref, watch } from 'vue'
 import { DataTexture } from 'three'
 import { gsap } from 'gsap'
+import logoEn from '../../assets/home-page/tsoa-logo-en.svg'
+import logoZh from '../../assets/home-page/tsoa-logo.svg'
+import { useI18n } from 'vue-i18n'
 // 手动保持引用
 [draco0Decoder, draco0Encoder, draco1Decoder, draco1Encoder]
 // 控制图片的最大高度或宽度
@@ -18,6 +21,8 @@ const picSize = ref(360 * 1.5)
 const emits = defineEmits<{
   (events: 'loadComplete', loaded: LoadedResources): void
 }>()
+// i18n
+const { locale } = useI18n()
 // 加载过程中已经加载好的资源暂存
 const loadingResources: LoadingResources = []
 // 加载进度
@@ -45,8 +50,23 @@ const opacityForProgressItem = (index: number): CSSProperties => {
     transition: 'opacity 250ms'
   }
 }
+// 图标是否加载完成
+const logoLoaded = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
+  // 先加载图标
+  await new Promise<void>((reslove) => {
+    // 加载英文版图标
+    const img = new Image()
+    img.src = logoEn
+    img.onload = () => {
+      // 加载中文版图标
+      img.src = logoZh
+      img.onload = () => reslove()
+    }
+  })
+  // 显示进度条
+  logoLoaded.value = true
   let loaded = 0
   const all = resources.length
   // 实例化 three 提供的 gltf 加载器
@@ -123,9 +143,15 @@ onMounted(() => {
 <template>
   <div class="res-loader-layer">
     <div class="loading-block">
-      <div class="game-logo cover-no-repeat-center" />
+      <div
+        class="game-logo cover-no-repeat-center"
+        :lang="locale"
+      />
       <!--加载条-->
-      <div class="progress-bar cover-no-repeat-center">
+      <div
+        class="progress-bar cover-no-repeat-center"
+        v-if="logoLoaded"
+      >
         <div class="progress-bar-inner cover-no-repeat-center">
           <!--左侧斜杠-->
           <div class="progress-bar-left">
@@ -171,6 +197,14 @@ onMounted(() => {
   position: absolute;
   left: @logo-left;
   top: @logo-top;
+
+  &:lang(zh) {
+    background-image: url('../../assets/home-page/tsoa-logo.svg');
+  }
+
+  &:lang(en) {
+    background-image: url('../../assets/home-page/tsoa-logo-en.svg');
+  }
 }
 // 加载层
 .res-loader-layer {

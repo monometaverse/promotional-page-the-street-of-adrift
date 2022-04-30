@@ -99,6 +99,7 @@ onMounted(() => {
         'logo-copy-center': animationFrom && animationActive,
         'duration-500 delay-0 transition-all': animationActive
       }"
+      :lang="locale"
     />
     <div
       class="community-btns"
@@ -220,6 +221,14 @@ onMounted(() => {
   top: calc(50% - @logo-height / 2);
   left: 64px;
   background-image: url("../assets/home-page/tsoa-logo.svg");
+
+  &:lang(zh) {
+    background-image: url("../assets/home-page/tsoa-logo.svg");
+  }
+
+  &:lang(en) {
+    background-image: url("../assets/home-page/tsoa-logo-en.svg");
+  }
 }
 
 .logo-copy-center {
