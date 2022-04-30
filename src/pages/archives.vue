@@ -6,6 +6,7 @@ import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 import { usePagination } from '../utils'
 import { useI18n } from 'vue-i18n'
+import { useElementBounding } from '@vueuse/core'
 
 // i18n
 const { t, locale } = useI18n()
@@ -31,6 +32,9 @@ const showCurrentNameIndex = ref(0)
 const showCurrentName = computed(() => {
   return picAndNameList.value[showCurrentNameIndex.value].name
 })
+// 标题元素
+const titleNameEl = ref<HTMLDivElement>()
+const titleNameBounding = useElementBounding(titleNameEl)
 // 标题动画定时
 let animationTimeout = -1
 const translateDistance = 100
@@ -305,7 +309,10 @@ const layer3Style = computed<CSSProperties>(() => {
         class="title"
         :style="layer1Style"
       >
-        <div class="title-name">
+        <div
+          class="title-name"
+          ref="titleNameEl"
+        >
           {{ t('archives.' + showCurrentName) }}
         </div>
         <div class="title-number">
@@ -366,7 +373,12 @@ const layer3Style = computed<CSSProperties>(() => {
         />
       </div>
       <!-- 只有手机端会显示的小图 -->
-      <div class="small-pic-container">
+      <div
+        class="small-pic-container"
+        :class="{
+          'small-pic-container-two-line': titleNameBounding.height.value > 46
+        }"
+      >
         <div
           class="small-pic-inner"
           :style="smallPicInnerStyle"
@@ -672,6 +684,10 @@ const layer3Style = computed<CSSProperties>(() => {
     overflow: hidden;
     display: block;
     top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt + @title-line-height + @title-number-line-height + @title-mt + @small-pic-mt);
+  }
+
+  .small-pic-container-two-line {
+    top: calc(@all-top + @pic-height + @indicator-height + @indicators-mt + @title-line-height + @title-number-line-height + @title-mt + @small-pic-mt + 46px);
   }
 
   .small-pic-inner {
