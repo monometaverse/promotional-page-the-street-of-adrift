@@ -389,7 +389,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
   let canScroll = true
   return (e, direction) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value) {
+    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -415,6 +415,8 @@ const hideCursorStyle = computed(() => {
 })
 // 移动端导航是否已打开
 const mobileNavOpen = ref(false)
+// 移动端导航开关事件
+const onMobileNavChange = (newVal: boolean) => mobileNavOpen.value = newVal
 useStyleTag(hideCursorStyle)
 </script>
 <template>
@@ -488,6 +490,8 @@ useStyleTag(hideCursorStyle)
           :animation-active="animationActive"
           :animation-from="animationFrom"
           @item-selected="onNavItemSelected"
+          v-model="mobileNavOpen"
+          @update:model-value="onMobileNavChange"
         />
         <!-- 桌面和平板端导航 -->
         <nav-on-desktop

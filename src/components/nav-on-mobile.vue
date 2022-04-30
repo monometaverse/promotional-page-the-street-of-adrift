@@ -6,25 +6,25 @@ import navOnDesktop from './nav-on-desktop.vue'
 const props = defineProps<{
   animationFrom: boolean,
   animationActive: boolean,
-  routes: { name: string, to: string }[]
+  routes: { name: string, to: string }[],
+  modelValue: boolean
 }>()
 // 定义会触发的事件
 const emits = defineEmits<{
-  (e: 'itemSelected', to: string): void
+  (e: 'itemSelected', to: string): void,
+  (e: 'update:modelValue', newVal: boolean): void
 }>()
-// 菜单是否打开
-const menuOpen = ref(false)
 
 const { onItemSelected, onMenuTransitionEnd } = (() => {
   const willGoTo = ref('')
   // 接收桌面端导航事件
   const onItemSelected0 = (to: string) => {
-    menuOpen.value = false
+    emits('update:modelValue', false)
     willGoTo.value = to
   }
   // 接收菜单动画结束事件
   const onMenuTransitionEnd0 = () => {
-    if (!menuOpen.value) emits('itemSelected', willGoTo.value)
+    if (!props.modelValue) emits('itemSelected', willGoTo.value)
     willGoTo.value = ''
   }
   return {
@@ -39,7 +39,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
     <div
       class="absolute w-[100vw] h-[100vh] transform bg-[rgba(0,0,0,0.9)] duration-250 top-0 left-0 pointer-events-auto"
       :class="{
-        '-translate-y-[100%]': !menuOpen
+        '-translate-y-[100%]': !modelValue
       }"
       @transitionend="onMenuTransitionEnd"
     >
@@ -80,24 +80,24 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
     <!-- 左上角菜单图标 -->
     <div
       class="absolute top-24px left-24px pointer-events-auto"
-      @click="menuOpen = !menuOpen"
+      @click="emits('update:modelValue', !modelValue)"
     >
       <div
         class="mb-5px h-3px w-24px bg-white transition-transform duration-250 origin-top-left"
         :class="{
-          'transform rotate-z-45': menuOpen
+          'transform rotate-z-45': modelValue
         }"
       />
       <div
         class="mb-5px h-3px w-24px bg-white transition-transform duration-250 origin-left"
         :class="{
-          'transform scale-x-0': menuOpen
+          'transform scale-x-0': modelValue
         }"
       />
       <div
         class="h-3px w-24px bg-white transition-transform duration-250 origin-bottom-left"
         :class="{
-          'transform -rotate-z-45': menuOpen
+          'transform -rotate-z-45': modelValue
         }"
       />
     </div>
