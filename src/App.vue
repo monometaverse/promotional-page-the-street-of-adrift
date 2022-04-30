@@ -283,8 +283,8 @@ useEventListener(window, 'mouseover', (event) => {
 })
 // 监听触摸移动事件
 useEventListener(window, 'touchmove', (event) => {
-  isTouchOverScrollbleOrDragble.value = window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll'
-  console.log(window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll')
+  const target = event.target as HTMLElement
+  isTouchOverScrollbleOrDragble.value = window.getComputedStyle(target).overflowY === 'scroll' || target.classList.contains('dragble')
 })
 // 监听鼠标滚动事件以切换页面
 useEventListener(document, 'wheel', (() => {
