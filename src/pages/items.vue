@@ -15,6 +15,7 @@ import '@lemonneko/vuetify-message/dist/style.css'
 import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
+import api from '../api'
 
 // pinia 状态管理
 const store = useStore()
@@ -87,6 +88,8 @@ const nftNames = computed(() => {
   itemsList.value.forEach(it => names.push(it.name))
   return names
 })
+// 是否选中“发送所有邮件”
+const isSendAllChecked = ref(true)
 // 当前正在显示的 NFT
 const { currentIndex, prevOrNext } = usePagination(itemsList)
 // 当前正在显示的 NFT 索引，供动画使用
@@ -188,16 +191,21 @@ const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
   const show = ref(false)
-  const name = ref('')
+  const name = ref('nft.goldCoinName')
   // 显示预约成功框
   // 请传入用来进行本地化的键
   const showDialog = (nftName: string) => {
     name.value = nftName
     show.value = true
   }
-  const closeDialog = () => {
+  const closeDialog = async (checked?: boolean) => {
     name.value = ''
     show.value = false
+    if (checked && isSendAllChecked.value) {
+      // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
+      await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
+    }
+    isSendAllChecked.value = true
   }
   return {
     showReserveSuccessDialog: showDialog,
@@ -380,20 +388,34 @@ watchEffect(() => {
         <div class="flex justify-end w-[100%] pt-24px pr-24px">
           <div
             class="close-btn clickble"
-            @click="closeReserveSuccessDialog"
+            @click="closeReserveSuccessDialog(false)"
           />
         </div>
-        <!-- TODO: 跟进设计稿，添加预约成功的物品名称，和接收邮件的选择框 -->
         <span class="font-serif font-900 leading-46px text-32px <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
+        <!-- 预约成功的物品的名称 -->
+        <span class="font-sans text-1rem <sm:text-0.75rem">{{ t('nft.reservedItem', { name: t(reservedNftName) }) }}</span>
         <!-- 预约成功图片 -->
         <div class="success-pic-container p-14px">
           <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
         </div>
+        <!-- 勾选框，是否接收所有关于彷徨之街的邮件 -->
+        <div class="flex items-center gap-x-0.5rem">
+          <input
+            type="checkbox"
+            :checked="isSendAllChecked"
+            id="receiveAll"
+          >
+          <label
+            for="receiveAll"
+            class="font-sans text-0.75rem leading-1.125rem"
+          >{{ t('nft.receiveEmailCheckboxText') }}</label>
+        </div>
+        <!-- 确定按钮 -->
         <div>
           <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
             <div
               class="reserve-success-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
-              @click="closeReserveSuccessDialog"
+              @click="closeReserveSuccessDialog(true)"
             />
           </div>
           <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-96px h-32px text-16px leading-23px -translate-y-32px)">
