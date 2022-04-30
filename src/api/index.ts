@@ -126,6 +126,12 @@ export default {
      */
     getReservedState: (nftName: string, projectId: string, userId: string) => {
       return monoAxios.get<ReserveStatus>(`/v1/project/reserve_status?nft_id=${encodeURIComponent(nftName)}&project_id=${encodeURIComponent(projectId)}&user_id=${encodeURIComponent(userId)}`)
+    },
+    /**
+     * 接收所有邮件
+     */
+    receiveAllEmails: (projectId: string) => {
+      return monoAxios.post<string>('/v1/project/reserve_check', { project_id: projectId })
     }
   }
 }

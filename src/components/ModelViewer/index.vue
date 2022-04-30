@@ -64,5 +64,6 @@ defineExpose({
     ref="canvasEl"
     :width="width"
     :height="height"
+    class="dragble"
   />
 </template>

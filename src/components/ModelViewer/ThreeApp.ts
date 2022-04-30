@@ -33,6 +33,8 @@ export class ThreeApp {
     this.orbitControls = new OrbitControls(this.camera, this.canvasEl)
     this.orbitControls.enableDamping = true
     this.orbitControls.autoRotate = true
+    this.orbitControls.enableZoom = false // 禁止缩放
+    this.orbitControls.enablePan = false // 禁止改变位置
     // 初始化场景
     this.scene = new Scene()
     // 设置统一的环境贴图

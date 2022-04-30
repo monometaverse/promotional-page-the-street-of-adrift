@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import particlesForCharacter from './components/particles-for-characters.vue'
 import ResourceLoader from './components/ResourceLoader/index.vue'
-import { computed, CSSProperties, onMounted, ref, watch } from 'vue'
+import { computed, CSSProperties, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { useRoute, useRouter } from 'vue-router'
@@ -240,9 +240,22 @@ const mouseInnerStyle = ref<CSSProperties>({
   top: `${innerHeight / 2}px`
 })
 // 鼠标扩散圈的样式
-const mouseClickStyle = ref<CSSProperties>({})
+const mouseClickStyleArgs = reactive({
+  left: 0,
+  top: 0,
+  opacity: 0,
+  scale: 0
+})
+const mouseClickStyle = computed<CSSProperties>(() => ({
+  top: mouseClickStyleArgs.top + 'px',
+  left: mouseClickStyleArgs.left + 'px',
+  opacity: mouseClickStyleArgs.opacity + '',
+  transform: `scale(${mouseClickStyleArgs.scale})`
+}))
 // 鼠标是否在可点击的物体上
 const isMouseOverClickable = ref(false)
+// 鼠标是否在可滚动的元素上
+const isMouseOverScrollble = ref(false)
 // 是否在可滚动或可拖动物体上触摸
 const isTouchOverScrollbleOrDragble = ref(false)
 // 监听屏幕内部鼠标移动事件
@@ -265,33 +278,35 @@ watch(store.mousePos, (val) => {
 })
 // 监听鼠标点击事件
 useEventListener(window, 'click', (event) => {
-  mouseClickStyle.value.left = (event.x - 24) + 'px'
-  mouseClickStyle.value.top = (event.y - 24) + 'px'
-  gsap.killTweensOf(mouseClickStyle.value)
-  gsap.fromTo(mouseClickStyle.value, {
+  mouseClickStyleArgs.left = event.x - 24
+  mouseClickStyleArgs.top = event.y - 24
+  gsap.killTweensOf(mouseClickStyleArgs)
+  gsap.fromTo(mouseClickStyleArgs, {
     opacity: 1,
-    transform: 'scale(0)'
+    scale: 0
   }, {
     opacity: 0,
-    transform: 'scale(2)',
+    scale: 2,
     duration: 0.5
   })
 })
 // 监听鼠标移入事件
 useEventListener(window, 'mouseover', (event) => {
-  isMouseOverClickable.value = (event.target as HTMLElement).classList.contains('clickble')
+  const target = event.target as HTMLElement
+  isMouseOverClickable.value = target.classList.contains('clickble')
+  isMouseOverScrollble.value = window.getComputedStyle(target).overflowY === 'scroll'
 })
 // 监听触摸移动事件
 useEventListener(window, 'touchmove', (event) => {
-  isTouchOverScrollbleOrDragble.value = window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll'
-  console.log(window.getComputedStyle(event.target as HTMLElement).overflowY === 'scroll')
+  const target = event.target as HTMLElement
+  isTouchOverScrollbleOrDragble.value = window.getComputedStyle(target).overflowY === 'scroll' || target.classList.contains('dragble')
 })
 // 监听鼠标滚动事件以切换页面
 useEventListener(document, 'wheel', (() => {
   let canScroll = true
   return (event: WheelEvent) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isShareDialogShow.value) {
+    if (canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -385,7 +400,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
   let canScroll = true
   return (e, direction) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value) {
+    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -411,6 +426,8 @@ const hideCursorStyle = computed(() => {
 })
 // 移动端导航是否已打开
 const mobileNavOpen = ref(false)
+// 移动端导航开关事件
+const onMobileNavChange = (newVal: boolean) => mobileNavOpen.value = newVal
 useStyleTag(hideCursorStyle)
 </script>
 <template>
@@ -484,6 +501,8 @@ useStyleTag(hideCursorStyle)
           :animation-active="animationActive"
           :animation-from="animationFrom"
           @item-selected="onNavItemSelected"
+          v-model="mobileNavOpen"
+          @update:model-value="onMobileNavChange"
         />
         <!-- 桌面和平板端导航 -->
         <nav-on-desktop

@@ -141,6 +141,10 @@ const doInfoDescAnimation = (enter: boolean, index: number) => {
 }
 // 切换函数
 const swtichTo = (index: number) => {
+  if (index === currentShowForNav.value) {
+    // 如果点击的是当前的角色，不播放动画
+    return
+  }
   currentShowForNav.value = index
   // 切换粒子图片
   if (allImagesForParticles.value) {
@@ -219,6 +223,9 @@ watchEffect(() => {
       <div
         class="info-title"
         :style="nameStyle"
+        :class="{
+          '!text-3rem !<xl:text-2rem! <sm:1.5rem': locale === 'en'
+        }"
       >
         {{ t(`characters.${ characters[currentShow] }.name`) }}
       </div>
@@ -254,7 +261,7 @@ watchEffect(() => {
           'info-divider-hide': isDividerHide
         }"
       />
-      <div class="info-desc">
+      <div class="info-desc custom-scrollbar">
         {{ t(`characters.${ characters[currentShow] }.info`) }}
       </div>
     </div>
@@ -340,7 +347,7 @@ watchEffect(() => {
 // 角色介绍
 .info {
   position: absolute;
-  right: 375px;
+  right: calc(375px + 50vw - 960px);
   bottom: calc(171px + 50vh - 540px);
 
   &-title {
@@ -348,6 +355,7 @@ watchEffect(() => {
     line-height: 92px;
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
+    max-width: 480px;
   }
 
   &-title-en {
@@ -410,6 +418,8 @@ watchEffect(() => {
     font-weight: 400;
     font-family: 'Noto Sans SC', sans-serif;
     line-height: 28px;
+    max-height: 240px;
+    overflow-y: scroll;
   }
 }
 // 角色背后的矩阵
@@ -474,6 +484,7 @@ watchEffect(() => {
     &-title {
       font-size: 48px;
       line-height: 69px;
+      max-width: 400px;
     }
 
     &-title-en {
@@ -483,6 +494,7 @@ watchEffect(() => {
 
     &-desc {
       width: 400px;
+      max-height: 200px;
     }
   }
 }
