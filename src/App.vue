@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import particlesForCharacter from './components/particles-for-characters.vue'
 import ResourceLoader from './components/ResourceLoader/index.vue'
-import { computed, CSSProperties, onMounted, ref, watch } from 'vue'
+import { computed, CSSProperties, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { useRoute, useRouter } from 'vue-router'
@@ -240,7 +240,18 @@ const mouseInnerStyle = ref<CSSProperties>({
   top: `${innerHeight / 2}px`
 })
 // 鼠标扩散圈的样式
-const mouseClickStyle = ref<CSSProperties>({})
+const mouseClickStyleArgs = reactive({
+  left: 0,
+  top: 0,
+  opacity: 0,
+  scale: 0
+})
+const mouseClickStyle = computed<CSSProperties>(() => ({
+  top: mouseClickStyleArgs.top + 'px',
+  left: mouseClickStyleArgs.left + 'px',
+  opacity: mouseClickStyleArgs.opacity + '',
+  transform: `scale(${mouseClickStyleArgs.scale})`
+}))
 // 鼠标是否在可点击的物体上
 const isMouseOverClickable = ref(false)
 // 鼠标是否在可滚动的元素上
@@ -267,15 +278,15 @@ watch(store.mousePos, (val) => {
 })
 // 监听鼠标点击事件
 useEventListener(window, 'click', (event) => {
-  mouseClickStyle.value.left = (event.x - 24) + 'px'
-  mouseClickStyle.value.top = (event.y - 24) + 'px'
-  gsap.killTweensOf(mouseClickStyle.value)
-  gsap.fromTo(mouseClickStyle.value, {
+  mouseClickStyleArgs.left = event.x - 24
+  mouseClickStyleArgs.top = event.y - 24
+  gsap.killTweensOf(mouseClickStyleArgs)
+  gsap.fromTo(mouseClickStyleArgs, {
     opacity: 1,
-    transform: 'scale(0)'
+    scale: 0
   }, {
     opacity: 0,
-    transform: 'scale(2)',
+    scale: 2,
     duration: 0.5
   })
 })
