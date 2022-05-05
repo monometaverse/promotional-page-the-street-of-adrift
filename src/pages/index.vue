@@ -101,6 +101,24 @@ onMounted(() => {
       }"
       :lang="locale"
     />
+    <!-- 左上角跳转按钮 -->
+    <div class="absolute top-4rem left-4rem <sm:hidden flex">
+      <a
+        class="mr-2.25rem clickble"
+        href="https://mono.fun"
+        target="_blank"
+      >
+        <img
+          src="../assets/home-page/mono.svg"
+          class="w-2rem h-2rem object-center object-contain clickble"
+        >
+      </a>
+      <img
+        src="../assets/home-page/caramel-mocha.svg"
+        class="w-2rem h-2rem object-center object-contain"
+      >
+    </div>
+    <!-- 社交媒体按钮 -->
     <div
       class="community-btns"
     >

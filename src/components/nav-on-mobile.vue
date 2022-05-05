@@ -74,6 +74,23 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
           </a>
         </div>
       </div>
+      <!-- 左上角跳转按钮 -->
+      <div class="absolute top-4.5rem right-3rem flex">
+        <a
+          class="mr-2.25rem clickble"
+          href="https://mono.fun"
+          target="_blank"
+        >
+          <img
+            src="../assets/home-page/mono.svg"
+            class="w-2rem h-2rem object-center object-contain clickble"
+          >
+        </a>
+        <img
+          src="../assets/home-page/caramel-mocha.svg"
+          class="w-2rem h-2rem object-center object-contain"
+        >
+      </div>
       <!-- 背景格子 -->
       <div class="background w-453px h-313px bg-left bg-no-repeat bg-contain bottom-24px absolute" />
     </div>

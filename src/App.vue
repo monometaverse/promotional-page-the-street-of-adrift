@@ -651,6 +651,17 @@ useStyleTag(hideCursorStyle)
               </template>
             </dropdown-menu>
           </div>
+          <!-- 返回项目详情页 -->
+          <a
+            class="ml-3rem <xl:ml-2rem"
+            href="https://mono.fun/project/03f3e7eb-fa25-485d-b224-b81105feca19"
+            target="_blank"
+          >
+            <img
+              src="./assets/static-framework/back-to-details.svg"
+              class="clickble object-center object-contain w-1rem h-1rem"
+            >
+          </a>
           <img
             src="./assets/static-framework/share.svg"
             class="actions-share clickble"
