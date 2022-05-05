@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useStore } from '../store'
 import { shuffle } from 'lodash'
+import { useEventListener } from '@vueuse/core'
 
 // 状态管理
 const store = useStore()
@@ -28,17 +29,14 @@ watchEffect(() => {
   // 当图片为空时
   if (newVal.width === 0) {
     targetAlpha = 0
-    if (points.length === 0) {
-      // 如果没有存在的粒子，就直接忽略
-      return
-    } else {
+    if (points.length !== 0) {
       // 如果有存在的粒子，让粒子分散到屏幕各处，然后消失
       points.forEach((it) => {
         it.targetX = Math.random() * (canvasEl.value?.width ?? 0)
         it.targetY = Math.random() * (canvasEl.value?.height ?? 0)
       })
-      return
     }
+    return
   }
   // 如果没有获取到角色信息块的位置，停止处理
   if (!infoElPos.value.x && !infoElPos.value.y) return
@@ -178,6 +176,10 @@ const render = () => {
   }
   if (!stopRender.value) requestAnimationFrame(render)
 }
+// 画布宽高改变事件
+useEventListener('resize', () => {
+  if (canvasCtx.value) canvasCtx.value.globalAlpha = 0
+})
 // 当挂载时开始帧刷
 onMounted(() => {
   requestAnimationFrame(render)

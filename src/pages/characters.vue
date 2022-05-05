@@ -1,6 +1,6 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties,  onDeactivated, onMounted, ref, watchEffect } from 'vue'
+import { computed, CSSProperties,  onActivated,  onDeactivated, onMounted, ref, watchEffect } from 'vue'
 import { gsap } from 'gsap'
 
 import { useStore } from '../store'
@@ -172,6 +172,11 @@ onMounted(() => {
 // 当页面休眠时，移除正在显示的粒子图片
 onDeactivated(() => {
   showingCharacter.value = new Image()
+})
+// 当页面重新激活时，添加当前正在显示的粒子图片
+onActivated(() => {
+  // @ts-ignore
+  showingCharacter.value = store.getRes(characters.value[currentShow.value] + 'Org', 'particle').value as HTMLImageElement
 })
 // 角色信息块引用
 const infoEl = ref<HTMLDivElement>()
