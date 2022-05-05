@@ -118,10 +118,10 @@ const stopRender = ref(false)
 // 是否暂停绘制，在获取新的图片信息时，需要暂停点的绘制，否则会获取到已经存在的点的信息，并且把这些点的位置信息误当成图片信息
 const pausePointRender = ref(false)
 // 鼠标距离目标点多少会被吸引
-const mouseAbsorbDistance = 64
-const mouseAbsorbDistanceMax = 128
+const mouseAbsorbDistance = 32
+const mouseAbsorbDistanceMax = 256
 // 当在最大受影响范围内时，最大的偏移距离
-const maxOffset = 32
+const maxOffset = 64
 // 全局透明度
 let targetAlpha = 1
 // 渲染函数
@@ -146,8 +146,8 @@ const render = () => {
         if (mouseDistanceCurrent <= mouseAbsorbDistance) {
           if (mouseDistance <= mouseAbsorbDistanceMax) {
             // 当鼠标和目标点的距离小于最小受影响范围时，粒子移动到鼠标的位置，而不是目标点的位置
-            it.x += (mousePos.value.x + Math.random() * 32 - 16 - it.x) / 10
-            it.y += (mousePos.value.y + Math.random() * 32 - 16 - it.y) / 10
+            it.x += (mousePos.value.x + Math.random() * 32 - 16 - it.x) / 30
+            it.y += (mousePos.value.y + Math.random() * 32 - 16 - it.y) / 30
           } else {
             // 偏移的距离，斜边长度
             const percent = mouseAbsorbDistance / mouseDistance * maxOffset
