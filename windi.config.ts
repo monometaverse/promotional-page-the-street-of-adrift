@@ -10,7 +10,8 @@ export default defineConfig({
         sans: ['Noto Sans SC', 'sans-serif'],
         serif: ['Noto Serif SC', 'sans-serif'],
         monsterrat: ['Montserrat', 'sans-serif'],
-        poppins: ['Poppins', 'sans-serif']
+        poppins: ['Poppins', 'sans-serif'],
+        inter: ['Inter', 'sans-serif']
       },
     },
     screens: {

@@ -5,11 +5,11 @@ import { computed, CSSProperties, onMounted, ref } from 'vue'
 import { useStore } from '../store'
 import scrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
-import { useMediaControls } from '@vueuse/core'
+import { useElementBounding, useMediaControls } from '@vueuse/core'
 
 // states
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll, isOnMobile } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll, mousePos, windowHeight, windowWidth } = storeToRefs(store)
 
 // i18n
 const { t, locale } = useI18n()
@@ -21,6 +21,21 @@ const logoCopyStyle = ref<CSSProperties>({})
 const showDescriptionText = ref(false)
 // 是否将元素转移到动画开始的状态
 const animationFrom = ref(false)
+// 神秘文字
+const secretMsg = ref<HTMLDivElement>()
+const secretMsgBounding = useElementBounding(secretMsg)
+const secretMsgLightBounding = computed(() => {
+  let top = secretMsgBounding.y.value
+  if (top < 0) {
+    top += windowHeight.value
+  } else if (top > windowHeight.value) {
+    top -= windowHeight.value
+  }
+  return {
+    top,
+    left: secretMsgBounding.x.value
+  }
+})
 // 是否激活动画
 const animationActive = ref(false)
 // 各个元素的动画延迟
@@ -180,6 +195,30 @@ onMounted(() => {
         }"
       >{{ t('home.gameInfo2') }}</span>
     </div>
+    <!-- 神秘文字 -->
+    <div
+      class="absolute bottom-4rem left-4rem <sm:hidden <xl:(bottom-2rem left-2rem) overflow-hidden"
+      ref="secretMsg"
+    >
+      <div
+        class="absolute w-4rem h-4rem transform -translate-x-2rem -translate-y-2rem flex justify-center items-center rounded-full pointer-events-none"
+        :style="{
+          background: 'rgba(255, 255, 255, 0.5)',
+          filter: 'blur(8px)',
+          top: mousePos.y - secretMsgLightBounding.top + 'px', // 解决绝对定位的偏移问题
+          left: mousePos.x - secretMsgLightBounding.left + 'px',
+          'mix-blend-mode': 'screen',
+        }"
+      >
+        <div
+          class="w-2rem h-2rem filter-[blur(6px)] bg-[rgba(255, 255, 255, 1)] rounded-full pointer-events-none"
+        />
+      </div>
+      <span
+        class="font-inter font-400 text-0.75rem leading-1rem secret-msg"
+        :style="{'mix-blend-mode': 'screen'}"
+      >▽▲▽▽▽▽▲▽▽▽▲▽▲▲▲▲▽▲▽▲▽▲▲▲▽▽▲▽▽▽▽▽▽▽▲▲▽▽▽▲▽▽▲▲▽▽▲▽</span>
+    </div>
     <scroll-hint
       :class="scrollHintAnimationClass"
       @transitionend="onScrollHintTransitionEnd"
@@ -230,6 +269,17 @@ onMounted(() => {
 .video-container {
   width: 50vw;
   height: calc(50vw / 16 * 9);
+}
+
+.secret-msg {
+  transition-property: opacity;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+  opacity: 0.1;
+
+  &:hover {
+    opacity: 0.3;
+  }
 }
 // logo 的复制体
 .logo-copy {

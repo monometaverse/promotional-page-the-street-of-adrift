@@ -34,6 +34,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  pointer-events: none;
 
   &-text {
     font-family: "Poppins", sans-serif;
