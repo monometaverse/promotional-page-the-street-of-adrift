@@ -131,6 +131,11 @@ const doInfoDescAnimation = (enter: boolean, index: number) => {
       if (enter) return
       // 真正修改目前正在显示的索引
       currentShow.value = index
+      // 切换粒子图片
+      if (allImagesForParticles.value) {
+        // @ts-ignore
+        showingCharacter.value = store.getRes(characters.value[currentShow.value] + 'Org', 'particle').value as HTMLImageElement
+      }
       // 开始进入动画
       doPaintingAnimation(true)
       setTimeout(doNameAnimation, delay.name, true)
@@ -146,11 +151,6 @@ const swtichTo = (index: number) => {
     return
   }
   currentShowForNav.value = index
-  // 切换粒子图片
-  if (allImagesForParticles.value) {
-    // @ts-ignore
-    showingCharacter.value = store.getRes(characters.value[currentShowForNav.value] + 'Org', 'particle').value as HTMLImageElement
-  }
   // 取消所有正在进行的动画和动画定时
   gsap.killTweensOf(paintingArgs.value)
   clearTimeout(nameLeaveTimeout)
