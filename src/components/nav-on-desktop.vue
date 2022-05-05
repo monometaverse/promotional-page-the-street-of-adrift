@@ -27,8 +27,7 @@ const emits = defineEmits<{
     }"
   >
     <div class="navigation-content">
-      <!--TODO:替换成 i18n 文案-->
-      <a
+      <span
         v-for="theRoute of routes"
         class="navigation-item clickble flex justify-end"
         :key="theRoute.name"
@@ -41,7 +40,7 @@ const emits = defineEmits<{
           {{ t(theRoute.name) }}
         </div>
         <div class="navigation-item-icon cover-no-repeat-center clickble" />
-      </a>
+      </span>
     </div>
     <div class="navigation-line" />
   </div>
