@@ -101,7 +101,8 @@ watchEffect(() => {
       points[i].targetY = offsetY + (pointsPos[i].y + Math.random() - 0.5) / 1.5
     } else {
       // 生成缺少的点
-      points.push({
+      const index = Math.floor(Math.random() * pointsPos.length) // 新的点会被插入到的位置
+      points.splice(index, 0, {
         x: Math.random() * canvasCtx.value.canvas.width,
         y: Math.random() * canvasCtx.value.canvas.height,
         targetX: offsetX + (pointsPos[i].x + Math.random() - 0.5) / 1.5,
