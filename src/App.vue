@@ -8,7 +8,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
-import { useElementBounding, useElementSize, useEventListener } from '@vueuse/core'
+import { useElementBounding, useElementSize, useEventListener, useTitle } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
@@ -28,9 +28,11 @@ const onResourceLoadComplete = (res: LoadedResources) => {
 }
 // i18n 切换语言
 const i18n = useI18n()
+const title = useTitle()
 const setLocale = (locale: string) => {
   i18n.locale.value = locale
   localStorage.setItem('locale', locale)
+  title.value = i18n.locale.value === 'zh' ? '彷徨之街' : 'The Street of Adrift'
 }
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
