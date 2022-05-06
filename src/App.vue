@@ -17,7 +17,7 @@ import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.png'
 import api, { isSuccess } from './api'
-import { useMessage } from '@lemonneko/vuetify-message'
+import { useMessage } from './utils'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -378,7 +378,7 @@ const goLoginPageAndWaitForMessage = (() => {
   return () => {
     childWindow = window.open('https://uat.mono.fun/login', '_blank')
     if(!childWindow) { // 如果没有获取到跳转后的窗口
-      message.show(i18n.t('static.failedToOpenLoginWindow'), { color: 'red' })
+      message.show(i18n.t('static.failedToOpenLoginWindow'))
       return
     }
     // 注册消息接收器
@@ -390,9 +390,9 @@ const logout = async () => {
   const res = await api.user.logout()
   if (isSuccess(res)) {
     userInfo.value = null
-    message.show(i18n.t('static.logoutSuccess'), { color: 'green' })
+    message.show(i18n.t('static.logoutSuccess'))
   } else {
-    message.show(res.message, { color: 'red' })
+    message.show(res.message)
   }
 }
 // 静态框架的引用
@@ -827,7 +827,7 @@ useStyleTag(hideCursorStyle)
   height: 100%;
   width: 100%;
   pointer-events: none;
-  z-index: 999;
+  z-index: 1001;
 }
 // 鼠标跟随框
 .mouse-outer {

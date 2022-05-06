@@ -1,7 +1,7 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, unref, watchEffect } from 'vue'
-import { usePagination } from '../utils'
+import { usePagination, useMessage } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding } from '@vueuse/core'
@@ -10,8 +10,6 @@ import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
-import { useMessage } from '@lemonneko/vuetify-message'
-import '@lemonneko/vuetify-message/dist/style.css'
 import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
@@ -24,7 +22,6 @@ const { windowHeight, isOnMobile, userInfo } = storeToRefs(store)
 const { t, locale } = useI18n()
 // 消息组件
 const msg = useMessage()
-// TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<NFTItem[]>([
   {
     name: 'nft.goldCoinName',
@@ -224,8 +221,7 @@ const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
   if (!itemsList.value[index].canBeReserved) return
   if (!userInfo.value) {
-    // TODO: 替换 i18n 文案
-    msg.show('需要先登录 Mono 账号，才能继续预约', { color: 'red' })
+    msg.show(t('nft.needLogin'))
     return
   }
   const res = await API.nft.reserve(itemsList.value[index].name, '03f3e7eb-fa25-485d-b224-b81105feca19')
@@ -233,7 +229,7 @@ const onReserveBtnClick = async (index: number) => {
     showReserveSuccessDialog(itemsList.value[index].name)
     itemsList.value[index].reserved = true
   } else {
-    msg.show(res.message, { color: 'red' })
+    msg.show(res.message)
   }
 }
 // 预约按钮文字元素

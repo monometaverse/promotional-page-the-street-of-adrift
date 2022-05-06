@@ -1,5 +1,6 @@
 import { Object3D } from "three"
-import { ref, Ref } from "vue"
+import { createApp, reactive, ref, Ref, h, App } from "vue"
+import messageBar from '../components/message-bar.vue'
 
 type DebouncedFunc<T extends (...args: any[]) => void> = (...args: Parameters<T>) => void
 type DebounceFunc = <T extends (...args: any[]) => void = () => void>(func: T, time: number) => DebouncedFunc<T>
@@ -84,4 +85,51 @@ export const usePagination = <T extends Ref<any[]>>(pages: T, beforeSwitch?: (ne
     prev,
     prevOrNext
   }
+}
+
+export interface Message {
+  show(text: string): void
+}
+export interface MyMessageEvent extends Event {
+  text: string
+}
+
+const newShowMessageEvent = (text: string) => {
+  const event = new Event('showSnackBar')
+  Object.assign(event, { text })
+  return event
+}
+
+// 导出使用函数
+export const useMessage = (): Message => {
+  return (() => {
+    let app: App<Element>
+    let created: boolean = false
+    return {
+      show: (textLocal: string) => {
+        let containerEl = document.querySelector('#vuetify-snackbar-container') as HTMLDivElement
+        const staticFramework = document.querySelector('.static-framework') as HTMLDivElement
+        if (!containerEl) {
+          // 容器元素不存在，新建一个
+          containerEl = document.createElement('div')
+          containerEl.id = 'vuetify-snackbar-container'
+          staticFramework?.appendChild(containerEl)
+        }
+        // 新建一个 vue 实例
+        if (!app) {
+          app = createApp(messageBar)
+          app.mount(containerEl)
+          created = true
+        }
+        setTimeout(() => {
+          window.dispatchEvent(newShowMessageEvent(textLocal))
+          created = false
+        }, created ? 50 : 0) // 添加一个延迟，避免没有动画
+        // 定时关闭
+        setTimeout(() => {
+          window.dispatchEvent(new Event('hideSnackBar'))
+        }, 5000)
+      },
+    }
+  })()
 }
