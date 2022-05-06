@@ -8,7 +8,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
-import { useElementBounding, useElementSize, useEventListener } from '@vueuse/core'
+import { useElementBounding, useElementSize, useEventListener, useTitle } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
 import { useStyleTag } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
@@ -17,7 +17,7 @@ import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.png'
 import api, { isSuccess } from './api'
-import { useMessage } from '@lemonneko/vuetify-message'
+import { useMessage } from './utils'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -28,9 +28,11 @@ const onResourceLoadComplete = (res: LoadedResources) => {
 }
 // i18n 切换语言
 const i18n = useI18n()
+const title = useTitle()
 const setLocale = (locale: string) => {
   i18n.locale.value = locale
   localStorage.setItem('locale', locale)
+  title.value = i18n.locale.value === 'zh' ? '彷徨之街' : 'The Street of Adrift'
 }
 // 路由，等英文文案准备好之后改用 i18n
 const routes = ref([
@@ -376,7 +378,7 @@ const goLoginPageAndWaitForMessage = (() => {
   return () => {
     childWindow = window.open('https://uat.mono.fun/login', '_blank')
     if(!childWindow) { // 如果没有获取到跳转后的窗口
-      message.show(i18n.t('static.failedToOpenLoginWindow'), { color: 'red' })
+      message.show(i18n.t('static.failedToOpenLoginWindow'))
       return
     }
     // 注册消息接收器
@@ -388,9 +390,9 @@ const logout = async () => {
   const res = await api.user.logout()
   if (isSuccess(res)) {
     userInfo.value = null
-    message.show(i18n.t('static.logoutSuccess'), { color: 'green' })
+    message.show(i18n.t('static.logoutSuccess'))
   } else {
-    message.show(res.message, { color: 'red' })
+    message.show(res.message)
   }
 }
 // 静态框架的引用
@@ -590,7 +592,7 @@ useStyleTag(hideCursorStyle)
                 <div>
                   <menu-item>
                     <a
-                      class="font-16px leading-24px font-sans text-left clickble"
+                      class="text-1rem leading-1.5rem font-sans text-left clickble"
                       :href="`https://uat.mono.fun/user/${userInfo?.id}`"
                       target="_blank"
                     >
@@ -600,7 +602,7 @@ useStyleTag(hideCursorStyle)
                   <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
                   <menu-item>
                     <button
-                      class="font-16px leading-24px font-sans text-left clickble"
+                      class="text-1rem leading-1.5rem font-sans text-left clickble"
                       @click="logout"
                     >
                       {{ i18n.t('static.logout') }}
@@ -632,7 +634,7 @@ useStyleTag(hideCursorStyle)
                 <div>
                   <menu-item>
                     <button
-                      class="font-16px leading-24px font-sans text-left clickble"
+                      class="text-1rem leading-1.5rem font-sans text-left clickble"
                       @click="setLocale('en')"
                     >
                       English
@@ -641,7 +643,7 @@ useStyleTag(hideCursorStyle)
                   <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
                   <menu-item>
                     <button
-                      class="font-16px leading-24px font-sans text-left clickble"
+                      class="text-1rem leading-1rem font-sans text-left clickble"
                       @click="setLocale('zh')"
                     >
                       中文
@@ -651,6 +653,17 @@ useStyleTag(hideCursorStyle)
               </template>
             </dropdown-menu>
           </div>
+          <!-- 返回项目详情页 -->
+          <a
+            class="ml-3rem <xl:ml-2rem"
+            href="https://mono.fun/project/03f3e7eb-fa25-485d-b224-b81105feca19"
+            target="_blank"
+          >
+            <img
+              src="./assets/static-framework/back-to-details.svg"
+              class="clickble object-center object-contain w-1rem h-1rem"
+            >
+          </a>
           <img
             src="./assets/static-framework/share.svg"
             class="actions-share clickble"
@@ -706,10 +719,10 @@ useStyleTag(hideCursorStyle)
                   <a
                     :href="sharePic"
                     download="share-pic.png"
-                    class="block btn-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
+                    class="block btn-bg w-12rem h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
                   />
                 </div>
-                <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-96px h-32px text-16px leading-23px -translate-y-32px)">
+                <div class="w-12rem h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-1.5rem font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-1rem leading-1.5rem -translate-y-2rem)">
                   {{ i18n.t('static.saveSahrePic') }}
                 </div>
               </div>
@@ -788,8 +801,8 @@ useStyleTag(hideCursorStyle)
   display: flex;
   column-gap: 16px;
   align-items: baseline;
-  bottom: 64px;
-  right: 64px;
+  bottom: 4rem;
+  right: 4rem;
   font-weight: 400;
 
   &-current {
@@ -814,7 +827,7 @@ useStyleTag(hideCursorStyle)
   height: 100%;
   width: 100%;
   pointer-events: none;
-  z-index: 999;
+  z-index: 1001;
 }
 // 鼠标跟随框
 .mouse-outer {
@@ -824,14 +837,14 @@ useStyleTag(hideCursorStyle)
   pointer-events: none;
   position: absolute;
   transform: translate3d(-50%, -50%, 0);
-  height: 48px;
-  width: 48px;
+  height: 3rem;
+  width: 3rem;
   border-radius: 100%;
   border: 1px solid rgba(255, 255, 255, 0.5);
 
   &-hovered {
-    height: 32px;
-    width: 32px;
+    height: 2rem;
+    width: 2rem;
     background-color: rgba(255, 255, 255, 0.5);
   }
 }
@@ -871,8 +884,8 @@ useStyleTag(hideCursorStyle)
 }
 // 页面标题
 .page-title {
-  left: 64px;
-  top: 64px;
+  left: 4rem;
+  top: 4rem;
   box-sizing: border-box;
   text-align: center;
   position: absolute;
@@ -890,7 +903,7 @@ useStyleTag(hideCursorStyle)
     bottom right;
 
   &-main {
-    font-size: 64px;
+    font-size: 4rem;
     font-family: 'Noto Sans SC', sans-serif;
     font-weight: 700;
     text-shadow: 4px 8px 4px rgba(0, 0, 0, 0.25);
@@ -905,8 +918,8 @@ useStyleTag(hideCursorStyle)
 // 右上角操作部分
 .actions {
   position: absolute;
-  right: 64px;
-  top: 64px;
+  right: 4rem;
+  top: 4rem;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -918,7 +931,7 @@ useStyleTag(hideCursorStyle)
     font-weight: bold;
 
     &:nth-child(3) {
-      margin-right: 48px;
+      margin-right: 3rem;
     }
   }
 
@@ -931,7 +944,7 @@ useStyleTag(hideCursorStyle)
 
   &-share {
     display: block;
-    margin-left: 48px;
+    margin-left: 3rem;
   }
 
   &-dropdown {
@@ -955,13 +968,13 @@ useStyleTag(hideCursorStyle)
 // 当屏幕宽度小于 1680px 时，进入平板模式
 @media screen and (max-width: 1679px) {
   .actions {
-    right: 32px;
-    top: 32px;
+    right: 2rem;
+    top: 2rem;
   }
 
   .page-number {
-    right: 32px;
-    bottom: 32px;
+    right: 2rem;
+    bottom: 2rem;
   }
 
   .page-title {
@@ -969,7 +982,7 @@ useStyleTag(hideCursorStyle)
     padding-right: 24px;
 
     &-main {
-      font-size: 48px;
+      font-size: 3rem;
     }
   }
 }
@@ -981,7 +994,7 @@ useStyleTag(hideCursorStyle)
   }
 
   .actions-share {
-    margin-left: 32px;
+    margin-left: 2rem;
   }
 
   .actions {
@@ -996,7 +1009,7 @@ useStyleTag(hideCursorStyle)
     top: 72px;
 
     &-main {
-      font-size: 32px;
+      font-size: 2rem;
     }
   }
 

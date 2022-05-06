@@ -148,7 +148,7 @@ const prevOrNext = (next: boolean) => {
     left: calc(393px + 50vw - 960px);
 
     &-title {
-      font-size: 64px;
+      font-size: 4rem;
       line-height: 92px;
       font-family: 'Noto Serif SC', sans-serif;
       font-weight: 900;
@@ -189,7 +189,7 @@ const prevOrNext = (next: boolean) => {
   }
 
   .details {
-    &-prev-btn { left: calc(32px + 50vw - 597px); }
+    &-prev-btn { left: calc(2rem + 50vw - 597px); }
     &-next-btn { right: calc(153px + 50vw - 597px); }
 
     &-prev-btn,
@@ -213,7 +213,7 @@ const prevOrNext = (next: boolean) => {
       left: calc(121px + 50vw - 597px);
 
       &-title {
-        font-size: 48px;
+        font-size: 3rem;
         line-height: 69px;
       }
 
@@ -233,17 +233,17 @@ const prevOrNext = (next: boolean) => {
 @media screen and (max-width: 1079px) {
   .details {
     @pic-top: calc(221px + 50vh - 406px);
-    @pic-height: calc(calc(100vw - 48px) / 16 * 9);
+    @pic-height: calc(calc(100vw - 3rem) / 16 * 9);
 
     &-desc {
       padding: 24px 8px 0 24px;
       width: 100%;
       top: unset;
       left: unset;
-      bottom: 64px;
+      bottom: 4rem;
 
       &-title {
-        font-size: 32px;
+        font-size: 2rem;
         line-height: 49px;
       }
 
@@ -261,11 +261,11 @@ const prevOrNext = (next: boolean) => {
     }
 
     &-pic {
-      width: calc(100vw - 48px);
+      width: calc(100vw - 3rem);
       margin: 0 24px;
       left: 0;
       top: @pic-top;
-      height: calc(calc(100vw - 48px) / 16 * 9);
+      height: calc(calc(100vw - 3rem) / 16 * 9);
     }
 
     &-prev-btn { left: 20px; }

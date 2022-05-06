@@ -34,6 +34,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  pointer-events: none;
 
   &-text {
     font-family: "Poppins", sans-serif;
@@ -64,7 +65,7 @@
 
 @media screen and (max-width: 1679px) {
   .scroll-hint {
-    bottom: 32px;
+    bottom: 2rem;
 
     &-text,
     &-icon {

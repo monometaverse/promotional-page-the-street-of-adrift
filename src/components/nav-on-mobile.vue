@@ -44,7 +44,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
       @transitionend="onMenuTransitionEnd"
     >
       <!-- 游戏 logo -->
-      <div class="game-logo mt-72px ml-20px h-32px bg-cover bg-center bg-no-repeat" />
+      <div class="game-logo mt-72px ml-20px h-2rem bg-cover bg-center bg-no-repeat" />
       <!-- 复用桌面端的导航 -->
       <nav-on-desktop
         :animation-active="animationActive"
@@ -53,7 +53,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
         @item-selected="onItemSelected"
       />
       <!-- 社交网络图标 -->
-      <div class="absolute top-524px right-48px z-50">
+      <div class="absolute top-524px right-3rem z-50">
         <div class="font-monsterrat text-15px opacity-50 font-12px font-700 text-right">
           SHARE
         </div>
@@ -73,6 +73,23 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
             <div class="icon icon-discord" />
           </a>
         </div>
+      </div>
+      <!-- 左上角跳转按钮 -->
+      <div class="absolute top-4.5rem right-3rem flex">
+        <a
+          class="mr-2.25rem clickble"
+          href="https://mono.fun"
+          target="_blank"
+        >
+          <img
+            src="../assets/home-page/mono.svg"
+            class="w-2rem h-2rem object-center object-contain clickble"
+          >
+        </a>
+        <img
+          src="../assets/home-page/caramel-mocha.svg"
+          class="w-2rem h-2rem object-center object-contain"
+        >
       </div>
       <!-- 背景格子 -->
       <div class="background w-453px h-313px bg-left bg-no-repeat bg-contain bottom-24px absolute" />
@@ -106,7 +123,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
 <style lang="less" scoped>
 .game-logo {
   background-image: url('../assets/home-page/tsoa-logo.svg');
-  width: calc(32px / 149 * 640);
+  width: calc(2rem / 149 * 640);
 }
 
 .icon {

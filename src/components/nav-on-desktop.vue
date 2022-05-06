@@ -27,8 +27,7 @@ const emits = defineEmits<{
     }"
   >
     <div class="navigation-content">
-      <!--TODO:替换成 i18n 文案-->
-      <a
+      <span
         v-for="theRoute of routes"
         class="navigation-item clickble flex justify-end"
         :key="theRoute.name"
@@ -41,7 +40,7 @@ const emits = defineEmits<{
           {{ t(theRoute.name) }}
         </div>
         <div class="navigation-item-icon cover-no-repeat-center clickble" />
-      </a>
+      </span>
     </div>
     <div class="navigation-line" />
   </div>
@@ -56,7 +55,7 @@ const emits = defineEmits<{
   display: flex;
   align-items: center;
   top: calc(50% - @line-height / 2);
-  right: 64px;
+  right: 4rem;
   // 导航中的左侧部分
   &-content {
     display: flex;
@@ -120,7 +119,7 @@ const emits = defineEmits<{
 
 @media screen and (max-width: 1689px) {
   .navigation {
-    right: 32px;
+    right: 2rem;
   }
 }
 

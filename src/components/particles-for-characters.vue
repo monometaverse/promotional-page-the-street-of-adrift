@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useStore } from '../store'
 import { shuffle } from 'lodash'
+import { useEventListener } from '@vueuse/core'
 
 // 状态管理
 const store = useStore()
@@ -28,17 +29,14 @@ watchEffect(() => {
   // 当图片为空时
   if (newVal.width === 0) {
     targetAlpha = 0
-    if (points.length === 0) {
-      // 如果没有存在的粒子，就直接忽略
-      return
-    } else {
+    if (points.length !== 0) {
       // 如果有存在的粒子，让粒子分散到屏幕各处，然后消失
       points.forEach((it) => {
         it.targetX = Math.random() * (canvasEl.value?.width ?? 0)
         it.targetY = Math.random() * (canvasEl.value?.height ?? 0)
       })
-      return
     }
+    return
   }
   // 如果没有获取到角色信息块的位置，停止处理
   if (!infoElPos.value.x && !infoElPos.value.y) return
@@ -103,7 +101,8 @@ watchEffect(() => {
       points[i].targetY = offsetY + (pointsPos[i].y + Math.random() - 0.5) / 1.5
     } else {
       // 生成缺少的点
-      points.push({
+      const index = Math.floor(Math.random() * pointsPos.length) // 新的点会被插入到的位置
+      points.splice(index, 0, {
         x: Math.random() * canvasCtx.value.canvas.width,
         y: Math.random() * canvasCtx.value.canvas.height,
         targetX: offsetX + (pointsPos[i].x + Math.random() - 0.5) / 1.5,
@@ -119,10 +118,10 @@ const stopRender = ref(false)
 // 是否暂停绘制，在获取新的图片信息时，需要暂停点的绘制，否则会获取到已经存在的点的信息，并且把这些点的位置信息误当成图片信息
 const pausePointRender = ref(false)
 // 鼠标距离目标点多少会被吸引
-const mouseAbsorbDistance = 64
-const mouseAbsorbDistanceMax = 128
+const mouseAbsorbDistance = 32
+const mouseAbsorbDistanceMax = 256
 // 当在最大受影响范围内时，最大的偏移距离
-const maxOffset = 32
+const maxOffset = 64
 // 全局透明度
 let targetAlpha = 1
 // 渲染函数
@@ -147,8 +146,8 @@ const render = () => {
         if (mouseDistanceCurrent <= mouseAbsorbDistance) {
           if (mouseDistance <= mouseAbsorbDistanceMax) {
             // 当鼠标和目标点的距离小于最小受影响范围时，粒子移动到鼠标的位置，而不是目标点的位置
-            it.x += (mousePos.value.x + Math.random() * 32 - 16 - it.x) / 10
-            it.y += (mousePos.value.y + Math.random() * 32 - 16 - it.y) / 10
+            it.x += (mousePos.value.x + Math.random() * 32 - 16 - it.x) / 30
+            it.y += (mousePos.value.y + Math.random() * 32 - 16 - it.y) / 30
           } else {
             // 偏移的距离，斜边长度
             const percent = mouseAbsorbDistance / mouseDistance * maxOffset
@@ -178,6 +177,10 @@ const render = () => {
   }
   if (!stopRender.value) requestAnimationFrame(render)
 }
+// 画布宽高改变事件
+useEventListener('resize', () => {
+  if (canvasCtx.value) canvasCtx.value.globalAlpha = 0
+})
 // 当挂载时开始帧刷
 onMounted(() => {
   requestAnimationFrame(render)

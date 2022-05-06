@@ -21,6 +21,9 @@ export default defineConfig({
         }, {
           name: 'Poppins',
           styles: 'wght@400;500;700'
+        }, {
+          name: 'Inter',
+          styles: 'wght@400'
         }]
       }
     }),

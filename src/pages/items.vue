@@ -1,7 +1,7 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, unref, watchEffect } from 'vue'
-import { usePagination } from '../utils'
+import { usePagination, useMessage } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding } from '@vueuse/core'
@@ -10,8 +10,6 @@ import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
-import { useMessage } from '@lemonneko/vuetify-message'
-import '@lemonneko/vuetify-message/dist/style.css'
 import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
@@ -24,7 +22,6 @@ const { windowHeight, isOnMobile, userInfo } = storeToRefs(store)
 const { t, locale } = useI18n()
 // 消息组件
 const msg = useMessage()
-// TODO: 到时候从服务器上拿数据吧
 const itemsList = ref<NFTItem[]>([
   {
     name: 'nft.goldCoinName',
@@ -70,16 +67,21 @@ const itemsList = ref<NFTItem[]>([
         material.color = new Color(0x7A7A7A)
         return material
       })()
+    },
+  },
+  {
+    name: 'nft.umsSuperName',
+    description: 'nft.umsSuperInfo',
+    reserved: false,
+    canBeReserved: false,
+    model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
+    customData: {
+      depthWrite: true,
+      childName: 'polySurface67_Mesh001',
+      side: FrontSide,
+      scale: 1.5,
+      positionY: -1.2
     }
-    // 已经调好的枪械的模型，不要删掉这段注释
-    // model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
-    // customData: {
-    //   depthWrite: true,
-    //   childName: 'polySurface67_Mesh001',
-    //   side: FrontSide,
-    //   scale: 1.5,
-    //   positionY: -1.2
-    // }
   }
 ])
 // NFT 名称列表
@@ -217,9 +219,9 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
 // 预约按钮事件处理器
 const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
+  if (!itemsList.value[index].canBeReserved) return
   if (!userInfo.value) {
-    // TODO: 替换 i18n 文案
-    msg.show('需要先登录 Mono 账号，才能继续预约', { color: 'red' })
+    msg.show(t('nft.needLogin'))
     return
   }
   const res = await API.nft.reserve(itemsList.value[index].name, '03f3e7eb-fa25-485d-b224-b81105feca19')
@@ -227,7 +229,7 @@ const onReserveBtnClick = async (index: number) => {
     showReserveSuccessDialog(itemsList.value[index].name)
     itemsList.value[index].reserved = true
   } else {
-    msg.show(res.message, { color: 'red' })
+    msg.show(res.message)
   }
 }
 // 预约按钮文字元素
@@ -320,9 +322,12 @@ watchEffect(() => {
       </div>
       <div
         class="info-reserve-btn-text"
+        :class="{
+          '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
+        }"
         :style="reserveBtnAnimationStyle"
       >
-        {{ itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') }}
+        {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}
       </div>
     </div>
     <div
@@ -391,7 +396,7 @@ watchEffect(() => {
             @click="closeReserveSuccessDialog(false)"
           />
         </div>
-        <span class="font-serif font-900 leading-46px text-32px <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
+        <span class="font-serif font-900 leading-46px text-2rem <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
         <!-- 预约成功的物品的名称 -->
         <span class="font-sans text-1rem <sm:text-0.75rem">{{ t('nft.reservedItem', { name: t(reservedNftName) }) }}</span>
         <!-- 预约成功图片 -->
@@ -414,11 +419,11 @@ watchEffect(() => {
         <div>
           <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
             <div
-              class="reserve-success-bg w-192px h-64px bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-96px h-32px)"
+              class="reserve-success-bg w-192px h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
               @click="closeReserveSuccessDialog(true)"
             />
           </div>
-          <div class="w-192px h-64px -translate-y-64px flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-96px h-32px text-16px leading-23px -translate-y-32px)">
+          <div class="w-192px h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem)">
             {{ t('nft.reserveSuccessBtnText') }}
           </div>
         </div>
@@ -434,18 +439,18 @@ watchEffect(() => {
 @divider-margin-top: 24px;
 @desc-margin-top: 24px;
 @divider-height: 2px;
-@desc-line-height: 32px;
-@reserve-btn-margin-top: 64px;
-@reserve-btn-height: 64px;
+@desc-line-height: 2rem;
+@reserve-btn-margin-top: 4rem;
+@reserve-btn-height: 4rem;
 @all-height: calc(@title-line-height + @title-en-line-height + @divider-margin-top + @desc-margin-top + @divider-height + @divider-height + @desc-line-height * 2 + @reserve-btn-height + @reserve-btn-margin-top);
 
 .info {
   position: absolute;
   top: calc(50% - @all-height / 2);
-  left: 64px;
+  left: 4rem;
   // NFT 名称
   &-title {
-    font-size: 64px;
+    font-size: 4rem;
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
     line-height: @title-line-height;
@@ -477,7 +482,7 @@ watchEffect(() => {
   // 预约按钮文字
   &-reserve-btn-text {
     margin-top: @reserve-btn-margin-top;
-    height: 64px;
+    height: 4rem;
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
     width: 192px;
@@ -494,11 +499,11 @@ watchEffect(() => {
   transition-duration: 250ms;
   transition-timing-function: ease;
   position: absolute;
-  height: 64px;
+  height: 4rem;
   width: 192px;
   border: 2px solid rgba(255, 255, 255, 0.5);
   box-sizing: border-box;
-  left: 64px;
+  left: 4rem;
 
   &-inner {
     transition: opacity 250ms ease;
@@ -531,8 +536,8 @@ watchEffect(() => {
 }
 
 .matrix-left-bottom {
-  left: 64px;
-  bottom: 64px;
+  left: 4rem;
+  bottom: 4rem;
 }
 
 .matrix-behind-models {
@@ -559,7 +564,7 @@ watchEffect(() => {
 
     &-item {
       transition: opacity 250ms ease;
-      width: 48px;
+      width: 3rem;
       height: @indicator-heigth;
       opacity: 0.25;
       background-color: white;
@@ -637,16 +642,16 @@ watchEffect(() => {
   @divider-margin-top: 24px;
   @desc-margin-top: 24px;
   @divider-height: 2px;
-  @desc-line-height: 32px;
-  @reserve-btn-margin-top: 48px;
-  @reserve-btn-height: 64px;
+  @desc-line-height: 2rem;
+  @reserve-btn-margin-top: 3rem;
+  @reserve-btn-height: 4rem;
   @all-height: calc(@title-line-height + @title-en-line-height + @divider-margin-top + @desc-margin-top + @divider-height + @divider-height + @desc-line-height * 2 + @reserve-btn-height + @reserve-btn-margin-top);
 
   .info {
     top: calc(50vh - @all-height / 2);
 
     &-title {
-      font-size: 48px;
+      font-size: 3rem;
       line-height: 69px;
     }
 
@@ -691,7 +696,7 @@ watchEffect(() => {
       margin-left: @prev-btn-margin-right;
 
       &-item {
-        width: 32px;
+        width: 2rem;
       }
     }
   }
@@ -747,7 +752,7 @@ watchEffect(() => {
     padding: 20px 20px 0 20px;
 
     &-title {
-      font-size: 32px;
+      font-size: 2rem;
       line-height: 46px;
     }
 
@@ -764,8 +769,8 @@ watchEffect(() => {
 
     &-reserve-btn-text {
       margin-top: 24px;
-      width: 96px;
-      height: 32px;
+      width: 6rem;
+      height: 2rem;
       font-size: 16px;
       line-height: 23px;
     }
@@ -773,8 +778,8 @@ watchEffect(() => {
 
   .info-reserve-btn {
     left: 20px;
-    width: 96px;
-    height: 32px;
+    width: 6rem;
+    height: 2rem;
   }
 }
 </style>
