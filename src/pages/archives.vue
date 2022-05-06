@@ -452,7 +452,7 @@ const layer3Style = computed<CSSProperties>(() => {
       left: calc(559px + 50vw - 960px);
       position: absolute;
       @height: 480px;
-      @width: calc(@height / 9 * 16);
+      @width: calc(@height / 40 * 71);
 
       height: @height;
       width: @width;
@@ -577,7 +577,7 @@ const layer3Style = computed<CSSProperties>(() => {
     &-center {
       .archives-pic {
         @height: 400px;
-        @width: calc(@height / 9 * 16);
+        @width: calc(@height / 40 * 71);
 
         height: @height;
         width: @width;
@@ -615,14 +615,14 @@ const layer3Style = computed<CSSProperties>(() => {
   }
 
   @pic-width: calc(100vw - 48px);
-  @pic-height: calc(@pic-width / 16 * 9);
+  @pic-height: calc(@pic-width / 71 * 40);
   @indicators-mt: 16px;
   @title-line-height: 46px;
   @title-mt: 16px;
   @title-number-line-height: 36px;
   @small-pic-mt: 8px;
   @small-pic-width: calc(calc(100vw - 48px - 32px) / 3);
-  @small-pic-height: calc(@small-pic-width / 16 * 9);
+  @small-pic-height: calc(@small-pic-width / 71 * 40);
   @indicator-height: 2px;
   @all-height: calc(@pic-height + @indicators-mt + @title-line-height + @title-mt + @title-number-line-height + @small-pic-mt + @small-pic-height + @indicator-height);
   @all-top: calc(50vh - @all-height / 2);
