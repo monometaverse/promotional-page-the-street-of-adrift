@@ -40,13 +40,11 @@ const showSecretMsgCoverMaxDistance = 256
 // 光圈的不透明度
 const msgCoverOpacity = computed(() => {
   let processedBoundingY = secretMsgBounding.y.value // 修正获取到的 y 值
-  console.log('before: ' + processedBoundingY)
   if (processedBoundingY < 0) {
     processedBoundingY += windowHeight.value
   } else if (processedBoundingY > windowHeight.value) {
     processedBoundingY -= windowHeight.value
   }
-  console.log('after: ' + processedBoundingY)
   const top = mousePos.value.y < processedBoundingY // 是否在文字上方
   const bottom = mousePos.value.y > processedBoundingY + secretMsgBounding.height.value // 是否在文字下方
   const left = mousePos.value.x < secretMsgBounding.x.value // 是否在文字左方
@@ -253,24 +251,30 @@ onMounted(() => {
       class="absolute bottom-4rem left-4rem <sm:hidden <xl:(bottom-2rem left-2rem)"
       ref="secretMsg"
     >
+      <!-- 鼠标光圈 -->
       <div
         class="absolute w-4rem h-4rem transform -translate-x-2rem -translate-y-2rem flex justify-center items-center rounded-full pointer-events-none"
         :style="{
-          background: 'rgba(255, 255, 255, 0.5)',
+          background: 'rgba(255, 255, 255, 0.25)',
           filter: 'blur(8px)',
           top: mousePos.y - secretMsgLightBounding.top + 'px', // 解决绝对定位的偏移问题
           left: mousePos.x - secretMsgLightBounding.left + 'px',
-          'mix-blend-mode': 'screen',
           opacity: msgCoverOpacity + ''
         }"
       >
         <div
-          class="w-2rem h-2rem filter-[blur(6px)] bg-[rgba(255, 255, 255, 1)] rounded-full pointer-events-none"
+          class="w-2rem h-2rem filter-[blur(6px)] bg-[rgba(255, 255, 255, 0.5)] rounded-full pointer-events-none"
         />
       </div>
       <span
         class="font-inter font-400 text-0.75rem leading-1rem secret-msg"
-        :style="{'mix-blend-mode': 'screen'}"
+      >▽▲▽▽▽▽▲▽▽▽▲▽▲▲▲▲▽▲▽▲▽▲▲▲▽▽▲▽▽▽▽▽▽▽▲▲▽▽▽▲▽▽▲▲▽▽▲▽</span>
+      <span
+        class="font-inter font-400 text-0.75rem leading-1rem secret-msg-mask"
+        :style="{
+          'mask-position': `${mousePos.x - secretMsgLightBounding.left - 32}px ${mousePos.y - secretMsgLightBounding.top - 32}px`,
+          '-webkit-mask-position': `${mousePos.x - secretMsgLightBounding.left - 32}px ${mousePos.y - secretMsgLightBounding.top - 32}px`
+        }"
       >▽▲▽▽▽▽▲▽▽▽▲▽▲▲▲▲▽▲▽▲▽▲▲▲▽▽▲▽▽▽▽▽▽▽▲▲▽▽▽▲▽▽▲▲▽▽▲▽</span>
     </div>
     <scroll-hint
@@ -326,14 +330,20 @@ onMounted(() => {
 }
 
 .secret-msg {
-  transition-property: opacity;
-  transition-duration: 250ms;
-  transition-timing-function: ease;
   opacity: 0.1;
+  display: block;
+}
 
-  &:hover {
-    opacity: 0.3;
-  }
+.secret-msg-mask {
+  display: block;
+  -webkit-mask-image: radial-gradient(circle at center, white 0%, transparent 80px);
+  mask-image: radial-gradient(circle at center, white 0%, transparent 80px);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 64px 64px;
+  opacity: 0.5;
+  mask-size: 64px 64px;
+  transform: translateY(-100%);
 }
 // logo 的复制体
 .logo-copy {
