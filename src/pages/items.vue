@@ -70,16 +70,21 @@ const itemsList = ref<NFTItem[]>([
         material.color = new Color(0x7A7A7A)
         return material
       })()
+    },
+  },
+  {
+    name: 'nft.umsSuperName',
+    description: 'nft.umsSuperInfo',
+    reserved: false,
+    canBeReserved: false,
+    model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
+    customData: {
+      depthWrite: true,
+      childName: 'polySurface67_Mesh001',
+      side: FrontSide,
+      scale: 1.5,
+      positionY: -1.2
     }
-    // 已经调好的枪械的模型，不要删掉这段注释
-    // model: (store.getRes('S_UMSSuper', 'NFT').value as GLTF).scene,
-    // customData: {
-    //   depthWrite: true,
-    //   childName: 'polySurface67_Mesh001',
-    //   side: FrontSide,
-    //   scale: 1.5,
-    //   positionY: -1.2
-    // }
   }
 ])
 // NFT 名称列表
@@ -217,6 +222,7 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
 // 预约按钮事件处理器
 const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
+  if (!itemsList.value[index].canBeReserved) return
   if (!userInfo.value) {
     // TODO: 替换 i18n 文案
     msg.show('需要先登录 Mono 账号，才能继续预约', { color: 'red' })
@@ -320,9 +326,12 @@ watchEffect(() => {
       </div>
       <div
         class="info-reserve-btn-text"
+        :class="{
+          '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
+        }"
         :style="reserveBtnAnimationStyle"
       >
-        {{ itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') }}
+        {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}
       </div>
     </div>
     <div
