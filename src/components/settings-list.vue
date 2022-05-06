@@ -330,7 +330,7 @@ const onItemClick = (index: number) => {
       height: 200px;
 
       &-text {
-        font-size: 32px;
+        font-size: 2rem;
         line-height: 49px;
       }
     }

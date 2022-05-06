@@ -417,7 +417,7 @@ const layer3Style = computed<CSSProperties>(() => {
 // 缩略图
 .small-pic-container {
   display: none;
-  width: calc(100vw - 48px);
+  width: calc(100vw - 3rem);
   position: absolute;
   left: 24px;
 }
@@ -471,7 +471,7 @@ const layer3Style = computed<CSSProperties>(() => {
 
   &-indicator {
     transition: opacity 250ms ease;
-    width: 48px;
+    width: 3rem;
     height: 4px;
     opacity: 0.25;
     background-color: white;
@@ -498,7 +498,7 @@ const layer3Style = computed<CSSProperties>(() => {
   &-name {
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
-    font-size: 64px;
+    font-size: 4rem;
     line-height: 92px;
   }
 
@@ -506,7 +506,7 @@ const layer3Style = computed<CSSProperties>(() => {
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     line-height: 72px;
-    font-size: 48px;
+    font-size: 3rem;
     opacity: 0.5;
   }
 }
@@ -556,13 +556,13 @@ const layer3Style = computed<CSSProperties>(() => {
     left: calc(109px + 50vw - 597px);
 
     &-name {
-      font-size: 48px;
+      font-size: 3rem;
       line-height: 69px;
     }
 
     &-number {
-      font-size: 32px;
-      line-height: 48px;
+      font-size: 2rem;
+      line-height: 3rem;
     }
   }
 
@@ -587,7 +587,7 @@ const layer3Style = computed<CSSProperties>(() => {
     }
 
     &-indicator {
-      width: 32px;
+      width: 2rem;
     }
 
     &-indicators {
@@ -597,13 +597,13 @@ const layer3Style = computed<CSSProperties>(() => {
     }
 
     &-prev {
-      top: calc(50vh - 32px);
-      left: calc(50vw + 32px - 597px);
+      top: calc(50vh - 2rem);
+      left: calc(50vw + 2rem - 597px);
     }
 
     &-next {
       right: calc(153px + 50vw - 597px);
-      top: calc(50vh - 32px);
+      top: calc(50vh - 2rem);
     }
   }
 }
@@ -614,14 +614,14 @@ const layer3Style = computed<CSSProperties>(() => {
     display: none;
   }
 
-  @pic-width: calc(100vw - 48px);
+  @pic-width: calc(100vw - 3rem);
   @pic-height: calc(@pic-width / 71 * 40);
   @indicators-mt: 16px;
   @title-line-height: 46px;
   @title-mt: 16px;
   @title-number-line-height: 36px;
   @small-pic-mt: 8px;
-  @small-pic-width: calc(calc(100vw - 48px - 32px) / 3);
+  @small-pic-width: calc(calc(100vw - 3rem - 2rem) / 3);
   @small-pic-height: calc(@small-pic-width / 71 * 40);
   @indicator-height: 2px;
   @all-height: calc(@pic-height + @indicators-mt + @title-line-height + @title-mt + @title-number-line-height + @small-pic-mt + @small-pic-height + @indicator-height);
@@ -670,7 +670,7 @@ const layer3Style = computed<CSSProperties>(() => {
     left: 24px;
 
     &-name {
-      font-size: 32px;
+      font-size: 2rem;
       line-height: @title-line-height;
     }
 

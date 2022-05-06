@@ -55,7 +55,7 @@ const emits = defineEmits<{
   display: flex;
   align-items: center;
   top: calc(50% - @line-height / 2);
-  right: 64px;
+  right: 4rem;
   // 导航中的左侧部分
   &-content {
     display: flex;
@@ -119,7 +119,7 @@ const emits = defineEmits<{
 
 @media screen and (max-width: 1689px) {
   .navigation {
-    right: 32px;
+    right: 2rem;
   }
 }
 

@@ -285,17 +285,17 @@ watchEffect(() => {
 <style lang="less" scoped>
 // 角色选择器
 .selector {
-  @top: calc(50% - calc(32px * 8 + 24px * 7) / 2);
+  @top: calc(50% - calc(2rem * 8 + 24px * 7) / 2);
 
   position: absolute;
-  left: 64px;
+  left: 4rem;
   top: @top;
   display: flex;
   flex-direction: column;
   row-gap: 24px;
 
   &-item {
-    line-height: 32px;
+    line-height: 2rem;
     font-size: 24px;
     font-family: 'Noto Sans SC', sans-serif;
     display: flex;
@@ -356,7 +356,7 @@ watchEffect(() => {
   bottom: calc(171px + 50vh - 540px);
 
   &-title {
-    font-size: 64px;
+    font-size: 4rem;
     line-height: 92px;
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
@@ -391,7 +391,7 @@ watchEffect(() => {
       }
 
       &-content {
-        line-height: 32px;
+        line-height: 2rem;
         font-size: 14px;
         font-family: 'Noto Sans SC', sans-serif;
         font-weight: 400;
@@ -439,9 +439,9 @@ watchEffect(() => {
   background-image: url('../assets/characters-page/element-x.svg');
   position: absolute;
   top: calc(180px + 50vh - 540px);
-  right: calc(1432px + 50vw - 960px);
-  height: 64px;
-  width: 64px;
+  right: calc(89.5rem + 50vw - 960px);
+  height: 4rem;
+  width: 4rem;
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -459,8 +459,8 @@ watchEffect(() => {
   }
 
   .element-x {
-    width: 48px;
-    height: 48px;
+    width: 3rem;
+    height: 3rem;
   }
 
   .matrix-behind-pic {
@@ -487,7 +487,7 @@ watchEffect(() => {
     bottom: calc(104px + 50vh - 417px);
 
     &-title {
-      font-size: 48px;
+      font-size: 3rem;
       line-height: 69px;
       max-width: 400px;
     }
@@ -538,12 +538,12 @@ watchEffect(() => {
 
   .info {
     right: unset;
-    bottom: 64px;
+    bottom: 4rem;
     width: 100%;
     padding: 24px 8px 0 24px;
 
     &-title {
-      font-size: 32px;
+      font-size: 2rem;
       line-height: 46px;
     }
 
@@ -586,8 +586,8 @@ watchEffect(() => {
   }
 
   .element-x {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     top: calc(50vh + 153px - 406px);
     left: calc(50vw + 71px - 187.5px);
   }

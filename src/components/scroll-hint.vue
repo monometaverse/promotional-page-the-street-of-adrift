@@ -65,7 +65,7 @@
 
 @media screen and (max-width: 1679px) {
   .scroll-hint {
-    bottom: 32px;
+    bottom: 2rem;
 
     &-text,
     &-icon {

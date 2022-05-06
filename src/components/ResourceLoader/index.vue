@@ -218,7 +218,7 @@ onMounted(async () => {
 }
 // 加载条
 .progress-bar {
-  @height: 32px;
+  @height: 2rem;
 
   width: @progress-width;
   height: @height;

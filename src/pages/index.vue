@@ -320,7 +320,7 @@ onMounted(() => {
 <style lang="less" scoped>
 @logo-width: 480px;
 @logo-height: calc(@logo-width / 480 * 112);
-@logo-and-play-top: calc(50% - calc(@logo-height + 64px) / 2);
+@logo-and-play-top: calc(50% - calc(@logo-height + 4rem) / 2);
 @logo-margin-right: 16px;
 @play-btn-size: 90px;
 // 视频容器
@@ -340,9 +340,9 @@ onMounted(() => {
   mask-image: radial-gradient(circle at center, white 0%, transparent 80px);
   mask-repeat: no-repeat;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 64px 64px;
+  -webkit-mask-size: 4rem 4rem;
   opacity: 0.5;
-  mask-size: 64px 64px;
+  mask-size: 4rem 4rem;
   transform: translateY(-100%);
 }
 // logo 的复制体
@@ -351,7 +351,7 @@ onMounted(() => {
   height: @logo-height;
   position: absolute;
   top: calc(50% - @logo-height / 2);
-  left: 64px;
+  left: 4rem;
   background-image: url("../assets/home-page/tsoa-logo.svg");
 
   &:lang(zh) {
@@ -375,10 +375,10 @@ onMounted(() => {
   font-family: "Noto Sans SC", sans-serif;
   font-size: 16px;
   position: absolute;
-  left: 64px;
-  top: calc(50% + @logo-height / 2 + 64px);
+  left: 4rem;
+  top: calc(50% + @logo-height / 2 + 4rem);
   width: calc(@logo-width + @logo-margin-right + @play-btn-size);
-  line-height: 32px;
+  line-height: 2rem;
 
   .text {
     display: block;
@@ -394,8 +394,8 @@ onMounted(() => {
   display: flex;
   column-gap: 24px;
   position: absolute;
-  left: 64px;
-  top: calc(@logo-and-play-top - 32px - 24px);
+  left: 4rem;
+  top: calc(@logo-and-play-top - 2rem - 24px);
   overflow: hidden;
 }
 
@@ -406,7 +406,7 @@ onMounted(() => {
 .community-btn {
   cursor: pointer;
   transition: opacity 250ms ease;
-  height: 32px;
+  height: 2rem;
   width: 80px;
   background-position: center;
   background-repeat: no-repeat;
@@ -432,8 +432,8 @@ onMounted(() => {
   display: flex;
   position: absolute;
   top: @logo-and-play-top;
-  left: 64px;
-  padding: 32px 0;
+  left: 4rem;
+  padding: 2rem 0;
   align-items: center;
   background-image:
     url("../assets/static-framework/page-title-dot.png"),
@@ -466,12 +466,12 @@ onMounted(() => {
 @media screen and (max-width: 1679px) {
   @logo-width: 360px;
   @logo-height: calc(@logo-width / 640 * 149);
-  @logo-and-play-top: calc(50% - calc(@logo-height + 48px) / 2);
+  @logo-and-play-top: calc(50% - calc(@logo-height + 3rem) / 2);
   @logo-margin-right: 16px;
-  @play-btn-size: 64px;
+  @play-btn-size: 4rem;
 
   .logo-and-play {
-    left: 32px;
+    left: 2rem;
     top: @logo-and-play-top;
     padding: 24px;
 
@@ -488,7 +488,7 @@ onMounted(() => {
   }
 
   .logo-copy {
-    left: 32px;
+    left: 2rem;
     width: @logo-width;
     height: @logo-height;
     position: absolute;
@@ -500,13 +500,13 @@ onMounted(() => {
   }
 
   .description {
-    top: calc(50% + @logo-height / 2 + 64px);
+    top: calc(50% + @logo-height / 2 + 4rem);
     font-size: 14px;
-    left: 32px;
+    left: 2rem;
   }
 
   .community-btns {
-    left: 32px;
+    left: 2rem;
   }
 }
 
@@ -514,9 +514,9 @@ onMounted(() => {
 @media screen and (max-width: 1079px) {
   @logo-width: 240px;
   @logo-height: calc(@logo-width / 640 * 149);
-  @logo-and-play-top: calc(50% - calc(@logo-height + 48px) / 2);
+  @logo-and-play-top: calc(50% - calc(@logo-height + 3rem) / 2);
   @logo-margin-right: 16px;
-  @play-btn-size: 64px;
+  @play-btn-size: 4rem;
   @desc-bottom: 100px;
   @desc-height: 72px;
   @desc-margin-top: 16px;
@@ -551,7 +551,7 @@ onMounted(() => {
     left: 20px;
     width: @logo-width;
     height: @logo-height;
-    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 32px);
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 2rem);
   }
 
   .logo-copy-center {
@@ -568,7 +568,7 @@ onMounted(() => {
 
   .community-btns {
     top: unset;
-    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 64px + @logo-height + 18px);
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 4rem + @logo-height + 18px);
     left: 20px;
   }
 
