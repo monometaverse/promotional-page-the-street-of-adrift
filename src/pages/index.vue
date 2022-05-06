@@ -36,6 +36,59 @@ const secretMsgLightBounding = computed(() => {
     left: secretMsgBounding.x.value
   }
 })
+const showSecretMsgCoverMaxDistance = 256
+// 光圈的不透明度
+const msgCoverOpacity = computed(() => {
+  let processedBoundingY = secretMsgBounding.y.value // 修正获取到的 y 值
+  console.log('before: ' + processedBoundingY)
+  if (processedBoundingY < 0) {
+    processedBoundingY += windowHeight.value
+  } else if (processedBoundingY > windowHeight.value) {
+    processedBoundingY -= windowHeight.value
+  }
+  console.log('after: ' + processedBoundingY)
+  const top = mousePos.value.y < processedBoundingY // 是否在文字上方
+  const bottom = mousePos.value.y > processedBoundingY + secretMsgBounding.height.value // 是否在文字下方
+  const left = mousePos.value.x < secretMsgBounding.x.value // 是否在文字左方
+  const right = mousePos.value.x > secretMsgBounding.x.value + secretMsgBounding.width.value // 是否在文字右方
+  let distance = 0
+  if (top) {
+    if (left) {
+      // 在文字左上方
+      distance = Math.sqrt(Math.pow(secretMsgBounding.x.value - mousePos.value.x, 2) + Math.pow(processedBoundingY - mousePos.value.y, 2))
+    } else if (right) {
+      // 在文字右上方
+      distance = Math.sqrt(Math.pow(mousePos.value.x - secretMsgBounding.x.value - secretMsgBounding.width.value, 2) + Math.pow(processedBoundingY - mousePos.value.y, 2))
+    } else {
+      // 在文字正上方
+      distance = processedBoundingY - mousePos.value.y
+    }
+  } else if (bottom) {
+    if (left) {
+      // 在文字左下方
+      distance = Math.sqrt(Math.pow(secretMsgBounding.x.value - mousePos.value.x, 2) + Math.pow(mousePos.value.y - processedBoundingY - secretMsgBounding.height.value, 2))
+    } else if (right) {
+      // 在文字右下方
+      distance = Math.sqrt(Math.pow(mousePos.value.x - secretMsgBounding.x.value - secretMsgBounding.width.value, 2) + Math.pow(mousePos.value.y - processedBoundingY - secretMsgBounding.height.value, 2))
+    } else {
+      // 在文字正下方
+      distance = mousePos.value.y - processedBoundingY - secretMsgBounding.height.value
+    }
+  } else {
+    if (left) {
+      // 在文字正左方
+      distance = secretMsgBounding.x.value - mousePos.value.x
+    } else if (right) {
+      // 在文字正右方
+      distance = mousePos.value.x - secretMsgBounding.x.value - secretMsgBounding.width.value
+    }
+    // 在文字内部无需计算
+  }
+  if (distance <= showSecretMsgCoverMaxDistance) {
+    return (showSecretMsgCoverMaxDistance - distance) / showSecretMsgCoverMaxDistance
+  }
+  return 0
+})
 // 是否激活动画
 const animationActive = ref(false)
 // 各个元素的动画延迟
@@ -197,7 +250,7 @@ onMounted(() => {
     </div>
     <!-- 神秘文字 -->
     <div
-      class="absolute bottom-4rem left-4rem <sm:hidden <xl:(bottom-2rem left-2rem) overflow-hidden"
+      class="absolute bottom-4rem left-4rem <sm:hidden <xl:(bottom-2rem left-2rem)"
       ref="secretMsg"
     >
       <div
@@ -208,6 +261,7 @@ onMounted(() => {
           top: mousePos.y - secretMsgLightBounding.top + 'px', // 解决绝对定位的偏移问题
           left: mousePos.x - secretMsgLightBounding.left + 'px',
           'mix-blend-mode': 'screen',
+          opacity: msgCoverOpacity + ''
         }"
       >
         <div
