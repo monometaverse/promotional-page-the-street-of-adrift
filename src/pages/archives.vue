@@ -332,7 +332,7 @@ const layer3Style = computed<CSSProperties>(() => {
           <a
             :href="picAndNameList[showCurrentNameIndex].pic.src"
             target="_blank"
-            class="archives-pic cover-no-repeat-center block clickble"
+            class="archives-pic bg-contain bg-center bg-no-repeat block clickble"
             :style="{
               'background-image': `url(${picAndNameList[currentIndex].pic.src})`,
               transform: layer2Style.transform + ' ' + picAnimationStyleNext.transform,
@@ -343,7 +343,7 @@ const layer3Style = computed<CSSProperties>(() => {
           <a
             :href="picAndNameList[showCurrentNameIndex].pic.src"
             target="_blank"
-            class="archives-pic cover-no-repeat-center block clickble"
+            class="archives-pic bg-contain bg-center bg-no-repeat block clickble"
             :style="{
               'background-image': `url(${picAndNameList[prevPic].pic.src})`,
               transform: layer2Style.transform + ' ' + picAnimationStyle.transform,
@@ -451,6 +451,7 @@ const layer3Style = computed<CSSProperties>(() => {
       top: calc(279px + 50vh - 540px);
       left: calc(559px + 50vw - 960px);
       position: absolute;
+      background-color: black;
       @height: 480px;
       @width: calc(@height / 40 * 71);
 
