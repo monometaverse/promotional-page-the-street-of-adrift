@@ -585,7 +585,8 @@ useStyleTag(hideCursorStyle)
                 <div
                   class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
                   :style="{
-                    backgroundImage: `url(https://static-test.mono.fun${userInfo.avatar})`
+                    backgroundImage: `url(https://static-test.mono.fun${userInfo.avatar})`,
+                    backgroundColor: 'rgba(255,255,255,0.5)'
                   }"
                 />
               </template>
