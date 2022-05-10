@@ -365,6 +365,7 @@ const goLoginPageAndWaitForMessage = (() => {
       if (ev.data.isLogin) {
         // 登录成功了，尝试获取一下用户信息
         const res = await api.user.getLoginInfo()
+        console.log(res)
         if (isSuccess(res)) {
           userInfo.value = res.data
           childWindow?.close()
@@ -584,7 +585,7 @@ useStyleTag(hideCursorStyle)
                 <div
                   class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
                   :style="{
-                    backgroundImage: `url(${'https://static-test.mono.fun/public/users/avatars/58010852afd77682b1900ed0a63dc94a8195c39b0a22845bddc58dd9d15eecf4.png'})`
+                    backgroundImage: `url(https://static-test.mono.fun${userInfo.avatar})`
                   }"
                 />
               </template>
