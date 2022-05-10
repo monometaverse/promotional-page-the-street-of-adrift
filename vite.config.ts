@@ -6,6 +6,7 @@ import eslint from 'vite-plugin-eslint'
 import stylelint from 'vite-plugin-stylelint'
 import windiCss from 'vite-plugin-windicss'
 
+// TODO: 在区分了环境之后，线上环境需要扔掉 console.log
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
