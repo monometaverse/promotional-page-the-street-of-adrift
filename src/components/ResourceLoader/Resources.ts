@@ -27,6 +27,8 @@ import theVoidExplosionWar from '../../assets/settings-page/theVoidExplosionWar.
 import theShiraishiGroup from '../../assets/settings-page/theShiraishiGroup.jpg'
 import fujingCity from '../../assets/settings-page/fujingCity.jpg'
 import kusyou from '../../assets/settings-page/kusyou.jpg'
+import fujingYuan from '../../assets/settings-page/fujingbi.png'
+import huiqiangCity from '../../assets/settings-page/huiqiangcheng.png'
 // 设定页小图
 import theVoidExplosionWarSmall from '../../assets/settings-page/theVoidExplosionWarSmall.png'
 import theShiraishiGroupSmall from '../../assets/settings-page/theShiraishiGroupSmall.png'
@@ -86,6 +88,8 @@ export const resources = [
   { name: 'fujingCity', value: fujingCity, type: 'image', for: 'settings' },
   { name: 'kusyou', value: kusyou, type: 'image', for: 'settings' },
   { name: 'beauties', value: beauties, type: 'image', for: 'settings' },
+  { name: 'fujingYuan', value: fujingYuan, type: 'image', for: 'settings' },
+  { name: 'huiqiangCity', value: huiqiangCity, type: 'image', for: 'settings' },
   // 设定页小图
   { name: 'theVoidExplosionWarSmall', value: theVoidExplosionWarSmall, type: 'image', for: 'settings' },
   { name: 'theShiraishiGroupSmall', value: theShiraishiGroupSmall, type: 'image', for: 'settings' },
