@@ -232,6 +232,11 @@ const onReserveBtnClick = async (index: number) => {
     msg.show(res.message)
   }
 }
+// 前往详情页按钮事件处理器
+// TODO: 分环境
+const onShowDetailBtnClick = async (index: number) => {
+  window.open(`https://uat.mono.fun/nft/${itemsList.value[index].name}`, '_blank')
+}
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)
 const infoElBound = useElementBounding(infoEl)
@@ -321,26 +326,50 @@ watchEffect(() => {
         {{ t(itemsList[currentIndexForAnimation].description) }}
       </div>
       <div
-        class="info-reserve-btn-text"
-        :class="{
-          '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
-        }"
+        class="info-btns flex gap-x-1rem"
         :style="reserveBtnAnimationStyle"
       >
-        {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}
+        <!-- 前往详情页按钮 -->
+        <div v-if="itemsList[currentIndexForAnimation].canBeReserved">
+          <div
+            :lang="locale"
+            class="info-btn-text"
+            :class="{
+              '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
+            }"
+          >
+            {{ t('nft.showDetails') }}
+          </div>
+          <div
+            class="info-btn info-common-btn transform -translate-y-[100%]"
+          >
+            <div
+              class="info-btn-inner info-common-btn-inner clickble"
+              @click="onShowDetailBtnClick(currentIndexForAnimation)"
+            />
+          </div>
+        </div>
+        <!-- 预约按钮 -->
+        <div>
+          <div
+            class="info-btn info-reserve-btn"
+          >
+            <div
+              class="info-btn-inner info-reserve-btn-inner clickble"
+              @click="onReserveBtnClick(currentIndexForAnimation)"
+            />
+          </div>
+          <div
+            :lang="locale"
+            class="info-btn-text text-black transform -translate-y-[100%] pointer-events-none"
+            :class="{
+              '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
+            }"
+          >
+            {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}
+          </div>
+        </div>
       </div>
-    </div>
-    <div
-      class="info-reserve-btn"
-      :style="{
-        ...reserveBtnAnimationStyle,
-        ...reserveBtnPosition
-      }"
-    >
-      <div
-        class="info-reserve-btn-inner clickble"
-        @click="onReserveBtnClick(currentIndexForAnimation)"
-      />
     </div>
     <div class="matrix matrix-left-bottom" />
     <div class="matrix matrix-behind-models <sm:hidden" />
@@ -479,9 +508,12 @@ watchEffect(() => {
     font-weight: 400;
     width: 480px;
   }
-  // 预约按钮文字
-  &-reserve-btn-text {
+  // 预约按钮和前往详情页按钮
+  &-btns {
     margin-top: @reserve-btn-margin-top;
+  }
+
+  &-btn-text {
     height: 4rem;
     font-family: 'Noto Serif SC', sans-serif;
     font-weight: 900;
@@ -491,37 +523,57 @@ watchEffect(() => {
     align-items: center;
     justify-content: center;
   }
-}
 
-// 预约按钮边框和背景
-.info-reserve-btn {
-  transition-property: background-color;
-  transition-duration: 250ms;
-  transition-timing-function: ease;
-  position: absolute;
-  height: 4rem;
-  width: 192px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  box-sizing: border-box;
-  left: 4rem;
+  &-btn {
+    transition-property: background-color;
+    transition-duration: 250ms;
+    transition-timing-function: ease;
+    height: 4rem;
+    width: 192px;
+    box-sizing: border-box;
+    left: 4rem;
 
-  &-inner {
-    transition: opacity 250ms ease;
-    width: 100%;
-    height: 100%;
-    background-image: url('../assets/nft-page/reserve-btn-background.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.1;
+    &-inner {
+      transition: opacity 250ms ease;
+      width: 100%;
+      height: 100%;
+      background-image: url('../assets/nft-page/reserve-btn-background.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      opacity: 0.2;
+    }
   }
 
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  // 普通按钮边框和背景
+  &-common-btn {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &:hover &-inner {
+      opacity: 1;
+    }
   }
 
-  &:hover &-inner {
-    opacity: 1;
+  // 预约按钮边框和背景
+  &-reserve-btn {
+    border: 2px solid white;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &-inner {
+      opacity: 0.5;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    &:hover &-inner {
+      opacity: 1;
+    }
   }
 }
 
@@ -665,7 +717,7 @@ watchEffect(() => {
       width: 320px;
     }
 
-    &-reserve-btn-text {
+    &-btns {
       margin-top: @reserve-btn-margin-top;
     }
   }
@@ -747,7 +799,7 @@ watchEffect(() => {
   .info {
     width: 100%;
     top: unset;
-    bottom: 100px;
+    bottom: 60px;
     left: 0;
     padding: 20px 20px 0 20px;
 
@@ -767,16 +819,23 @@ watchEffect(() => {
       line-height: 24px;
     }
 
-    &-reserve-btn-text {
-      margin-top: 24px;
+    &-btns {
+      margin-top: 1.5rem;
+    }
+
+    &-btn-text {
       width: 6rem;
       height: 2rem;
-      font-size: 16px;
+      font-size: 1rem;
       line-height: 23px;
+
+      &:lang(en) {
+        font-size: 0.75rem;
+      }
     }
   }
 
-  .info-reserve-btn {
+  .info-btn {
     left: 20px;
     width: 6rem;
     height: 2rem;
