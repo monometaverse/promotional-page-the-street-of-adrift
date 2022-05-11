@@ -29,6 +29,7 @@
     "reserveSuccessBtnText": "知道了",
     "reserveSucceed": "预约成功",
     "commingSoon": "敬请期待",
+    "showDetails": "前往详情页",
     "reservedItem": "您已成功预约「{name}」",
     "needLogin": "需要先登录 Mono 账号，才能进行预约操作",
     "receiveEmailCheckboxText": "订阅彷徨之街推送的邮件",

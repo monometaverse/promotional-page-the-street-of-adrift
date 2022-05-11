@@ -44,12 +44,12 @@ const settings = ref<{
   {
     name: 'greywallCity',
     smallPic: null,
-    bigPic: null,
+    bigPic: store.getRes('huiqiangCity', 'settings').value as HTMLImageElement,
   },
   {
     name: 'fujingYuan',
     smallPic: null,
-    bigPic: null,
+    bigPic: store.getRes('fujingYuan', 'settings').value as HTMLImageElement,
   }
 ])
 // 当前正在显示的索引
