@@ -187,7 +187,7 @@ const modelContainerEl = ref<HTMLDivElement | null>(null)
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
-  const show = ref(false)
+  const show = ref(true)
   const name = ref('nft.goldCoinName')
   // 显示预约成功框
   // 请传入用来进行本地化的键
@@ -395,49 +395,53 @@ watchEffect(() => {
     >
       <!-- 提示框主体 -->
       <div
-        class="w-576px h-480px bg-black flex flex-col justify-between items-center transition duration-250 <sm:(w-320px h-374px)"
+        class="w-576px h-480px bg-black flex transition duration-250 <sm:(w-320px h-374px)"
         :class="{
           'opacity-0': !isDialogShow,
           '-translate-y-50px transform': !isDialogShow
         }"
       >
+        <!-- 占位符 -->
+        <div class="flex-1 pt-24px pr-24px" />
+        <div class="flex flex-col justify-between items-center pt-3rem">
+          <span class="font-serif font-900 leading-46px text-2rem <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
+          <!-- 预约成功的物品的名称 -->
+          <span class="font-sans text-1rem <sm:text-0.75rem">{{ t('nft.reservedItem', { name: t(reservedNftName) }) }}</span>
+          <!-- 预约成功图片 -->
+          <div class="success-pic-container p-14px">
+            <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
+          </div>
+          <!-- 勾选框，是否接收所有关于彷徨之街的邮件 -->
+          <div class="flex items-center gap-x-0.5rem">
+            <input
+              type="checkbox"
+              :checked="isSendAllChecked"
+              id="receiveAll"
+            >
+            <label
+              for="receiveAll"
+              class="font-sans text-0.75rem leading-1.125rem"
+            >{{ t('nft.receiveEmailCheckboxText') }}</label>
+          </div>
+          <!-- 确定按钮 -->
+          <div>
+            <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
+              <div
+                class="reserve-success-bg w-192px h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
+                @click="closeReserveSuccessDialog(true)"
+              />
+            </div>
+            <div class="w-192px h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem)">
+              {{ t('nft.reserveSuccessBtnText') }}
+            </div>
+          </div>
+        </div>
         <!-- 关闭按钮 -->
-        <div class="flex justify-end w-[100%] pt-24px pr-24px">
+        <div class="flex justify-end flex-1 pt-24px pr-24px">
           <div
             class="close-btn clickble"
             @click="closeReserveSuccessDialog(false)"
           />
-        </div>
-        <span class="font-serif font-900 leading-46px text-2rem <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
-        <!-- 预约成功的物品的名称 -->
-        <span class="font-sans text-1rem <sm:text-0.75rem">{{ t('nft.reservedItem', { name: t(reservedNftName) }) }}</span>
-        <!-- 预约成功图片 -->
-        <div class="success-pic-container p-14px">
-          <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
-        </div>
-        <!-- 勾选框，是否接收所有关于彷徨之街的邮件 -->
-        <div class="flex items-center gap-x-0.5rem">
-          <input
-            type="checkbox"
-            :checked="isSendAllChecked"
-            id="receiveAll"
-          >
-          <label
-            for="receiveAll"
-            class="font-sans text-0.75rem leading-1.125rem"
-          >{{ t('nft.receiveEmailCheckboxText') }}</label>
-        </div>
-        <!-- 确定按钮 -->
-        <div>
-          <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
-            <div
-              class="reserve-success-bg w-192px h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
-              @click="closeReserveSuccessDialog(true)"
-            />
-          </div>
-          <div class="w-192px h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem)">
-            {{ t('nft.reserveSuccessBtnText') }}
-          </div>
         </div>
       </div>
     </div>
