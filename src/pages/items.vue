@@ -1,6 +1,6 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties, onMounted, reactive, ref, toRaw, unref, watchEffect } from 'vue'
+import { computed, CSSProperties, onMounted, reactive, ref, toRaw, watchEffect } from 'vue'
 import { usePagination, useMessage } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
@@ -8,7 +8,7 @@ import { useElementBounding } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
-import { Color, DataTexture, FrontSide, MeshPhysicalMaterial } from 'three'
+import { Color, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
 import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
@@ -17,7 +17,7 @@ import api from '../api'
 
 // pinia 状态管理
 const store = useStore()
-const { windowHeight, isOnMobile, userInfo } = storeToRefs(store)
+const { userInfo } = storeToRefs(store)
 // i18n
 const { t, locale } = useI18n()
 // 消息组件
@@ -85,11 +85,6 @@ const itemsList = ref<NFTItem[]>([
   }
 ])
 // NFT 名称列表
-const nftNames = computed(() => {
-  const names: string[] = []
-  itemsList.value.forEach(it => names.push(it.name))
-  return names
-})
 // 是否选中“发送所有邮件”
 const isSendAllChecked = ref(true)
 // 当前正在显示的 NFT
@@ -239,18 +234,6 @@ const onShowDetailBtnClick = async (index: number) => {
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)
-const infoElBound = useElementBounding(infoEl)
-const reserveBtnPosition = computed<CSSProperties>(() => {
-  let top = infoElBound.bottom.value - (isOnMobile.value ? 32 : 64)
-  if (top > windowHeight.value) {
-    top -= windowHeight.value
-  } else if (top < 0) {
-    top += windowHeight.value
-  }
-  return {
-    top: `${top}px`
-  }
-})
 const getNFTReservedStatus = async () => {
   if (!userInfo.value) {
     return
