@@ -187,7 +187,7 @@ const modelContainerEl = ref<HTMLDivElement | null>(null)
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
-  const show = ref(true)
+  const show = ref(false)
   const name = ref('nft.goldCoinName')
   // 显示预约成功框
   // 请传入用来进行本地化的键
@@ -201,6 +201,9 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
     if (checked && isSendAllChecked.value) {
       // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
+      // 跳转到项目详情页
+      // TODO: 分环境
+      window.open(`https://uat.mono.fun/nft/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
     }
     isSendAllChecked.value = true
   }
@@ -432,7 +435,7 @@ watchEffect(() => {
               />
             </div>
             <div class="w-192px h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem)">
-              {{ t('nft.reserveSuccessBtnText') }}
+              {{ t('nft.showDetails') }}
             </div>
           </div>
         </div>
