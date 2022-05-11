@@ -26,6 +26,11 @@ const picAndNameList = ref([
   { name: 'alcoholAbuse', pic: store.getRes('alcoholAbuse', 'archive').value as HTMLImageElement },
   { name: 'anna', pic: store.getRes('annaInArchive', 'archive').value as HTMLImageElement }
 ])
+// 获取原图链接
+const getOriginPicLink = (src: string): string => {
+  const fileName = src.substring(src.lastIndexOf('/')).replace('.webp', '.jpg')
+  return 'https://tsoastatictest.blob.core.windows.net/public' + fileName
+}
 // 用来显示的名字索引
 const showCurrentNameIndex = ref(0)
 // 用来显示的图片名称
@@ -330,7 +335,7 @@ const layer3Style = computed<CSSProperties>(() => {
         <div class="archives-center">
           <!-- 图片 -->
           <a
-            :href="picAndNameList[showCurrentNameIndex].pic.src"
+            :href="getOriginPicLink(picAndNameList[showCurrentNameIndex].pic.src)"
             target="_blank"
             class="archives-pic bg-contain bg-center bg-no-repeat block clickble"
             :style="{
@@ -341,7 +346,7 @@ const layer3Style = computed<CSSProperties>(() => {
             }"
           />
           <a
-            :href="picAndNameList[showCurrentNameIndex].pic.src"
+            :href="getOriginPicLink(picAndNameList[prevPic].pic.src)"
             target="_blank"
             class="archives-pic bg-contain bg-center bg-no-repeat block clickble"
             :style="{
