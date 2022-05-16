@@ -15,8 +15,8 @@
     "failedToOpenLoginWindow": "开启登录窗口失败"
   },
   "home": {
-    "gameInfo1": "彷徨之街本名艾德里夫特街（Street of Adrift），它并非街道而是商业大楼。",
-    "gameInfo2": "其负责人曾读过不少福京市官方语言的文学作品，于是把它意译为“彷徨之街”。"
+    "gameInfo1": "彷徨之街（The Street of Adrift）本意“艾德里夫特的街”，它并非街道而是商业大楼，艾德里夫特是它的最初设计者。",
+    "gameInfo2": "其负责人曾读过不少福京市官方语言的文学作品，于是把艾德里夫特意译为了“彷徨”。"
   },
   "nft": {
     "goldCoinName": "九霄金币",
