@@ -40,7 +40,8 @@ export default defineConfig({
     assetsInlineLimit: 0,
     rollupOptions: {
       output: {
-        assetFileNames: `assets/[name].[ext]`
+        // 只当文件名是 dracoDecoder 和 dracoEncoder 时，才不会生成 hash
+        assetFileNames: (chunkInfo): string => chunkInfo.name.includes('draco') ? 'assets/[name].[ext]' : 'assets/[name].[hash].[ext]'
       }
     }
   }
