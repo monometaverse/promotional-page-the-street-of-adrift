@@ -185,6 +185,10 @@ const doAnimation = (next: boolean, newIndex: number, enter: boolean) => {
 const modelContainerEl = ref<HTMLDivElement | null>(null)
 // 模型容器元素的位置高宽信息
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
+// API 基础路径
+const apiBaseUrl = import.meta.env.VITE_APP_API_BASE_URL
+// 会使用到的主站路径
+const apiBase = apiBaseUrl.includes('uat') ? 'https://uat.mono.fun' : 'https://mono.fun'
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
   const show = ref(false)
@@ -202,8 +206,7 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
       // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
       // 跳转到项目详情页
-      // TODO: 分环境
-      window.open(`https://uat.mono.fun/nft/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
+      window.open(`${apiBase}/nft/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
     }
     isSendAllChecked.value = true
   }
@@ -231,9 +234,8 @@ const onReserveBtnClick = async (index: number) => {
   }
 }
 // 前往详情页按钮事件处理器
-// TODO: 分环境
 const onShowDetailBtnClick = async (index: number) => {
-  window.open(`https://uat.mono.fun/nft/${itemsList.value[index].name}`, '_blank')
+  window.open(`${apiBase}/nft/${itemsList.value[index].name}`, '_blank')
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)

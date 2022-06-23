@@ -330,6 +330,9 @@ useEventListener(document, 'wheel', (() => {
 const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
 // 分享框
 const isShareDialogShow = ref(false)
+// API 基础路径
+const apiBase = import.meta.env.VITE_APP_API_BASE_URL
+const willOpen = apiBase.includes('uat') ? 'https://uat.mono.fun' : 'https://mono.fun'
 // 当挂载时
 onMounted(async () => {
   animationActive.value = true
@@ -361,7 +364,8 @@ const goLoginPageAndWaitForMessage = (() => {
   const messageHandler = async (ev: MessageEvent) => {
     console.log(ev)
     // 检查来源，避免被跨站攻击
-    if (ev.origin === 'https://uat.mono.fun' || ev.origin === 'https://uat-preview.mono.fun') {
+    if (ev.origin === 'https://uat.mono.fun' || ev.origin === 'https://uat-preview.mono.fun'
+      || ev.origin === 'https://mono.fun' || ev.origin === 'https://www.mono.fun') {
       if (ev.data.isLogin) {
         // 登录成功了，尝试获取一下用户信息
         const res = await api.user.getLoginInfo()
@@ -377,7 +381,8 @@ const goLoginPageAndWaitForMessage = (() => {
     }
   }
   return () => {
-    childWindow = window.open('https://uat.mono.fun/login', '_blank')
+    // 区分环境
+    childWindow = window.open(willOpen + '/login', '_blank')
     if(!childWindow) { // 如果没有获取到跳转后的窗口
       message.show(i18n.t('static.failedToOpenLoginWindow'))
       return
@@ -434,7 +439,6 @@ const onMobileNavChange = (newVal: boolean) => mobileNavOpen.value = newVal
 useStyleTag(hideCursorStyle)
 </script>
 <template>
-  <!--TODO: 调试好之后改成 v-if="!loadedRes"-->
   <transition name="fade">
     <ResourceLoader
       @load-complete="onResourceLoadComplete"
@@ -570,7 +574,7 @@ useStyleTag(hideCursorStyle)
             <div class="actions-divider" />
             <a
               class="actions-text clickble"
-              href="https://uat.mono.fun/login"
+              :href="willOpen + '/login'"
               target="blank"
             >
               {{ i18n.t('static.register') }}
@@ -595,7 +599,7 @@ useStyleTag(hideCursorStyle)
                   <menu-item>
                     <a
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
-                      :href="`https://uat.mono.fun/user/${userInfo?.id}`"
+                      :href="`${willOpen}/user/${userInfo?.id}`"
                       target="_blank"
                     >
                       {{ i18n.t('static.toMyProfile') }}
