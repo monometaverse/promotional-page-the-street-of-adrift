@@ -1,7 +1,7 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, watchEffect } from 'vue'
-import { usePagination, useMessage } from '../utils'
+import { usePagination, useMessage, useActivityDate } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding } from '@vueuse/core'
@@ -14,6 +14,7 @@ import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
 import api from '../api'
+import moment from 'moment'
 
 // pinia 状态管理
 const store = useStore()
@@ -186,9 +187,7 @@ const modelContainerEl = ref<HTMLDivElement | null>(null)
 // 模型容器元素的位置高宽信息
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // API 基础路径
-const apiBaseUrl = import.meta.env.VITE_APP_API_BASE_URL
-// 会使用到的主站路径
-const apiBase = apiBaseUrl.includes('uat') ? 'https://uat.mono.fun' : 'https://mono.fun'
+const apiBase = import.meta.env.VITE_APP_API_URL_BASE
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
   const show = ref(false)
@@ -206,7 +205,7 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
       // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
       // 跳转到项目详情页
-      window.open(`${apiBase}/nft/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
+      window.open(`${apiBase}/items/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
     }
     isSendAllChecked.value = true
   }
@@ -217,8 +216,15 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
     closeReserveSuccessDialog: closeDialog
   }
 })()
+// 活动相关
+const activityDate = useActivityDate()
 // 预约按钮事件处理器
 const onReserveBtnClick = async (index: number) => {
+  // 如果活动还没开始，就拒绝
+  if (!activityDate.started()) {
+    msg.show(t('nft.activityNotStart'))
+    return
+  }
   if (itemsList.value[index].reserved) return
   if (!itemsList.value[index].canBeReserved) return
   if (!userInfo.value) {
@@ -235,7 +241,7 @@ const onReserveBtnClick = async (index: number) => {
 }
 // 前往详情页按钮事件处理器
 const onShowDetailBtnClick = async (index: number) => {
-  window.open(`${apiBase}/nft/${itemsList.value[index].name}`, '_blank')
+  window.open(`${apiBase}/items/${itemsList.value[index].name}`, '_blank')
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)

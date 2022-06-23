@@ -16,3 +16,7 @@ declare module '*.glb' {
   const value: string
   export default value
 }
+
+declare interface ImportMetaEnv {
+  VITE_APP_API_URL_BASE: string
+}

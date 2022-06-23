@@ -331,8 +331,7 @@ const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
 // 分享框
 const isShareDialogShow = ref(false)
 // API 基础路径
-const apiBase = import.meta.env.VITE_APP_API_BASE_URL
-const willOpen = apiBase.includes('uat') ? 'https://uat.mono.fun' : 'https://mono.fun'
+const apiBase = import.meta.env.VITE_APP_API_URL_BASE
 // 当挂载时
 onMounted(async () => {
   animationActive.value = true
@@ -382,7 +381,7 @@ const goLoginPageAndWaitForMessage = (() => {
   }
   return () => {
     // 区分环境
-    childWindow = window.open(willOpen + '/login', '_blank')
+    childWindow = window.open(apiBase + '/login', '_blank')
     if(!childWindow) { // 如果没有获取到跳转后的窗口
       message.show(i18n.t('static.failedToOpenLoginWindow'))
       return
@@ -574,7 +573,7 @@ useStyleTag(hideCursorStyle)
             <div class="actions-divider" />
             <a
               class="actions-text clickble"
-              :href="willOpen + '/login'"
+              :href="apiBase + '/login'"
               target="blank"
             >
               {{ i18n.t('static.register') }}
@@ -599,7 +598,7 @@ useStyleTag(hideCursorStyle)
                   <menu-item>
                     <a
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
-                      :href="`${willOpen}/user/${userInfo?.id}`"
+                      :href="`${apiBase}/user/${userInfo?.id}`"
                       target="_blank"
                     >
                       {{ i18n.t('static.toMyProfile') }}
