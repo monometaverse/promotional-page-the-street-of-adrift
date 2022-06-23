@@ -1,3 +1,4 @@
+import moment from "moment"
 import { Object3D } from "three"
 import { createApp, reactive, ref, Ref, h, App } from "vue"
 import messageBar from '../components/message-bar.vue'
@@ -132,4 +133,16 @@ export const useMessage = (): Message => {
       },
     }
   })()
+}
+
+// 活动开始时间
+export const useActivityDate = () => {
+  /**
+   * 是否已经开始预约
+   * @returns boolean 函数，调用之后可以获取预约是否开始
+   */
+  const started = () => moment('2022-06-25T06:00:00.000Z').diff(moment()) <= 0
+  return {
+    started
+  }
 }

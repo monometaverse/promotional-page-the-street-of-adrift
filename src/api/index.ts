@@ -56,7 +56,7 @@ interface MonoAxios extends AxiosInstance {
 
 const monoAxios: MonoAxios = (() => {
   const instance = axios.create({
-    baseURL: 'https://uat.mono.fun/api',
+    baseURL: import.meta.env.VITE_APP_API_URL_BASE + '/api',
     withCredentials: true,
   })
   // 添加错误拦截器
