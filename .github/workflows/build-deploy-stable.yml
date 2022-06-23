@@ -122,7 +122,7 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         uses: azure/CLI@v1
         with:
-          inlineScript: az storage blob upload-batch --account-name tsoa --auth-mode key -d '$web' -s ./dist --overwrite
+          inlineScript: az storage blob upload-batch --account-name tsoastatic --auth-mode key -d '$web' -s ./dist --overwrite
       # 清除终结点
       - name: Purge CDN endpoint
         if: ${{ github.event_name != 'pull_request' }}
