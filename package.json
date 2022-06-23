@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build:prod": "vue-tsc --noEmit && vite build",
-    "build:azure": "chmod +x ./build.sh && ./build.sh",
+    "build:uat": "vue-tsc --noEmit && vite build --mode uat",
+    "build:stable": "vue-tsc --noEmit && vite build --mode stable",
     "preview": "vite preview"
   },
   "dependencies": {
