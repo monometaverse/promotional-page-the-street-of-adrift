@@ -141,7 +141,7 @@ export const useActivityDate = () => {
    * 是否已经开始预约
    * @returns boolean 函数，调用之后可以获取预约是否开始
    */
-  const started = () => moment('2022-06-25T06:00:00.000Z').diff(moment()) <= 0
+  const started = () => moment('2022-06-25T11:00:00.000Z').diff(moment()) <= 0
   return {
     started
   }
