@@ -28,8 +28,9 @@ const picAndNameList = ref([
 ])
 // 获取原图链接
 const getOriginPicLink = (src: string): string => {
-  const fileName = src.substring(src.lastIndexOf('/')).replace('.webp', '.jpg')
-  return 'https://tsoastatictest.blob.core.windows.net/public' + fileName
+  let fileName = src.substring(src.lastIndexOf('/'))
+  fileName = fileName.substring(0, fileName.indexOf('.')) + '.jpg'
+  return (import.meta.env.MODE === 'stable' ? 'https://tsoastatic.blob.core.windows.net/public' : 'https://tsoastatictest.blob.core.windows.net/public') + fileName
 }
 // 用来显示的名字索引
 const showCurrentNameIndex = ref(0)
