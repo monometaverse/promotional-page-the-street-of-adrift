@@ -220,13 +220,13 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
 const activityDate = useActivityDate()
 // 预约按钮事件处理器
 const onReserveBtnClick = async (index: number) => {
+  if (itemsList.value[index].reserved) return
+  if (!itemsList.value[index].canBeReserved) return
   // 如果活动还没开始，就拒绝
   if (!activityDate.started()) {
     msg.show(t('nft.activityNotStart'))
     return
   }
-  if (itemsList.value[index].reserved) return
-  if (!itemsList.value[index].canBeReserved) return
   if (!userInfo.value) {
     msg.show(t('nft.needLogin'))
     return
