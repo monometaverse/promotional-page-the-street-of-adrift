@@ -598,7 +598,7 @@ useStyleTag(hideCursorStyle)
                   <menu-item>
                     <a
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
-                      :href="`${apiBase}/user/${userInfo?.id}`"
+                      :href="`${apiBase}/user`"
                       target="_blank"
                     >
                       {{ i18n.t('static.toMyProfile') }}
