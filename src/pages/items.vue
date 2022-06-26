@@ -27,6 +27,7 @@ const itemsList = ref<NFTItem[]>([
   {
     name: 'nft.goldCoinName',
     description: 'nft.goldCoinInfo',
+    url: "d9baa6d4-f37b-4fe0-9164-21780b5e8b40",
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
     canBeReserved: true,
@@ -50,6 +51,7 @@ const itemsList = ref<NFTItem[]>([
   {
     name: 'nft.sliverCoinName',
     description: 'nft.sliverCoinInfo',
+    url: "cfeb8d91-4865-456a-b400-ad6b72b60ca1",
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
     canBeReserved: true,
@@ -241,7 +243,7 @@ const onReserveBtnClick = async (index: number) => {
 }
 // 前往详情页按钮事件处理器
 const onShowDetailBtnClick = async (index: number) => {
-  window.open(`${apiBase}/items/${itemsList.value[index].name}`, '_blank')
+  window.open(`${apiBase}/items/${itemsList.value[index].url}`, '_blank')
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)
