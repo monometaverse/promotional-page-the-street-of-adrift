@@ -115,6 +115,7 @@ export type LoadedResources = Required<LoadingResources>
 export type NFTItem = {
   name: string, // 名称
   description: string, // 描述
+  url?: string, // 链接
   reserved: boolean, // 是否已经预约
   model: Group, // 模型组
   readonly canBeReserved: boolean, // 是否可以被预约，如果不能，就会标注敬请期待
