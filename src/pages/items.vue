@@ -255,7 +255,7 @@ const getNFTReservedStatus = async () => {
   // 获取 NFT 预约状态，需要是已经登录的状态
   for (let it of itemsList.value) {
     if (!it.canBeReserved) continue // 如果是不能被预约的项目，跳过
-    const res = await API.nft.getReservedState(it.name, '03f3e7eb-fa25-485d-b224-b81105feca19', userInfo.value.id)
+    const res = await API.nft.getReservedState(it.url!, '03f3e7eb-fa25-485d-b224-b81105feca19', userInfo.value.id)
     if (isSuccess(res)) {
       it.reserved = res.data.status === 1
     } else {
