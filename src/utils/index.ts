@@ -146,3 +146,8 @@ export const useActivityDate = () => {
     started
   }
 }
+
+// 拼接 OSS 路径
+export const ossPath = (path: string) => {
+  return `${import.meta.env.VITE_APP_OSS_URL_BASE}${path}`
+}

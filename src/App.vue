@@ -16,8 +16,9 @@ import DropdownMenu from './components/dropdown-menu.vue'
 import navOnMobile from './components/nav-on-mobile.vue'
 import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.webp'
+import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
-import { useMessage } from './utils'
+import { useMessage, ossPath } from './utils'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -588,7 +589,7 @@ useStyleTag(hideCursorStyle)
                 <div
                   class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
                   :style="{
-                    backgroundImage: `url(https://static-test.mono.fun${userInfo.avatar})`,
+                    backgroundImage: `url(${userInfo.avatar ? ossPath(userInfo.avatar) : defaultProfileAvatar})`,
                     backgroundColor: 'rgba(255,255,255,0.5)'
                   }"
                 />
