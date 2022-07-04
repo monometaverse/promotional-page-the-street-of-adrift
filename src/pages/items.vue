@@ -233,7 +233,7 @@ const onReserveBtnClick = async (index: number) => {
     msg.show(t('nft.needLogin'))
     return
   }
-  const res = await API.nft.reserve(itemsList.value[index].name, '03f3e7eb-fa25-485d-b224-b81105feca19')
+  const res = await API.nft.reserve(itemsList.value[index].url!, '03f3e7eb-fa25-485d-b224-b81105feca19')
   if (isSuccess(res)) {
     showReserveSuccessDialog(itemsList.value[index].name)
     itemsList.value[index].reserved = true
