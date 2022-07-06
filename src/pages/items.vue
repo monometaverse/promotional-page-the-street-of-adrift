@@ -207,10 +207,12 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
   const closeDialog = async (checked?: boolean) => {
     name.value = ''
     show.value = false
-    if (checked && isSendAllChecked.value) {
-      // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
+    if (isSendAllChecked.value) {
+      // 如果选中了「接受邮件」框，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
-      // 跳转到项目详情页
+    }
+    if (checked) {
+      // 如果点击的是「前往详情页」，跳转到项目详情页
       window.open(`${monoFeBase}/items/${id.value}`, '_blank')
     }
     isSendAllChecked.value = true
