@@ -838,9 +838,7 @@ watchEffect(() => {
     }
 
     &-desc {
-      width: 100%;
-      font-size: 12px;
-      line-height: 24px;
+      display: none;
     }
 
     &-btns {
