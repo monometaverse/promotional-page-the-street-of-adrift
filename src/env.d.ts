@@ -20,4 +20,5 @@ declare module '*.glb' {
 declare interface ImportMetaEnv {
   VITE_APP_API_URL_BASE: string
   VITE_APP_OSS_URL_BASE: string
+  VITE_APP_MONO_FE: string
 }

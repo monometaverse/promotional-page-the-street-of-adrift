@@ -1,7 +1,7 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, watchEffect } from 'vue'
-import { usePagination, useMessage, useActivityDate } from '../utils'
+import { usePagination, useMessage, useActivityDate, useLoginAndMessage } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding } from '@vueuse/core'
@@ -18,7 +18,7 @@ import moment from 'moment'
 
 // pinia 状态管理
 const store = useStore()
-const { userInfo } = storeToRefs(store)
+const { userInfo, shouldReserveAfterLogin } = storeToRefs(store)
 // i18n
 const { t, locale } = useI18n()
 // 消息组件
@@ -190,6 +190,8 @@ const modelContainerEl = ref<HTMLDivElement | null>(null)
 const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 // API 基础路径
 const apiBase = import.meta.env.VITE_APP_API_URL_BASE
+// MonoFun 前端基础路径
+const monoFeBase = import.meta.env.VITE_APP_MONO_FE
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
   const show = ref(false)
@@ -207,7 +209,7 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
       // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
       // 跳转到项目详情页
-      window.open(`${apiBase}/items/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
+      window.open(`${monoFeBase}/items/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
     }
     isSendAllChecked.value = true
   }
@@ -220,6 +222,18 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
 })()
 // 活动相关
 const activityDate = useActivityDate()
+// 前往登录页，并等待登录消息
+const goLoginPageAndWaitForMessage = useLoginAndMessage()
+// 进行预约
+const doReserve = async (index: number) => {
+  const res = await API.nft.reserve(itemsList.value[index].url!, '03f3e7eb-fa25-485d-b224-b81105feca19')
+  if (isSuccess(res)) {
+    showReserveSuccessDialog(itemsList.value[index].name)
+    itemsList.value[index].reserved = true
+  } else {
+    msg.show(res.message)
+  }
+}
 // 预约按钮事件处理器
 const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
@@ -231,19 +245,17 @@ const onReserveBtnClick = async (index: number) => {
   }
   if (!userInfo.value) {
     msg.show(t('nft.needLogin'))
+    // 保存要在登录完成后预约的项目
+    shouldReserveAfterLogin.value = index
+    // 跳转到登录页
+    goLoginPageAndWaitForMessage()
     return
   }
-  const res = await API.nft.reserve(itemsList.value[index].url!, '03f3e7eb-fa25-485d-b224-b81105feca19')
-  if (isSuccess(res)) {
-    showReserveSuccessDialog(itemsList.value[index].name)
-    itemsList.value[index].reserved = true
-  } else {
-    msg.show(res.message)
-  }
+  doReserve(index)
 }
 // 前往详情页按钮事件处理器
 const onShowDetailBtnClick = async (index: number) => {
-  window.open(`${apiBase}/items/${itemsList.value[index].url}`, '_blank')
+  window.open(`${monoFeBase}/items/${itemsList.value[index].url}`, '_blank')
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)
@@ -279,6 +291,12 @@ watchEffect(() => {
     return
   }
   getNFTReservedStatus()
+  // 如果发现有需要在登录后立即预约的项目，发送预约请求
+  if (shouldReserveAfterLogin.value !== -1) {
+    doReserve(shouldReserveAfterLogin.value)
+    // 清除要在登录后立即预约的项目
+    shouldReserveAfterLogin.value = -1
+  }
 })
 </script>
 <template>
