@@ -193,23 +193,27 @@ const apiBase = import.meta.env.VITE_APP_API_URL_BASE
 // MonoFun 前端基础路径
 const monoFeBase = import.meta.env.VITE_APP_MONO_FE
 // 预约成功框
-const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
+const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog, reservedNftId } = (() => {
   const show = ref(false)
   const name = ref('nft.goldCoinName')
+  const id = ref('')
   // 显示预约成功框
   // 请传入用来进行本地化的键
-  const showDialog = (nftName: string) => {
+  const showDialog = (nftName: string, idIn: string) => {
     name.value = nftName
     show.value = true
+    id.value = idIn
   }
   const closeDialog = async (checked?: boolean) => {
     name.value = ''
     show.value = false
-    if (checked && isSendAllChecked.value) {
-      // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
+    if (isSendAllChecked.value) {
+      // 如果选中了「接受邮件」框，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
-      // 跳转到项目详情页
-      window.open(`${monoFeBase}/items/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
+    }
+    if (checked) {
+      // 如果点击的是「前往详情页」，跳转到项目详情页
+      window.open(`${monoFeBase}/items/${id.value}`, '_blank')
     }
     isSendAllChecked.value = true
   }
@@ -217,7 +221,8 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
     showReserveSuccessDialog: showDialog,
     isDialogShow: show,
     reservedNftName: name,
-    closeReserveSuccessDialog: closeDialog
+    closeReserveSuccessDialog: closeDialog,
+    reservedNftId: id
   }
 })()
 // 活动相关
@@ -228,7 +233,7 @@ const goLoginPageAndWaitForMessage = useLoginAndMessage()
 const doReserve = async (index: number) => {
   const res = await API.nft.reserve(itemsList.value[index].url!, '03f3e7eb-fa25-485d-b224-b81105feca19')
   if (isSuccess(res)) {
-    showReserveSuccessDialog(itemsList.value[index].name)
+    showReserveSuccessDialog(itemsList.value[index].name, itemsList.value[index].url!)
     itemsList.value[index].reserved = true
   } else {
     msg.show(res.message)
@@ -290,13 +295,14 @@ watchEffect(() => {
     }
     return
   }
-  getNFTReservedStatus()
-  // 如果发现有需要在登录后立即预约的项目，发送预约请求
-  if (shouldReserveAfterLogin.value !== -1) {
-    doReserve(shouldReserveAfterLogin.value)
+  getNFTReservedStatus().then(() => {
+    // 获取到预约状态之后，如果没有预约，才进行预约
+    if (shouldReserveAfterLogin.value !== -1 && !itemsList.value[shouldReserveAfterLogin.value].reserved) {
+      doReserve(shouldReserveAfterLogin.value)
+    }
     // 清除要在登录后立即预约的项目
     shouldReserveAfterLogin.value = -1
-  }
+  })
 })
 </script>
 <template>
@@ -832,9 +838,7 @@ watchEffect(() => {
     }
 
     &-desc {
-      width: 100%;
-      font-size: 12px;
-      line-height: 24px;
+      display: none;
     }
 
     &-btns {
