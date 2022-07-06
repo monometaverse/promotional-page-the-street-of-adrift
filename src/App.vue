@@ -18,7 +18,7 @@ import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.webp'
 import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
-import { useMessage, ossPath } from './utils'
+import { useMessage, ossPath, useLoginAndMessage } from './utils'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -333,6 +333,8 @@ const langMenuBtnEl = ref<HTMLButtonElement | null>(null)
 const isShareDialogShow = ref(false)
 // API 基础路径
 const apiBase = import.meta.env.VITE_APP_API_URL_BASE
+// MonoFun 前端基础路径
+const monoFeBase = import.meta.env.VITE_APP_MONO_FE
 // 当挂载时
 onMounted(async () => {
   animationActive.value = true
@@ -358,39 +360,7 @@ onMounted(async () => {
 // 消息组件
 const message = useMessage()
 // 前往登录页，并等待登录消息
-const goLoginPageAndWaitForMessage = (() => {
-  let childWindow: Window | null = null
-  // 消息接收器
-  const messageHandler = async (ev: MessageEvent) => {
-    console.log(ev)
-    // 检查来源，避免被跨站攻击
-    if (ev.origin === 'https://uat.mono.fun' || ev.origin === 'https://uat-preview.mono.fun'
-      || ev.origin === 'https://mono.fun' || ev.origin === 'https://www.mono.fun') {
-      if (ev.data.isLogin) {
-        // 登录成功了，尝试获取一下用户信息
-        const res = await api.user.getLoginInfo()
-        console.log(res)
-        if (isSuccess(res)) {
-          userInfo.value = res.data
-          childWindow?.close()
-          console.log('window closed')
-          // 注销消息接收器
-          window.removeEventListener('message', messageHandler)
-        }
-      }
-    }
-  }
-  return () => {
-    // 区分环境
-    childWindow = window.open(apiBase + '/login', '_blank')
-    if(!childWindow) { // 如果没有获取到跳转后的窗口
-      message.show(i18n.t('static.failedToOpenLoginWindow'))
-      return
-    }
-    // 注册消息接收器
-    window.addEventListener('message', messageHandler)
-  }
-})()
+const goLoginPageAndWaitForMessage = useLoginAndMessage()
 // 登出
 const logout = async () => {
   const res = await api.user.logout()
@@ -574,7 +544,7 @@ useStyleTag(hideCursorStyle)
             <div class="actions-divider" />
             <a
               class="actions-text clickble"
-              :href="apiBase + '/login'"
+              :href="`${monoFeBase}/login`"
               target="blank"
             >
               {{ i18n.t('static.register') }}
@@ -599,7 +569,7 @@ useStyleTag(hideCursorStyle)
                   <menu-item>
                     <a
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
-                      :href="`${apiBase}/user`"
+                      :href="`${monoFeBase}/user`"
                       target="_blank"
                     >
                       {{ i18n.t('static.toMyProfile') }}

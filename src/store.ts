@@ -44,6 +44,8 @@ export const useStore = defineStore('main', () => {
   })
   // 用户信息
   const userInfo = ref<LoginInfo | null>(null)
+  // 在登录后立即发起预约请求的 NFT 在详情页中的索引
+  const shouldReserveAfterLogin = ref(-1)
   return {
     firstEnter,
     staticFrameworkAnimationStart,
@@ -60,6 +62,7 @@ export const useStore = defineStore('main', () => {
     isOnMobile,
     isOnTablet,
     isOnMobileByUserAgent,
-    userInfo
+    userInfo,
+    shouldReserveAfterLogin
   }
 })

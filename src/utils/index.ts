@@ -1,6 +1,10 @@
+import { useStore } from './../store'
 import moment from "moment"
+import { storeToRefs } from "pinia"
 import { Object3D } from "three"
 import { createApp, reactive, ref, Ref, h, App } from "vue"
+import { useI18n } from "vue-i18n"
+import api, { isSuccess } from "../api"
 import messageBar from '../components/message-bar.vue'
 
 type DebouncedFunc<T extends (...args: any[]) => void> = (...args: Parameters<T>) => void
@@ -150,4 +154,42 @@ export const useActivityDate = () => {
 // 拼接 OSS 路径
 export const ossPath = (path: string) => {
   return `${import.meta.env.VITE_APP_OSS_URL_BASE}${path}`
+}
+
+// 前往登录页面，并等待登录页面返回消息
+export const useLoginAndMessage = () => {
+  let childWindow: Window | null = null
+  const message = useMessage()
+  const i18n = useI18n()
+  const apiBase = import.meta.env.VITE_APP_MONO_FE
+  const { userInfo } = storeToRefs(useStore())
+  // 消息接收器
+  const messageHandler = async (ev: MessageEvent) => {
+    // 检查来源，避免被跨站攻击
+    if (ev.origin === 'https://uat.mono.fun' || ev.origin === 'https://uat-preview.mono.fun'
+      || ev.origin === 'https://mono.fun' || ev.origin === 'https://www.mono.fun' || ev.origin === apiBase) {
+      if (ev.data.isLogin) {
+        // 登录成功了，尝试获取一下用户信息
+        const res = await api.user.getLoginInfo()
+        console.log(res)
+        if (isSuccess(res)) {
+          userInfo.value = res.data
+          childWindow?.close()
+          console.log('window closed')
+          // 注销消息接收器
+          window.removeEventListener('message', messageHandler)
+        }
+      }
+    }
+  }
+  return () => {
+    // 区分环境
+    childWindow = window.open(apiBase + '/login', '_blank')
+    if(!childWindow) { // 如果没有获取到跳转后的窗口
+      message.show(i18n.t('static.failedToOpenLoginWindow'))
+      return
+    }
+    // 注册消息接收器
+    window.addEventListener('message', messageHandler)
+  }
 }
