@@ -193,14 +193,16 @@ const apiBase = import.meta.env.VITE_APP_API_URL_BASE
 // MonoFun 前端基础路径
 const monoFeBase = import.meta.env.VITE_APP_MONO_FE
 // 预约成功框
-const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog } = (() => {
+const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog, reservedNftId } = (() => {
   const show = ref(false)
   const name = ref('nft.goldCoinName')
+  const id = ref('')
   // 显示预约成功框
   // 请传入用来进行本地化的键
-  const showDialog = (nftName: string) => {
+  const showDialog = (nftName: string, idIn: string) => {
     name.value = nftName
     show.value = true
+    id.value = idIn
   }
   const closeDialog = async (checked?: boolean) => {
     name.value = ''
@@ -209,7 +211,7 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
       // 如果点击的是“知道了”，发送请求给后端，表示这个用户愿意接收所有邮件
       await api.nft.receiveAllEmails('03f3e7eb-fa25-485d-b224-b81105feca19')
       // 跳转到项目详情页
-      window.open(`${monoFeBase}/items/${itemsList.value[currentIndexForAnimation.value].name}`, '_blank')
+      window.open(`${monoFeBase}/items/${id.value}`, '_blank')
     }
     isSendAllChecked.value = true
   }
@@ -217,7 +219,8 @@ const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuc
     showReserveSuccessDialog: showDialog,
     isDialogShow: show,
     reservedNftName: name,
-    closeReserveSuccessDialog: closeDialog
+    closeReserveSuccessDialog: closeDialog,
+    reservedNftId: id
   }
 })()
 // 活动相关
@@ -228,7 +231,7 @@ const goLoginPageAndWaitForMessage = useLoginAndMessage()
 const doReserve = async (index: number) => {
   const res = await API.nft.reserve(itemsList.value[index].url!, '03f3e7eb-fa25-485d-b224-b81105feca19')
   if (isSuccess(res)) {
-    showReserveSuccessDialog(itemsList.value[index].name)
+    showReserveSuccessDialog(itemsList.value[index].name, itemsList.value[index].url!)
     itemsList.value[index].reserved = true
   } else {
     msg.show(res.message)
