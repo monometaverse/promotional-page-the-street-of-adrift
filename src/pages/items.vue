@@ -293,13 +293,14 @@ watchEffect(() => {
     }
     return
   }
-  getNFTReservedStatus()
-  // 如果发现有需要在登录后立即预约的项目，发送预约请求
-  if (shouldReserveAfterLogin.value !== -1) {
-    doReserve(shouldReserveAfterLogin.value)
+  getNFTReservedStatus().then(() => {
+    // 获取到预约状态之后，如果没有预约，才进行预约
+    if (shouldReserveAfterLogin.value !== -1 && !itemsList.value[shouldReserveAfterLogin.value].reserved) {
+      doReserve(shouldReserveAfterLogin.value)
+    }
     // 清除要在登录后立即预约的项目
     shouldReserveAfterLogin.value = -1
-  }
+  })
 })
 </script>
 <template>
