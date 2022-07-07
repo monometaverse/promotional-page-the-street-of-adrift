@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     name: 发送构建开始的消息到 Slack
     steps:
+      - run: |
+          echo '${{ github.event.commits[0] }}'
       # 发送开始构建的消息到 Slack
       - name: 发送开始构建的消息到 Slack（Send Build Start Message to Slack Channel）
         uses: slackapi/slack-github-action@v1.17.0
