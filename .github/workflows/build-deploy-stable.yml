@@ -29,7 +29,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n构建开始\n名称: 彷徨之街宣传页正式网\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].message }}（${{ github.event.commits[0].author.name }}）"
+                    "text": "===================\n构建开始\n名称: 彷徨之街宣传页正式网\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].messageHeadline }}（${{ github.event.commits[0].author.name }}）"
                   }
                 }
               ]
@@ -109,7 +109,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n构建结束\n名称: 彷徨之街宣传页正式网\n是否成功: ${{ steps.build.outcome == 'success' }}\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].message }}（${{ github.event.commits[0].author.name }}）"
+                    "text": "===================\n构建结束\n名称: 彷徨之街宣传页正式网\n是否成功: ${{ steps.build.outcome == 'success' }}\n花费时间: ${{ steps.endTime.outputs.time }}秒\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].messageHeadline }}（${{ github.event.commits[0].author.name }}）"
                   }
                 }
               ]
@@ -143,7 +143,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "===================\n产物上传完成\n名称: 彷徨之街宣传页正式网\n是否成功: ${{ steps.upload_main.outcome == 'success' }}\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].message }}（${{ github.event.commits[0].author.name }}）"
+                    "text": "===================\n产物上传完成\n名称: 彷徨之街宣传页正式网\n是否成功: ${{ steps.upload_main.outcome == 'success' }}\n构建基于: `${{ github.event.ref }}` `${{ github.event.commits[0].id }}`\n提交消息: ${{ github.event.commits[0].messageHeadline }}（${{ github.event.commits[0].author.name }}）"
                   }
                 }
               ]
