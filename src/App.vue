@@ -557,7 +557,7 @@ useStyleTag(hideCursorStyle)
             <dropdown-menu>
               <template #trigger>
                 <div
-                  class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
+                  class="bg-cover bg-center bg-no-repeat rounded-full h-2rem w-2rem clickble"
                   :style="{
                     backgroundImage: `url(${userInfo.avatar ? ossPath(userInfo.avatar) : defaultProfileAvatar})`,
                     backgroundColor: 'rgba(255,255,255,0.5)'
@@ -568,17 +568,17 @@ useStyleTag(hideCursorStyle)
                 <div>
                   <menu-item>
                     <a
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       :href="`${monoFeBase}/user`"
                       target="_blank"
                     >
                       {{ i18n.t('static.toMyProfile') }}
                     </a>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" />
                   <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="logout"
                     >
                       {{ i18n.t('static.logout') }}
@@ -593,13 +593,13 @@ useStyleTag(hideCursorStyle)
             <dropdown-menu>
               <template #trigger="{ open }">
                 <div
-                  class="actions-text actions-dropdown clickble flex items-center"
+                  class="flex actions-text actions-dropdown clickble items-center"
                   ref="langMenuBtnEl"
                 >
                   <span class="clickble block">{{ i18n.locale.value.toUpperCase() }}</span>
                   <img
                     src="./assets/static-framework/dropdown.svg"
-                    class="actions-dropdown-icon transition transform transition-transform duration-250 clickble block"
+                    class="transform transition transition-transform duration-250 actions-dropdown-icon clickble block"
                     :class="{
                       'rotate-z-180': open
                     }"
@@ -610,16 +610,16 @@ useStyleTag(hideCursorStyle)
                 <div>
                   <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="setLocale('en')"
                     >
                       English
                     </button>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" />
                   <menu-item>
                     <button
-                      class="text-1rem leading-1rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1rem clickble"
                       @click="setLocale('zh')"
                     >
                       中文
@@ -637,7 +637,7 @@ useStyleTag(hideCursorStyle)
           >
             <img
               src="./assets/static-framework/back-to-details.svg"
-              class="clickble object-center object-contain w-1rem h-1rem"
+              class="object-center object-contain h-1rem w-1rem clickble"
             >
           </a>
           <img
@@ -657,7 +657,7 @@ useStyleTag(hideCursorStyle)
         </transition>
         <!-- 分享框 -->
         <div
-          class="w-[100vw] h-[100vh] flex justify-center items-center absolute transition-colors duration-250 z-998"
+          class="flex h-[100vh] transition-colors w-[100vw] z-998 duration-250 justify-center items-center absolute"
           :class="{
             'bg-[rgba(0,0,0,0.5)]': isShareDialogShow,
             'pointer-events-none': !isShareDialogShow
@@ -670,7 +670,7 @@ useStyleTag(hideCursorStyle)
             enter-from-class="transform -translate-y-1.5rem opacity-0"
           >
             <div
-              class="w-36rem h-40.5rem bg-[#0f0f0f] flex flex-col justify-between items-center <sm:(w-20rem h-34.25rem)"
+              class="flex flex-col bg-[#0f0f0f] h-40.5rem w-36rem justify-between items-center <sm:(w-20rem h-34.25rem) "
               v-if="isShareDialogShow"
             >
               <div class="pt-1.5rem pr-1.5rem w-[100%]">
@@ -679,11 +679,11 @@ useStyleTag(hideCursorStyle)
                   @click="isShareDialogShow = false"
                 />
               </div>
-              <span class="leading-2.875rem text-2rem font-serif <sm:(leading-2.125rem text-1.5rem)">
+              <span class="font-serif text-2rem leading-2.875rem <sm:(leading-2.125rem text-1.5rem) ">
                 {{ i18n.t('static.shareTheGame') }}
               </span>
               <!-- 分享图片预览 -->
-              <div class="w-17rem h-23.125rem overflow-y-scroll custom-scrollbar">
+              <div class="h-23.125rem w-17rem overflow-y-scroll custom-scrollbar">
                 <img
                   class="w-[100%]"
                   :src="sharePic"
@@ -691,14 +691,14 @@ useStyleTag(hideCursorStyle)
               </div>
               <!-- 保存按钮 -->
               <div>
-                <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
+                <div class="border-solid border-[rgba(255,255,255,0.5)] border-2px transition-colors duration-250 hover:(bg-[rgba(255,255,255,0.2)])">
                   <a
                     :href="sharePic"
                     download="share-pic.png"
-                    class="block btn-bg w-12rem h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
+                    class="bg-contain bg-center bg-no-repeat h-4rem opacity-20 transition-opacity w-12rem duration-250 block btn-bg clickble <sm:(w-6rem h-2rem) hover:(opacity-50) "
                   />
                 </div>
-                <div class="w-12rem h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-1.5rem font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-1rem leading-1.5rem -translate-y-2rem)">
+                <div class="flex font-serif font-900 h-4rem transform text-1.5rem leading-34px w-12rem -translate-y-4rem justify-center items-center pointer-events-none <sm:(w-6rem h-2rem text-1rem leading-1.5rem -translate-y-2rem) ">
                   {{ i18n.t('static.saveSahrePic') }}
                 </div>
               </div>
