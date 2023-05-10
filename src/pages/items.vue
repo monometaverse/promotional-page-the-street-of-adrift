@@ -14,7 +14,7 @@ import { storeToRefs } from 'pinia'
 import ScrollHint from '../components/scroll-hint.vue'
 import { useI18n } from 'vue-i18n'
 import api from '../api'
-import moment from 'moment'
+import TextButton from '../components/text-button.vue'
 
 // pinia 状态管理
 const store = useStore()
@@ -350,45 +350,25 @@ watchEffect(() => {
         :style="reserveBtnAnimationStyle"
       >
         <!-- 前往详情页按钮 -->
-        <div v-if="itemsList[currentIndexForAnimation].canBeReserved">
-          <div
-            :lang="locale"
-            class="info-btn-text"
-            :class="{
-              '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
-            }"
-          >
-            {{ t('nft.showDetails') }}
-          </div>
-          <div
-            class="info-btn info-common-btn transform -translate-y-[100%]"
-          >
-            <div
-              class="info-btn-inner info-common-btn-inner clickble"
-              @click="onShowDetailBtnClick(currentIndexForAnimation)"
-            />
-          </div>
-        </div>
+        <TextButton
+          @click="onShowDetailBtnClick(currentIndexForAnimation)"
+          type="secondary"
+          width="12rem"
+          height="4rem"
+          :is-en="locale === 'en'"
+        >
+          {{ t('nft.showDetails') }}
+        </TextButton>
         <!-- 预约按钮 -->
-        <div>
-          <div
-            class="info-btn info-reserve-btn"
-          >
-            <div
-              class="info-btn-inner info-reserve-btn-inner clickble"
-              @click="onReserveBtnClick(currentIndexForAnimation)"
-            />
-          </div>
-          <div
-            :lang="locale"
-            class="info-btn-text text-black transform -translate-y-[100%] pointer-events-none"
-            :class="{
-              '!text-20px !<sm:text-12px': !itemsList[currentIndexForAnimation].canBeReserved && locale === 'en'
-            }"
-          >
-            {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}
-          </div>
-        </div>
+        <TextButton
+          @click="onReserveBtnClick(currentIndexForAnimation)"
+          type="primary"
+          width="12rem"
+          height="4rem"
+          :is-en="locale === 'en'"
+        >
+          {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}
+        </TextButton>
       </div>
     </div>
     <div class="matrix matrix-left-bottom" />
