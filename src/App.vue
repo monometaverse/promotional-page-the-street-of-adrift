@@ -20,6 +20,7 @@ import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
 import { useMessage, ossPath, useLoginAndMessage, useItemsPageButtonSize } from './utils'
 import TextButton from './components/text-button.vue'
+import LoginDialog from './components/login-dialog.vue'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -416,6 +417,7 @@ const downloadPic = () => {
   a.click()
 }
 const buttonSize = useItemsPageButtonSize()
+const showLogin = ref(false)
 </script>
 <template>
   <transition name="fade">
@@ -546,7 +548,7 @@ const buttonSize = useItemsPageButtonSize()
           >
             <div
               class="actions-text clickble"
-              @click="goLoginPageAndWaitForMessage"
+              @click="showLogin = true"
             >
               {{ i18n.t('static.login') }}
             </div>
@@ -711,6 +713,15 @@ const buttonSize = useItemsPageButtonSize()
               </TextButton>
             </div>
           </transition>
+        </div>
+        <div
+          class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
+          :class="[showLogin ? 'bg-black/50' : 'pointer-events-none']"
+        >
+          <LoginDialog
+            :show="showLogin"
+            @close="showLogin = false"
+          />
         </div>
       </div>
     </transition>

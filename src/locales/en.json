@@ -12,7 +12,8 @@
     "toMyProfile": "Profile",
     "logout": "Logout",
     "logoutSuccess": "Logged out",
-    "failedToOpenLoginWindow": "Failed to open login window"
+    "failedToOpenLoginWindow": "Failed to open login window",
+    "cancel-login": "Cancel"
   },
   "home": {
     "gameInfo1": "The Street of Adrift was originally named Adrift's Street, not a street but a commercial building designed by Mr. Adrift. ",
@@ -129,5 +130,9 @@
     "conceptDesign": "Concept design of the Street of Adrift",
     "noTitle": "No title",
     "alcoholAbuse": "Alcohol abuse"
+  },
+  "login": {
+    "email": "Email",
+    "pwd": "Password"
   }
 }

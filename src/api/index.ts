@@ -106,6 +106,13 @@ export default {
     },
     logout: () => {
       return monoAxios.post<null>('/v1/user/logout')
+    },
+    login: (email: string, pwd: string) => {
+      return monoAxios.post<string>('/v1/user/login', {
+        email,
+        password: pwd,
+        keepLoggedIn: true
+      })
     }
   },
   nft: {
