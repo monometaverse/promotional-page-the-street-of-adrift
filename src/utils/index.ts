@@ -2,10 +2,11 @@ import { useStore } from './../store'
 import moment from "moment"
 import { storeToRefs } from "pinia"
 import { Object3D } from "three"
-import { createApp, reactive, ref, Ref, h, App } from "vue"
+import { createApp, reactive, ref, Ref, h, App, computed } from "vue"
 import { useI18n } from "vue-i18n"
 import api, { isSuccess } from "../api"
 import messageBar from '../components/message-bar.vue'
+import { useWindowSize } from '@vueuse/core'
 
 type DebouncedFunc<T extends (...args: any[]) => void> = (...args: Parameters<T>) => void
 type DebounceFunc = <T extends (...args: any[]) => void = () => void>(func: T, time: number) => DebouncedFunc<T>
@@ -193,3 +194,17 @@ export const useLoginAndMessage = () => {
     window.addEventListener('message', messageHandler)
   }
 }
+
+export const useItemsPageButtonSize = (() => {
+  const {width: windowW} = useWindowSize()
+  const buttonsSize = computed(() => {
+    return windowW.value > 1080 ? {
+      width: '12rem',
+      height: '4rem'
+    } : {
+      width: '6rem',
+      height: '2rem'
+    }
+  })
+  return () => buttonsSize
+})()

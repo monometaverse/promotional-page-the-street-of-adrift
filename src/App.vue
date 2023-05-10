@@ -18,7 +18,7 @@ import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.webp'
 import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
-import { useMessage, ossPath, useLoginAndMessage } from './utils'
+import { useMessage, ossPath, useLoginAndMessage, useItemsPageButtonSize } from './utils'
 import TextButton from './components/text-button.vue'
 // pinia
 const store = useStore()
@@ -415,6 +415,7 @@ const downloadPic = () => {
   a.download = 'share-pic.png'
   a.click()
 }
+const buttonSize = useItemsPageButtonSize()
 </script>
 <template>
   <transition name="fade">
@@ -699,10 +700,11 @@ const downloadPic = () => {
               </div>
               <!-- 保存按钮 -->
               <TextButton
+                class="mb-4rem"
                 @click="downloadPic"
                 type="secondary"
-                width="12rem"
-                height="4rem"
+                :width="buttonSize.width"
+                :height="buttonSize.height"
                 :is-en="i18n.locale.value === 'en'"
               >
                 {{ i18n.t('static.saveSahrePic') }}
