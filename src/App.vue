@@ -19,6 +19,7 @@ import sharePic from './assets/static-framework/share-pic.webp'
 import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
 import { useMessage, ossPath, useLoginAndMessage } from './utils'
+import TextButton from './components/text-button.vue'
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -407,6 +408,13 @@ const mobileNavOpen = ref(false)
 // 移动端导航开关事件
 const onMobileNavChange = (newVal: boolean) => mobileNavOpen.value = newVal
 useStyleTag(hideCursorStyle)
+// 下载图片
+const downloadPic = () => {
+  const a = document.createElement('a')
+  a.href = sharePic
+  a.download = 'share-pic.png'
+  a.click()
+}
 </script>
 <template>
   <transition name="fade">
@@ -690,18 +698,15 @@ useStyleTag(hideCursorStyle)
                 >
               </div>
               <!-- 保存按钮 -->
-              <div>
-                <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
-                  <a
-                    :href="sharePic"
-                    download="share-pic.png"
-                    class="block btn-bg w-12rem h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
-                  />
-                </div>
-                <div class="w-12rem h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-1.5rem font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-1rem leading-1.5rem -translate-y-2rem)">
-                  {{ i18n.t('static.saveSahrePic') }}
-                </div>
-              </div>
+              <TextButton
+                @click="downloadPic"
+                type="secondary"
+                width="12rem"
+                height="4rem"
+                :is-en="i18n.locale.value === 'en'"
+              >
+                {{ i18n.t('static.saveSahrePic') }}
+              </TextButton>
             </div>
           </transition>
         </div>
