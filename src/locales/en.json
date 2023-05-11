@@ -140,6 +140,7 @@
     "account-not-found": "Account not found",
     "incorrect-pwd": "Incorrect password",
     "other-error": "Failed to login, please try again later",
-    "incorrect-pwd-format": "Incorrect password format"
+    "incorrect-pwd-format": "Incorrect password format",
+    "success": "Login success"
   }
 }

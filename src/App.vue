@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
-import { useStore } from './store'
+import { useMessage, useStore } from './store'
 import { storeToRefs } from 'pinia'
 import { useElementSize, useEventListener, useTitle } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
@@ -18,9 +18,11 @@ import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.webp'
 import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
-import { useMessage, ossPath, useLoginAndMessage, useItemsPageButtonSize } from './utils'
+import { ossPath, useLoginAndMessage, useItemsPageButtonSize } from './utils'
 import TextButton from './components/text-button.vue'
 import LoginDialog from './components/login-dialog.vue'
+import MessageBar from './components/message-bar.vue'
+
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -725,6 +727,23 @@ const showLogin = ref(false)
         </div>
       </div>
     </transition>
+    <div class="absolute top-0 left-0 w-[100vw] h-[100vh] pointer-events-none z-1000">
+      <TransitionGroup
+        leave-to-class="transform -translate-y-20px opacity-0"
+        enter-from-class="transform -translate-y-20px opacity-0"
+        leave-active-class="absolute transition-all"
+        enter-active-class="absolute transition-all"
+        move-class="transition-all"
+        :appear="true"
+      >
+        <MessageBar
+          v-for="(item) in message.messages"
+          :key="item.id"
+          :info="item"
+          @close="message.remove(item.id)"
+        />
+      </TransitionGroup>
+    </div>
   </router-view>
 </template>
 

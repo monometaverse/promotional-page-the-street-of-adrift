@@ -106,7 +106,10 @@ const newShowMessageEvent = (text: string) => {
   return event
 }
 
-// 导出使用函数
+/**
+ * 显示一条提醒消息
+ * @deprecated 不再需要创建新的 vue 实例才能显示消息
+ */
 export const useMessage = (): Message => {
   return (() => {
     let app: App<Element>
@@ -157,13 +160,17 @@ export const ossPath = (path: string) => {
   return `${import.meta.env.VITE_APP_OSS_URL_BASE}${path}`
 }
 
-// 前往登录页面，并等待登录页面返回消息
+/**
+ * 前往登录页面，并等待登录页面返回消息
+ * @deprecated 不再前往 mono 主站进行登录
+ */
 export const useLoginAndMessage = () => {
   let childWindow: Window | null = null
   const message = useMessage()
   const i18n = useI18n()
   const apiBase = import.meta.env.VITE_APP_MONO_FE
-  const { userInfo } = storeToRefs(useStore())
+  const store = useStore()
+  const userInfo = ref(store.userInfo)
   // 消息接收器
   const messageHandler = async (ev: MessageEvent) => {
     // 检查来源，避免被跨站攻击

@@ -1,12 +1,12 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, watchEffect } from 'vue'
-import { usePagination, useMessage, useActivityDate, useLoginAndMessage, useItemsPageButtonSize } from '../utils'
+import { usePagination, useActivityDate, useLoginAndMessage, useItemsPageButtonSize } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
 import { useElementBounding, useWindowSize } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-import { useStore } from '../store'
+import { useStore, useMessage } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
