@@ -66,3 +66,31 @@ export const useStore = defineStore('main', () => {
     shouldReserveAfterLogin
   }
 })
+
+export type MessageInfo = {
+  id: number
+  text: string
+}
+
+/**
+ * 使用提醒消息
+ */
+export const useMessage = defineStore('message', () => {
+  const messages = ref<MessageInfo[]>([])
+  const show = (msg: string) => {
+    messages.value.push({
+      text: msg,
+      id: window.setTimeout(() => messages.value.shift(), 5000)
+    })
+  }
+  const remove = (id: number) => {
+    clearTimeout(id)
+    messages.value = messages.value.filter(it => it.id !== id)
+  }
+
+  return {
+    messages,
+    show,
+    remove
+  }
+})

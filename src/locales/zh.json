@@ -12,7 +12,8 @@
     "toMyProfile": "查看个人主页",
     "logout": "退出账户",
     "logoutSuccess": "退出成功",
-    "failedToOpenLoginWindow": "开启登录窗口失败"
+    "failedToOpenLoginWindow": "开启登录窗口失败",
+    "cancel-login": "取消"
   },
   "home": {
     "gameInfo1": "彷徨之街（The Street of Adrift）本意“艾德里夫特的街”，它并非街道而是商业大楼，艾德里夫特是它的最初设计者。",
@@ -129,5 +130,17 @@
     "conceptDesign": "彷徨之街概念图",
     "noTitle": "无题",
     "alcoholAbuse": "酗酒"
+  },
+  "login": {
+    "email": "Email",
+    "pwd": "密码",
+    "email-empty": "邮箱不能为空",
+    "passwd-empty": "密码不能为空",
+    "account-not-found": "没有此账号，请先注册",
+    "incorrect-pwd": "密码错误",
+    "other-error": "登录失败，请稍后再试",
+    "email-format-error": "邮箱格式错误",
+    "incorrect-pwd-format": "密码格式错误",
+    "success": "登录成功"
   }
 }

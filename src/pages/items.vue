@@ -1,12 +1,12 @@
 <!--NFT 页面-->
 <script lang="ts" setup>
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, watchEffect } from 'vue'
-import { usePagination, useMessage, useActivityDate, useLoginAndMessage } from '../utils'
+import { usePagination, useActivityDate, useLoginAndMessage, useItemsPageButtonSize } from '../utils'
 import { gsap } from 'gsap'
 import modelViewer from '../components/ModelViewer/index.vue'
-import { useElementBounding } from '@vueuse/core'
+import { useElementBounding, useWindowSize } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-import { useStore } from '../store'
+import { useStore, useMessage } from '../store'
 import type { NFTItem } from '../components/ResourceLoader/Resources'
 import { Color, FrontSide, MeshPhysicalMaterial } from 'three'
 import API, { isSuccess } from '../api'
@@ -304,6 +304,8 @@ watchEffect(() => {
     shouldReserveAfterLogin.value = -1
   })
 })
+
+const buttonsSize = useItemsPageButtonSize()
 </script>
 <template>
   <div class="route-page">
@@ -353,8 +355,8 @@ watchEffect(() => {
         <TextButton
           @click="onShowDetailBtnClick(currentIndexForAnimation)"
           type="secondary"
-          width="12rem"
-          height="4rem"
+          :width="buttonsSize.width"
+          :height="buttonsSize.height"
           :is-en="locale === 'en'"
         >
           {{ t('nft.showDetails') }}
@@ -363,8 +365,8 @@ watchEffect(() => {
         <TextButton
           @click="onReserveBtnClick(currentIndexForAnimation)"
           type="primary"
-          width="12rem"
-          height="4rem"
+          :width="buttonsSize.width"
+          :height="buttonsSize.height"
           :is-en="locale === 'en'"
         >
           {{ itemsList[currentIndexForAnimation].canBeReserved ? itemsList[currentIndexForAnimation].reserved ? t('nft.reserveBtnTextReserved') : t('nft.reserveBtnText') : t('nft.commingSoon') }}

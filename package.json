@@ -16,6 +16,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
     "pinia": "^2.0.12",
+    "slimeform": "^0.9.1",
     "three": "^0.137.5",
     "ua-parser-js": "^1.0.2",
     "vite-plugin-pages": "^0.22.0",

@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { LoadedResources } from './components/ResourceLoader/Resources'
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
-import { useStore } from './store'
+import { useMessage, useStore } from './store'
 import { storeToRefs } from 'pinia'
 import { useElementSize, useEventListener, useTitle } from '@vueuse/core'
 import { useSwipe } from '@vueuse/core'
@@ -18,8 +18,11 @@ import navOnDesktop from './components/nav-on-desktop.vue'
 import sharePic from './assets/static-framework/share-pic.webp'
 import defaultProfileAvatar from './assets/static-framework/default_profile.png'
 import api, { isSuccess } from './api'
-import { useMessage, ossPath, useLoginAndMessage } from './utils'
+import { ossPath, useLoginAndMessage, useItemsPageButtonSize } from './utils'
 import TextButton from './components/text-button.vue'
+import LoginDialog from './components/login-dialog.vue'
+import MessageBar from './components/message-bar.vue'
+
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -415,6 +418,8 @@ const downloadPic = () => {
   a.download = 'share-pic.png'
   a.click()
 }
+const buttonSize = useItemsPageButtonSize()
+const showLogin = ref(false)
 </script>
 <template>
   <transition name="fade">
@@ -545,7 +550,7 @@ const downloadPic = () => {
           >
             <div
               class="actions-text clickble"
-              @click="goLoginPageAndWaitForMessage"
+              @click="showLogin = true"
             >
               {{ i18n.t('static.login') }}
             </div>
@@ -699,10 +704,11 @@ const downloadPic = () => {
               </div>
               <!-- 保存按钮 -->
               <TextButton
+                class="mb-4rem"
                 @click="downloadPic"
                 type="secondary"
-                width="12rem"
-                height="4rem"
+                :width="buttonSize.width"
+                :height="buttonSize.height"
                 :is-en="i18n.locale.value === 'en'"
               >
                 {{ i18n.t('static.saveSahrePic') }}
@@ -710,8 +716,34 @@ const downloadPic = () => {
             </div>
           </transition>
         </div>
+        <div
+          class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
+          :class="[showLogin ? 'bg-black/50' : 'pointer-events-none']"
+        >
+          <LoginDialog
+            :show="showLogin"
+            @close="showLogin = false"
+          />
+        </div>
       </div>
     </transition>
+    <div class="absolute top-0 left-0 w-[100vw] h-[100vh] pointer-events-none z-1000">
+      <TransitionGroup
+        leave-to-class="transform -translate-y-20px opacity-0"
+        enter-from-class="transform -translate-y-20px opacity-0"
+        leave-active-class="absolute transition-all"
+        enter-active-class="absolute transition-all"
+        move-class="transition-all"
+        :appear="true"
+      >
+        <MessageBar
+          v-for="(item) in message.messages"
+          :key="item.id"
+          :info="item"
+          @close="message.remove(item.id)"
+        />
+      </TransitionGroup>
+    </div>
   </router-view>
 </template>
 
