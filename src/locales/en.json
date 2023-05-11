@@ -133,6 +133,13 @@
   },
   "login": {
     "email": "Email",
-    "pwd": "Password"
+    "pwd": "Password",
+    "email-empty": "Email must not be empty",
+    "email-format-error": "Email format incorrect",
+    "passwd-empty": "Password must not be empty",
+    "account-not-found": "Account not found",
+    "incorrect-pwd": "Incorrect password",
+    "other-error": "Failed to login, please try again later",
+    "incorrect-pwd-format": "Incorrect password format"
   }
 }

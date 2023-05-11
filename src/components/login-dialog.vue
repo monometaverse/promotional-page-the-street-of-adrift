@@ -2,6 +2,10 @@
 import { useI18n } from 'vue-i18n'
 import TextButton from './text-button.vue'
 import api from '../api/index'
+import { isSuccess } from '../api/index'
+import { useForm } from 'slimeform'
+import { useMessage } from '../store'
+import { useStore } from '../store'
 import { ref } from 'vue'
 
 const props = defineProps<{
@@ -11,14 +15,66 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const store = useStore()
 const {t,locale} = useI18n()
+const msg = useMessage()
 
-const email = ref('')
-const passwd = ref('')
+const { form, status, reset } = useForm({
+  form: () => ({
+    email: '',
+    passwd: ''
+  }),
+  rule: {
+    email: (it: string) => it ? /^\S+\@\S+\.\S+$/s.test(it) ? true : t('login.email-format-error') : t('login.email-empty'),
+    passwd: (it: string) => it ? true : t('login.passwd-empty')
+  },
+})
+
+const loading = ref(false)
 async function login() {
-  const result = await api.user.login(email.value, passwd.value)
-  console.log(result)
-  // TODO: 参数验证，尝试引入 slimeform?
+  loading.value = true
+  try {
+    if (status.email.isError) {
+      msg.show(status.email.message)
+      return
+    }
+    if (status.passwd.isError) {
+      msg.show(status.passwd.message)
+      return
+    }
+    const res = await api.user.login(form.email, form.passwd)
+    if (isSuccess(res)) {
+      const res = await api.user.getLoginInfo()
+      if (isSuccess(res)) {
+        store.userInfo = res.data
+      }
+      return
+    }
+    if (res.code === 40410) {
+      // 没有此账号
+      msg.show(t('login.account-not-found'))
+      return
+    }
+    if (res.code === 40012) {
+      // 密码格式错误
+      msg.show(t('login.incorrect-pwd-format'))
+      return
+    }
+    if (res.code === 40112) {
+      // 密码错误
+      msg.show(t('login.incorrect-pwd'))
+      return
+    }
+    // 其它错误
+    msg.show(t('login.other-error'))
+  } finally {
+    loading.value = false
+  }
+}
+
+function close() {
+  reset()
+  emit('close')
 }
 </script>
 <template>
@@ -29,9 +85,9 @@ async function login() {
     leave-to-class="transform -translate-y-1.5rem opacity-0"
     enter-from-class="transform -translate-y-1.5rem opacity-0"
   >
-    <div
+    <form
       v-if="show"
-      class="w-30rem p-8 h-24rem bg-[#0f0f0f] font-serif flex flex-col justify-between items-center <sm:(w-20rem h-34.25rem) z-998"
+      class="w-30rem p-8 h-24rem bg-[#0f0f0f] font-serif flex flex-col justify-between items-center z-998"
     >
       <div class="text-[3rem]">
         {{ t('static.login') }}
@@ -41,8 +97,9 @@ async function login() {
           {{ t('login.email') }}
         </div>
         <input
-          v-model="email"
+          v-model="form.email"
           type="text"
+          autocomplete="username"
           class="text-input"
           @keydown.enter="login"
         >
@@ -50,15 +107,17 @@ async function login() {
           {{ t('login.pwd') }}
         </div>
         <input
-          v-model="passwd"
+          v-model="form.passwd"
           type="password"
+          autocomplete="current-password"
           class="text-input"
           @keydown.enter="login"
         >
       </div>
       <div class="w-[100%] flex gap-x-[2rem]">
         <TextButton
-          @click="emit('close')"
+          :disabled="loading"
+          @click="close"
           :is-en="false"
           height="3rem"
           width="100%"
@@ -72,11 +131,12 @@ async function login() {
           width="100%"
           type="primary"
           @click="login"
+          :disabled="loading"
         >
           {{ t('static.login') }}
         </TextButton>
       </div>
-    </div>
+    </form>
   </Transition>
 </template>
 
