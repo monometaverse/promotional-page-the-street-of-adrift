@@ -49,23 +49,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: 安装 Azure CLI
-        run: |
-          sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
-          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
-          AZ_REPO=$(lsb_release -cs)
-          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
-          sudo apt-get update
-          sudo apt-get install azure-cli
-          az version
-      # 登录到 azure，为部署做好准备
-      - name: 登录到 Azure（Login to Azure）
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_LOGIN_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_LOGIN_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_LOGIN_SUBSCRIPTION_ID }}
-
       # 获取 yarn 缓存目录
       - name: 获取 yarn 缓存目录
         id: yarn-cache-dir-path
@@ -116,19 +99,16 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      # 上传产物
-      - name: 上传产物
-        id: upload_main
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: azure/CLI@v1
+      - name: 部署到 aws Deploy on aws s3
+        uses: jakejarvis/s3-sync-action@master
         with:
-          inlineScript: az storage blob upload-batch --account-name tsoastatic --auth-mode key -d '$web' -s ./dist --overwrite
-      # 清除终结点
-      - name: Purge CDN endpoint
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: azure/CLI@v1
-        with:
-          inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "tsoa-test-cdn" --name "tsoa" --resource-group "gushiji-mono-subprojects" --no-wait
+          args: --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ap-northeast-1'
+          SOURCE_DIR: 'dist'
       # 发送上传完成的消息到 Slack
       - name: Send upload done message to slack channel
         uses: slackapi/slack-github-action@v1.17.0
@@ -150,7 +130,3 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      # 从 auzre 退出，消除登录状态
-      - name: 从 Azure 退出（Login out from Azure）
-        run: az logout
-        if: always()
