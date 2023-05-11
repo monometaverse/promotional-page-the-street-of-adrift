@@ -32,6 +32,7 @@ const { form, status, reset } = useForm({
 
 const loading = ref(false)
 async function login() {
+  if (loading.value) return
   loading.value = true
   try {
     if (status.email.isError) {
@@ -45,9 +46,11 @@ async function login() {
     const res = await api.user.login(form.email, form.passwd)
     if (isSuccess(res)) {
       const res = await api.user.getLoginInfo()
+      msg.show(t('login.success'))
       if (isSuccess(res)) {
         store.userInfo = res.data
       }
+      close()
       return
     }
     if (res.code === 40410) {
