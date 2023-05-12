@@ -1,4 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios"
+import { LoginInfo, ReserveStatus } from './types'
+export * from './types'
 
 export type SuccessResponse<T> = {
   code: 0,
@@ -19,26 +21,6 @@ export type MonoResponse<T> = SuccessResponse<T> | FailureResponse
  */
 export const isSuccess = <T>(res: SuccessResponse<T> | FailureResponse): res is SuccessResponse<T> => {
   return res.code === 0
-}
-
-/**
- * 登录信息接口返回体
- */
-export interface LoginInfo {
-  avatar: string
-  city: string
-  country: string
-  disable: number
-  displayName: string
-  id: string
-  intro: string
-}
-
-/**
- * 预约状态
- */
-export interface ReserveStatus {
-  status: 1 | 2
 }
 
 // 拦截器拦下来的错误的编号
