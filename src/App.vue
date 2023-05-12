@@ -22,6 +22,7 @@ import { ossPath, useLoginAndMessage, useItemsPageButtonSize } from './utils'
 import TextButton from './components/text-button.vue'
 import LoginDialog from './components/login-dialog.vue'
 import MessageBar from './components/message-bar.vue'
+import Orders from './components/Orders/orders.vue'
 
 // pinia
 const store = useStore()
@@ -308,12 +309,17 @@ useEventListener(window, 'touchmove', (event) => {
   const target = event.target as HTMLElement
   isTouchOverScrollbleOrDragble.value = window.getComputedStyle(target).overflowY === 'scroll' || target.classList.contains('dragble')
 })
+
+// 是否显示订单框
+const showOrder = ref(false)
+// 是否锁定鼠标滚动
+const scrollLock = computed(() => showLogin.value || showOrder.value)
 // 监听鼠标滚动事件以切换页面
 useEventListener(document, 'wheel', (() => {
   let canScroll = true
   return (event: WheelEvent) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value) {
+    if (canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -580,13 +586,12 @@ const showLogin = ref(false)
               <template #menuItems>
                 <div>
                   <menu-item>
-                    <a
+                    <button
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
-                      :href="`${monoFeBase}/user`"
-                      target="_blank"
+                      @click="showOrder = true"
                     >
-                      {{ i18n.t('static.toMyProfile') }}
-                    </a>
+                      {{ i18n.t('static.orders') }}
+                    </button>
                   </menu-item>
                   <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
                   <menu-item>
@@ -718,13 +723,22 @@ const showLogin = ref(false)
         </div>
         <div
           class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
-          :class="[showLogin ? 'bg-black/50' : 'pointer-events-none']"
+          :class="[showLogin || showOrder ? 'bg-black/50' : 'pointer-events-none']"
         >
           <LoginDialog
             :show="showLogin"
             @close="showLogin = false"
           />
+          <Orders
+            :show="showOrder"
+            @close="showOrder = false"
+          />
         </div>
+        <!-- <div
+          class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
+          :class="[showOrder ? 'bg-black/50' : '!pointer-events-none']"
+        >
+        </div> -->
       </div>
     </transition>
     <div class="absolute top-0 left-0 w-[100vw] h-[100vh] pointer-events-none z-1000">

@@ -13,7 +13,8 @@
     "logout": "Logout",
     "logoutSuccess": "Logged out",
     "failedToOpenLoginWindow": "Failed to open login window",
-    "cancel-login": "Cancel"
+    "cancel-login": "Cancel",
+    "orders": "Orders"
   },
   "home": {
     "gameInfo1": "The Street of Adrift was originally named Adrift's Street, not a street but a commercial building designed by Mr. Adrift. ",
@@ -142,5 +143,14 @@
     "other-error": "Failed to login, please try again later",
     "incorrect-pwd-format": "Incorrect password format",
     "success": "Login success"
+  },
+  "order": {
+    "wait-for-payment": "Wait For Payment",
+    "minting": "Minting",
+    "wait-for-claim": "Wait For Claim",
+    "completed": "Completed",
+    "expired": "Expired",
+    "pay": "Pay",
+    "claim": "Claim"
   }
 }
