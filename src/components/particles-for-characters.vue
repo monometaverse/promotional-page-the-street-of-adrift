@@ -7,7 +7,7 @@ import { useEventListener } from '@vueuse/core'
 
 // 状态管理
 const store = useStore()
-const { windowWidth, windowHeight, mousePos, infoElPos, isOnMobile, isOnTablet, isOnMobileByUserAgent } = storeToRefs(store)
+const { windowWidth, windowHeight, mousePos, isOnMobile, isOnTablet, isOnMobileByUserAgent } = storeToRefs(store)
 // canvas 的引用
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 // canvas 上下文
@@ -21,6 +21,36 @@ let points: {
   targetX: number, // 将要移动到的位置 x
   targetY: number  // 将要移动到的位置 y
 }[] = []
+// 图片大小
+const picSize = computed(() => isOnMobile.value ? 120 * 1.5 : (isOnTablet.value ? 240 * 1.5 : 360 * 1.5))
+// 自己来计算角色描述应该在的位置
+// 根据角色描述的 CSS 属性算的，所以 CSS 属性变化之后这里也需要改变
+const pointsGroupOffset = computed(() => {
+  if (isOnMobile.value) {
+    return {
+      x: windowWidth.value - picSize.value / 1.5 - (windowWidth.value / 2 + 20 - 187.5),
+      y:(windowHeight.value / 2) + 64 - 406
+    }
+  }
+  if (isOnTablet.value) {
+    return {
+      x: windowWidth.value - 581,
+      y: windowHeight.value / 2 - 102 - picSize.value / 1.5
+    }
+  }
+  return {
+    x: windowWidth.value / 2 + 105,
+    y: windowHeight.value / 2 - 51 - picSize.value / 1.5
+  }
+})
+const pointsPosCacheOnMobile = new Map<string, { x: number, y: number }[]>()
+const pointsPosCacheOnTablet = new Map<string, { x: number, y: number }[]>()
+const pointsPosCacheOnPC = new Map<string, { x: number, y: number }[]>()
+const pointsPosCache = {
+  2: pointsPosCacheOnMobile,
+  3: pointsPosCacheOnTablet,
+  4: pointsPosCacheOnPC
+}
 // 监听图片的变化
 watchEffect(() => {
   const ctx = canvasCtx.value
@@ -38,62 +68,55 @@ watchEffect(() => {
     }
     return
   }
-  // 如果没有获取到角色信息块的位置，停止处理
-  if (!infoElPos.value.x && !infoElPos.value.y) return
   // 开始处理图片高宽
-  const picSize = isOnMobile.value ? 120 * 1.5 : (isOnTablet.value ? 240 * 1.5 : 360 * 1.5)
   const width = Number(newVal.width)
-  newVal.width = picSize
-  newVal.height = newVal.height * picSize / width
-  if (newVal.height > picSize) {
+  newVal.width = picSize.value
+  newVal.height = newVal.height * picSize.value / width
+  if (newVal.height > picSize.value) {
     const height = Number(newVal.height)
-    newVal.height = picSize
-    newVal.width = newVal.width * picSize / height
+    newVal.height = picSize.value
+    newVal.width = newVal.width * picSize.value / height
   }
   targetAlpha = 1
-  // 开始锁住画布，停止绘制
-  pausePointRender.value = true
-  ctx.clearRect(0,0,canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
-  ctx.globalAlpha = 1
-  ctx.drawImage(newVal, 0, 0, newVal.width, newVal.height)
-  // 获取到图片的信息
-  const imageData = ctx.getImageData(0,0,newVal.width, newVal.height).data
-  // 清除图片
-  ctx.globalAlpha = 0
-  ctx.clearRect(0, 0, canvasEl.value!.width, canvasEl.value!.height)
-  // 记录已遍历的点的数量
-  let pointsPos: { x: number, y: number }[] = []
   // 采样密度，越低越密
   const denisty = isOnMobile.value ? 2 : isOnTablet.value ? 3 : 4
-  // 根据图片的颜色信息生成点阵，用图片的高宽去计算到应该获取到像素点位置
-  for (let h = 0; h < newVal.height; h += denisty) {
-    for (let w = 0; w < newVal.width; w += denisty) {
-      const position = (newVal.width * h + w) * 4 // 数组是以 rgba 的顺序排列的，每跳过一个像素点需要跳过 4 个索引值
-      const r = imageData[position], g = imageData[position + 1], b = imageData[position + 2], a = imageData[position + 3]
-      // 如果颜色值为白色，才进行下一步处理
-      if (r + g + b + a === 255 * 4) {
-        pointsPos.push({ x: w, y: h })
+  // 检查是否已经缓存了点的目标位置
+  let pointsPos = pointsPosCache[denisty].get(newVal.src)
+  if (pointsPos === undefined) {
+    pointsPos = []
+    // 开始锁住画布，停止绘制
+    pausePointRender.value = true
+    ctx.clearRect(0,0,canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
+    ctx.globalAlpha = 1
+    ctx.drawImage(newVal, 0, 0, newVal.width, newVal.height)
+    // 获取到图片的信息
+    const imageData = ctx.getImageData(0,0,newVal.width, newVal.height).data
+    // 清除图片
+    ctx.globalAlpha = 0
+    ctx.clearRect(0, 0, canvasEl.value!.width, canvasEl.value!.height)
+    // 记录已遍历的点的数量
+    // 根据图片的颜色信息生成点阵，用图片的高宽去计算到应该获取到像素点位置
+    for (let h = 0; h < newVal.height; h += denisty) {
+      for (let w = 0; w < newVal.width; w += denisty) {
+        const position = (newVal.width * h + w) * 4 // 数组是以 rgba 的顺序排列的，每跳过一个像素点需要跳过 4 个索引值
+        const r = imageData[position], g = imageData[position + 1], b = imageData[position + 2], a = imageData[position + 3]
+        // 如果颜色值为白色，才进行下一步处理
+        if (r + g + b + a === 255 * 4) {
+          pointsPos.push({ x: w, y: h })
+        }
       }
     }
+    // 采样完成，进行缓存
+    pointsPosCache[denisty].set(newVal.src, pointsPos)
   }
+
   // 打乱数组
-  points = shuffle(points)
+  pointsPos = shuffle(pointsPos)
   // 移除多余的点
   points = points.slice(0, pointsPos.length)
-  // 根据角色信息块的位置来计算粒子的位置
-  let offsetX = infoElPos.value.x
-  let offsetY = infoElPos.value.y - picSize / 1.5
-  // 因为角色页刚进入时获取到的位置是被偏移过的，需要进行额外的判断
-  if (offsetY > windowHeight.value) {
-    offsetY -= windowHeight.value
-  } else if (offsetY < 0) {
-    offsetY += windowHeight.value
-  }
   // 手机端额外判断，移动到右上角
-  if (isOnMobile.value) {
-    offsetX = innerWidth - picSize / 1.5 - (innerWidth / 2 + 20 - 187.5)
-    offsetY = (innerHeight / 2) + 64 - 406
-  }
+  const offsetX = pointsGroupOffset.value.x
+  const offsetY = pointsGroupOffset.value.y
   for (let i = 0; i < pointsPos.length ;i ++) {
     if (i < points.length) {
       // 把已经存在的点移动到相应位置
@@ -112,7 +135,14 @@ watchEffect(() => {
   }
   // 解锁画布，继续绘制
   pausePointRender.value = false
+  // 暂时不让鼠标影响点阵的绘制，因为会有一部分点被鼠标吸引走
+  pointsNotAffectByMouse = true
+  window.clearTimeout(pointsNotAffectByMouseTimout)
+  pointsNotAffectByMouseTimout = window.setTimeout(() => pointsNotAffectByMouse = false, 2000)
 })
+// 是否暂时不受鼠标影响
+let pointsNotAffectByMouseTimout = 0
+let pointsNotAffectByMouse = false
 // 是否停止帧刷
 const stopRender = ref(false)
 // 是否暂停绘制，在获取新的图片信息时，需要暂停点的绘制，否则会获取到已经存在的点的信息，并且把这些点的位置信息误当成图片信息
@@ -134,7 +164,7 @@ const render = () => {
     // 清除整个画布
     ctx.clearRect(0,0, canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
     points.forEach((it) => {
-      if (isOnMobileByUserAgent.value) {
+      if (isOnMobileByUserAgent.value || pointsNotAffectByMouse) {
         // 在手机端，不受鼠标位置影响
         it.x += (it.targetX - it.x) / 40
         it.y += (it.targetY - it.y) / 40
