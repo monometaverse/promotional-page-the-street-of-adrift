@@ -20,7 +20,7 @@ const logoCopyStyle = ref<CSSProperties>({})
 // 标题下方描述文字是否显示
 const showDescriptionText = ref(false)
 // 是否将元素转移到动画开始的状态
-const animationFrom = ref(false)
+const animationStart = ref(false)
 // 神秘文字
 const secretMsg = ref<HTMLDivElement>()
 const secretMsgBounding = useElementBounding(secretMsg)
@@ -87,32 +87,6 @@ const msgCoverOpacity = computed(() => {
   }
   return 0
 })
-// 是否激活动画
-const animationActive = ref(false)
-// 各个元素的动画延迟
-// 修改以调整各个元素动画开始的时间和顺序
-const animationDelay = ref({
-  logo: 0,
-  playBtn: 500, // 播放按钮和旁边的 4 个点
-  socialBtns: 1000, // discord 和 Twitter 按钮
-  descTextLine1: 1500, // 描述文字第一行
-  descTextLine2: 1750 // 描述文字第二行
-})
-// 各个元素动画的时长
-const animationDuration = ref<typeof animationDelay.value>({
-  logo: 500,
-  playBtn: 500, // 播放按钮和旁边的 4 个点
-  socialBtns: 500, // discord 和 Twitter 按钮
-  descTextLine1: 500, // 描述文字第一行
-  descTextLine2: 500 // 描述文字第二行
-})
-// 所有元素完成动画所需的时间
-// 每个元素的动画时长 + 延迟 的最大值
-const animationDurationAll = computed(() => {
-  let durationAndDelay: number[] = []
-  Object.keys(animationDuration.value).forEach(it => durationAndDelay.push((animationDuration.value as any)[it] + (animationDelay.value as any)[it]))
-  return Math.max(...durationAndDelay)
-})
 // 滚动提示的 css 类
 const scrollHintAnimationClass = computed<string>(() => {
   if (!firstEnter.value) {
@@ -137,33 +111,30 @@ const hideVideo = () => {
   isVideoShow.value = false
   isVideoPlaying.value = false
 }
+function onSecondDescTransitionEnd() {
+  staticFrameworkAnimationStart.value = true
+}
 // 定义挂载的时候执行的操作
 onMounted(() => {
   if (firstEnter.value) {
     // 重载后第一次进入首页，展示动画
-    animationFrom.value = true
-    animationActive.value = true
     setTimeout(() => {
-      animationFrom.value = false
-      setTimeout(() => {
-        animationActive.value = false
-        staticFrameworkAnimationStart.value = true
-      }, animationDurationAll.value)
+      animationStart.value = true
     }, 250)
-  } else {
-    showDescriptionText.value = true
+    return
   }
+  showDescriptionText.value = true
+
 })
 // 监听目前最后一个结束的动画，的动画结束事件
 </script>
 <template>
   <div class="route-page">
     <div
-      class="logo-copy cover-no-repeat-center"
+      class="logo-copy logo-copy-center cover-no-repeat-center duration-500 delay-0 transition-all"
       :style="logoCopyStyle"
       :class="{
-        'logo-copy-center': animationFrom && animationActive,
-        'duration-500 delay-0 transition-all': animationActive
+        'logo-copy-position-normal': animationStart,
       }"
       :lang="locale"
     />
@@ -189,29 +160,26 @@ onMounted(() => {
       class="community-btns"
     >
       <a
-        class="community-btn community-btn-discord clickble"
+        class="community-btn community-btn-discord clickble !duration-500 !delay-1000 !transition-all"
         :class="{
-          'social-btns-hide': animationFrom && animationActive,
-          '!duration-500 !delay-1000 !transition-all': animationActive
+          'social-btns-hide': !animationStart,
         }"
         href="https://discord.gg/monoverse"
         target="_blank"
       />
       <a
-        class="community-btn community-btn-twitter clickble"
+        class="community-btn community-btn-twitter clickble !duration-500 !delay-1000 !transition-all"
         :class="{
-          'social-btns-hide': animationFrom && animationActive,
-          '!duration-500 !delay-1000 !transition-all': animationActive
+          'social-btns-hide': !animationStart,
         }"
         href="https://twitter.com/adriftstreet"
         target="_blank"
       />
     </div>
     <div
-      class="logo-and-play"
+      class="logo-and-play duration-500 delay-500 transition-all"
       :class="{
-        'opacity-0': animationFrom && animationActive,
-        'duration-500 delay-500 transition-all': animationActive
+        'opacity-0': !animationStart
       }"
     >
       <div
@@ -230,18 +198,17 @@ onMounted(() => {
       }"
     >
       <span
-        class="text"
+        class="text duration-500 delay-1500 transition-all"
         :class="{
-          'text-hide': animationFrom && animationActive,
-          'duration-500 delay-1500 transition-all': animationActive,
+          'text-hide': !animationStart,
           '!inline': locale === 'en'
         }"
       >{{ t('home.gameInfo1') }}</span>
       <span
-        class="text"
+        @transitionend="onSecondDescTransitionEnd"
+        class="text duration-500 delay-1750 transition-all"
         :class="{
-          'text-hide': animationFrom && animationActive,
-          'duration-500 delay-1750 transition-all': animationActive,
+          'text-hide': !animationStart,
           '!inline': locale === 'en'
         }"
       >{{ t('home.gameInfo2') }}</span>
@@ -347,11 +314,10 @@ onMounted(() => {
 }
 // logo 的复制体
 .logo-copy {
+  position: absolute;
   width: @logo-width;
   height: @logo-height;
-  position: absolute;
   top: calc(50% - @logo-height / 2);
-  left: 4rem;
   background-image: url("../assets/home-page/tsoa-logo.svg");
 
   &:lang(zh) {
@@ -361,6 +327,10 @@ onMounted(() => {
   &:lang(en) {
     background-image: url("../assets/home-page/tsoa-logo-en.svg");
   }
+}
+
+.logo-copy-position-normal {
+  left: 4rem !important;
 }
 
 .logo-copy-center {
@@ -488,11 +458,14 @@ onMounted(() => {
   }
 
   .logo-copy {
-    left: 2rem;
     width: @logo-width;
     height: @logo-height;
     position: absolute;
     top: calc(50% - @logo-height / 2);
+  }
+
+  .logo-copy-position-normal {
+    left: 2rem !important;
   }
 
   .logo-copy-center {
@@ -551,7 +524,11 @@ onMounted(() => {
     left: 20px;
     width: @logo-width;
     height: @logo-height;
-    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 2rem);
+  }
+
+  .logo-copy-position-normal {
+    left: 20px !important;
+    bottom: calc(@desc-bottom + @desc-height + @desc-margin-top + 2rem) !important;
   }
 
   .logo-copy-center {
