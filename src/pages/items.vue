@@ -3,7 +3,7 @@
 import { computed, CSSProperties, onMounted, reactive, ref, toRaw, watchEffect } from 'vue'
 import { usePagination, useActivityDate, useLoginAndMessage, useItemsPageButtonSize } from '../utils'
 import { gsap } from 'gsap'
-import modelViewer from '../components/ModelViewer/index.vue'
+import modelViewer from '../components/ModelViewerTrois/index.vue'
 import { useElementBounding, useWindowSize } from '@vueuse/core'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useStore, useMessage } from '../store'
@@ -34,7 +34,8 @@ const itemsList = ref<NFTItem[]>([
     customData: {
       childName: 'YX_Gold',
       scale: 4,
-      positionY: -1.9,
+      positionY: -2,
+      positionX: 0.05,
       correctMaterial: (() => {
         const material = new MeshPhysicalMaterial()
         material.metalness = 1
@@ -58,7 +59,8 @@ const itemsList = ref<NFTItem[]>([
     customData: {
       childName: 'YX_Gold',
       scale: 4,
-      positionY: -1.9,
+      positionY: -2,
+      positionX: 0.05,
       correctMaterial: (() => {
         const material = new MeshPhysicalMaterial()
         material.metalness = 1
@@ -83,7 +85,7 @@ const itemsList = ref<NFTItem[]>([
       childName: 'polySurface67_Mesh001',
       side: FrontSide,
       scale: 1.5,
-      positionY: -1.2
+      positionY: -1.4
     }
   }
 ])
@@ -137,7 +139,6 @@ const prevOrNextLocal = (next?: boolean, index?: number) => {
       throw new Error('切换组件：没有传入任何参数')
     } else {
       currentIndex.value = index
-      modelViewerEl.value?.prevOrNextModel(true, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
       doAnimation(true, index, false)
     }
   } else {
@@ -145,7 +146,6 @@ const prevOrNextLocal = (next?: boolean, index?: number) => {
       console.warn('已经传入了要进行的动作：' + next + '，再传入要跳转的索引是无效的')
     } else {
       prevOrNext(next)
-      modelViewerEl.value?.prevOrNextModel(next, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
       doAnimation(next, -1, false)
     }
   }
@@ -283,7 +283,6 @@ const getNFTReservedStatus = async () => {
 
 // 当挂载时，显示第一个模型
 onMounted(async () => {
-  modelViewerEl.value?.prevOrNextModel(false, toRaw(itemsList.value[currentIndex.value].model), itemsList.value[currentIndex.value].customData)
   getNFTReservedStatus()
 })
 // 监听用户登录状态，一旦用户登录了，就获取 NFT 预约状态
@@ -309,14 +308,6 @@ const buttonsSize = useItemsPageButtonSize()
 </script>
 <template>
   <div class="route-page">
-    <!-- 模型查看器 -->
-    <model-viewer
-      :width="modelContainerElBounding.width"
-      :height="modelContainerElBounding.height"
-      :top="modelContainerElBounding.top"
-      :left="modelContainerElBounding.left"
-      ref="modelViewerEl"
-    />
     <div
       class="info"
       ref="infoEl"
@@ -387,6 +378,14 @@ const buttonsSize = useItemsPageButtonSize()
           ref="modelContainerEl"
         >
           <div class="models-rotating-border" />
+          <!-- 模型查看器 -->
+          <div class="w-full h-full transform -translate-y-[100%]">
+            <model-viewer
+              :items="itemsList"
+              :showing-item="currentIndex"
+              ref="modelViewerEl"
+            />
+          </div>
         </div>
         <div
           class="models-next-btn next-btn clickble"
