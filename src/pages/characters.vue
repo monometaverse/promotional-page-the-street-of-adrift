@@ -348,6 +348,7 @@ watchEffect(() => {
   background-size: contain;
   bottom: calc(-244px + 50vh - 540px);
   right: calc(850px + 50vw - 960px);
+  pointer-events: none;
 }
 // 角色介绍
 .info {
