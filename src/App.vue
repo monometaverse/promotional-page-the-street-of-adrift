@@ -23,6 +23,7 @@ import TextButton from './components/text-button.vue'
 import LoginDialog from './components/login-dialog.vue'
 import MessageBar from './components/message-bar.vue'
 import Orders from './components/Orders/orders.vue'
+import RegisterDialog from './components/Register/register.vue'
 
 // pinia
 const store = useStore()
@@ -426,6 +427,7 @@ const downloadPic = () => {
 }
 const buttonSize = useItemsPageButtonSize()
 const showLogin = ref(false)
+const showRegister = ref(false)
 </script>
 <template>
   <transition name="fade">
@@ -561,13 +563,12 @@ const showLogin = ref(false)
               {{ i18n.t('static.login') }}
             </div>
             <div class="actions-divider" />
-            <a
+            <div
               class="actions-text clickble"
-              :href="`${monoFeBase}/login`"
-              target="blank"
+              @click="showRegister = true"
             >
               {{ i18n.t('static.register') }}
-            </a>
+            </div>
           </div>
           <div
             v-else
@@ -723,7 +724,7 @@ const showLogin = ref(false)
         </div>
         <div
           class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
-          :class="[showLogin || showOrder ? 'bg-black/50' : 'pointer-events-none']"
+          :class="[showLogin || showOrder || showRegister ? 'bg-black/50' : 'pointer-events-none']"
         >
           <LoginDialog
             :show="showLogin"
@@ -733,12 +734,11 @@ const showLogin = ref(false)
             :show="showOrder"
             @close="showOrder = false"
           />
+          <RegisterDialog
+            :show="showRegister"
+            @close="showRegister=false"
+          />
         </div>
-        <!-- <div
-          class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
-          :class="[showOrder ? 'bg-black/50' : '!pointer-events-none']"
-        >
-        </div> -->
       </div>
     </transition>
     <div class="absolute top-0 left-0 w-[100vw] h-[100vh] pointer-events-none z-1000">

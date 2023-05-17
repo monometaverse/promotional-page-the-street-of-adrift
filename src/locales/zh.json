@@ -141,8 +141,7 @@
     "incorrect-pwd": "密码错误",
     "other-error": "登录失败，请稍后再试",
     "email-format-error": "邮箱格式错误",
-    "incorrect-pwd-format": "密码格式错误",
-    "success": "登录成功"
+    "incorrect-pwd-format": "密码格式错误"
   },
   "order": {
     "wait-for-payment": "待支付",
@@ -152,5 +151,17 @@
     "expired": "已过期",
     "pay": "去支付",
     "claim": "领取"
+  },
+  "register": {
+    "display-name": "昵称",
+    "password": "密码",
+    "cancel": "取消",
+    "email": "Email",
+    "back": "上一步",
+    "verify-captcha": "验证",
+    "finish": "完成注册",
+    "send-captcha": "发送验证码",
+    "captcha": "验证码",
+    "password-again": "重复密码"
   }
 }
