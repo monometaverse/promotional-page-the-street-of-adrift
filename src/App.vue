@@ -870,8 +870,8 @@ const showRegister = ref(false)
   border: 1px solid rgba(255, 255, 255, 0.5);
 
   &-hovered {
-    height: 2rem;
-    width: 2rem;
+    height: 2rem !important;
+    width: 2rem !important;
     background-color: rgba(255, 255, 255, 0.5);
   }
 }
