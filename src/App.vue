@@ -395,9 +395,9 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
       const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
       // 如果向下滑动，就切换到上一个页面，否则切换到下一个页面
-      if (direction === 'DOWN') {
+      if (direction === 'down') {
         router.push(routes.value[prevIndex].to)
-      } else if (direction === 'UP') {
+      } else if (direction === 'up') {
         router.push(routes.value[nextIndex].to)
       }
       // 禁止切换
