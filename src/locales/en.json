@@ -152,5 +152,18 @@
     "expired": "Expired",
     "pay": "Pay",
     "claim": "Claim"
+  },
+  "register": {
+    "display-name": "Nick Name",
+    "password": "Password",
+    "password-again": "Repeat Password",
+    "send-captcha": "Send Captcha",
+    "captcha": "Captcha Code",
+    "register-back": "Back",
+    "verify-captcha": "Verify",
+    "finish": "Finish",
+    "cancel": "Cancel",
+    "email": "Email",
+    "back": "Back"
   }
 }
