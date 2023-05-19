@@ -44,6 +44,18 @@ export const useStore = defineStore('main', () => {
   })
   // 用户信息
   const userInfo = ref<LoginInfo | null>(null)
+  // 邮件发送倒计时
+  const emailSendingCountDown = ref(0)
+  const startEmailSendingCountDown = () => {
+    emailSendingCountDown.value = 60
+    const interval = setInterval(() => {
+      emailSendingCountDown.value--
+      if (emailSendingCountDown.value === 0) {
+        clearInterval(interval)
+      }
+    }, 1000)
+  }
+
   // 在登录后立即发起预约请求的 NFT 在详情页中的索引
   const shouldReserveAfterLogin = ref(-1)
   return {
@@ -63,7 +75,9 @@ export const useStore = defineStore('main', () => {
     isOnTablet,
     isOnMobileByUserAgent,
     userInfo,
-    shouldReserveAfterLogin
+    shouldReserveAfterLogin,
+    emailSendingCountDown,
+    startEmailSendingCountDown
   }
 })
 

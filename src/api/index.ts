@@ -95,6 +95,24 @@ export default {
         password: pwd,
         keepLoggedIn: true
       })
+    },
+    sendCaptchaCode: (email: string, isPasswordReset: boolean) => {
+      return monoAxios.post<null>('/v1/user/email/send-verification-code', { email, type: isPasswordReset ? 1 : 0 })
+    },
+    submitCaptchaCode: (email: string, code: string, isPasswordReset: boolean) => {
+      return monoAxios.post<null>('/v1/user/email/submit-verification-captcha-code', { email, code, type: isPasswordReset ? 1 : 0 })
+    },
+    register: (email: string, pwd: string, displayName: string) => {
+      return monoAxios.post<LoginInfo>('/v1/user/register', {
+        email,
+        password: pwd,
+        displayName: displayName,
+        isAdvertisingPush: true,
+        useCaptchaCode: true
+      })
+    },
+    passwordReset: (email: string, password: string) => {
+      return monoAxios.post<null>('/v1/user/password-reset', { email, password, useCaptchaCode: true })
     }
   },
   nft: {

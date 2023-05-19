@@ -6,7 +6,6 @@ import { isSuccess } from '../../api/index'
 import { useForm } from 'slimeform'
 import { useMessage } from '../../store'
 import { ref } from 'vue'
-import { useStore } from '../../store'
 
 const props = defineProps<{ email: string }>()
 
@@ -15,25 +14,22 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const store = useStore()
 const {t,locale} = useI18n()
 const msg = useMessage()
 
 const { form, status, verify } = useForm({
   form: () => ({
-    displayName: '',
     passwd: '',
     passwdRepeat: '',
   }),
   rule: {
-    displayName: (it: string) => it && t('register.display-name-empty'),
-    passwd: (it: string) => it === '' ? t('login.passwd-empty') : true,
+    passwd: (it: string) => !!it || t('login.passwd-empty'),
   },
 })
 verify()
 
 const loading = ref(false)
-async function register() {
+async function passwordReset() {
   if (loading.value) return
   loading.value = true
   try {
@@ -41,18 +37,13 @@ async function register() {
       msg.show(status.passwd.message)
       return
     }
-    if (status.passwdRepeat.isError) {
-      msg.show(status.passwdRepeat.message)
-      return
-    }
     if (form.passwdRepeat !== form.passwd) {
       msg.show(t('register.password-not-equal'))
       return
     }
-    const res = await api.user.register(props.email, form.passwd, form.displayName)
+    const res = await api.user.passwordReset(props.email, form.passwd)
     if (isSuccess(res)) {
-      msg.show(t('register.finished'))
-      store.userInfo = res.data
+      msg.show(t('password-reset.finished'))
       emit('close')
       return
     }
@@ -65,14 +56,6 @@ async function register() {
         // 密码格式错误
         msg.show(t('login.incorrect-pwd-format'))
         return
-      case 40013:
-        // 昵称格式错误
-        msg.show(t('login.incorrect-nickname-format'))
-        return
-      case 40014:
-        // 昵称已存在
-        msg.show(t('login.nickname-exists'))
-        return
     }
     // 其它错误
     msg.show(t('register.other-error'))
@@ -81,31 +64,18 @@ async function register() {
   }
 }
 
-function close() {
-  emit('cancel')
-}
 </script>
 <template>
   <div>
-    <div class="w-30rem p-8 h-32rem flex flex-col justify-between step-3">
+    <div class="w-30rem p-8 h-24rem flex flex-col justify-between step-3">
       <div class="text-[3rem] delay-1 text-center w-[calc(100%+3rem)] flex">
         <div class="w-[100%]">
-          {{ t('static.register') }}
+          {{ t('static.password-reset') }}
         </div>
         <div
           class="close-btn transform -translate-x-[100%] flex-shrink-0"
           @click="emit('close')"
         />
-      </div>
-      <div class="w-[100%] flex flex-col justify-center items-center delay-2">
-        <div class="w-[100%] text-[1.5rem] mb-3">
-          {{ t('register.display-name') }}
-        </div>
-        <input
-          v-model="form.displayName"
-          type="text"
-          class="text-input clickble"
-        >
       </div>
       <div class="w-[100%] flex flex-col justify-center items-center delay-2">
         <div class="w-[100%] text-[1.5rem] mb-3">
@@ -124,13 +94,14 @@ function close() {
         <input
           v-model="form.passwdRepeat"
           type="password"
+          autocomplete="username"
           class="text-input clickble"
         >
       </div>
       <div class="w-[100%] flex gap-x-[2rem] delay-3">
         <TextButton
           :disabled="loading"
-          @click="close"
+          @click="emit('cancel')"
           :is-en="false"
           height="3rem"
           width="100%"
@@ -143,10 +114,10 @@ function close() {
           height="3rem"
           width="100%"
           type="primary"
-          @click="register"
+          @click="passwordReset"
           :disabled="loading"
         >
-          {{ loading ? t('register.submitting') : t('register.finish') }}
+          {{ t('password-reset.finish') }}
         </TextButton>
       </div>
     </div>
