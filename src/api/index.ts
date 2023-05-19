@@ -113,7 +113,10 @@ export default {
     },
     passwordReset: (email: string, password: string) => {
       return monoAxios.post<null>('/v1/user/password-reset', { email, password, useCaptchaCode: true })
-    }
+    },
+    checkRecaptcha: (email: string, token: string) => {
+      return monoAxios.get<null>(`/v1/user/recaptcha?email=${email}&token=${token}`)
+    },
   },
   nft: {
     /**

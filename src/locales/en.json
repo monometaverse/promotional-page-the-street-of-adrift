@@ -180,7 +180,10 @@
     "submitting": "Submitting...",
     "display-name-empty": "Nickname must not empty",
     "password-not-equal": "Passowrd not equal",
-    "finished": "Register finished, have fun!"
+    "finished": "Register finished, have fun!",
+    "recaptcha-error": "ReCaptcha verification failed",
+    "continue": "Continue",
+    "extra-verification": "Are you a Bot?"
   },
   "password-reset": {
     "finish": "Finish",

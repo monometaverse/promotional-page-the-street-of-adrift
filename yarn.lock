@@ -3634,6 +3634,11 @@ vue-demi@>=0.14.0, vue-demi@>=0.14.1:
   resolved "https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.1.tgz#1ed9af03a27642762bfed83d8750805302d0398d"
   integrity sha512-rt+yuCtXvscYot9SQQj3WKZJVSriPNqVkpVBNEHPzSgBv7QIYzsS410VqVgvx8f9AAPgjg+XPKvmV3vOqqkJQQ==
 
+vue-demi@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.npmjs.org/vue-demi/-/vue-demi-0.13.11.tgz#7d90369bdae8974d87b1973564ad390182410d99"
+  integrity sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==
+
 vue-eslint-parser@^9.3.0:
   version "9.3.0"
   resolved "https://registry.npmjs.org/vue-eslint-parser/-/vue-eslint-parser-9.3.0.tgz#775a974a0603c9a73d85fed8958ed9e814a4a816"
@@ -3656,6 +3661,13 @@ vue-i18n@^9.2.2:
     "@intlify/shared" "9.2.2"
     "@intlify/vue-devtools" "9.2.2"
     "@vue/devtools-api" "^6.2.1"
+
+vue-recaptcha@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/vue-recaptcha/-/vue-recaptcha-2.0.3.tgz#7e035d4302cff921d53d320e237ed1912985d922"
+  integrity sha512-Rz0kLIETUgmOrp7CxFvaFE65DkhKdWu4pteWOTt2i+yTajTHPqtyOW6DqTg0BvALWTm+WUvWVV7k5XXFijQnBw==
+  dependencies:
+    vue-demi "^0.13.11"
 
 vue-router@^4.2.0:
   version "4.2.0"

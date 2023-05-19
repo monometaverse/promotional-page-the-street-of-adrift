@@ -178,7 +178,10 @@
     "submitting": "提交中...",
     "display-name-empty": "昵称不能为空",
     "password-not-equal": "密码不一致",
-    "finished": "注册完成！"
+    "finished": "注册完成！",
+    "recaptcha-error": "ReCaptcha 校验失败",
+    "continue": "继续",
+    "extra-verification": "你是机器人吗？"
   },
   "password-reset": {
     "finish": "完成重设",
