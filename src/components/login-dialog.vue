@@ -13,6 +13,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
   (e: 'close'): void
+  (e: 'password-reset'): void
 }>()
 
 const store = useStore()
@@ -106,8 +107,16 @@ function close() {
           class="text-input"
           @keydown.enter="login"
         >
-        <div class="w-[100%] text-[1.5rem] my-3">
-          {{ t('login.pwd') }}
+        <div class="w-[100%] text-[1.5rem] my-3 flex">
+          <div class="flex-1">
+            {{ t('login.pwd') }}
+          </div>
+          <div
+            @click="emit('password-reset')"
+            class="text-[1rem] font-sans flex items-end text-white/80 hover:text-white transition-colors duration-250 clickble"
+          >
+            {{ t('static.password-reset') }}
+          </div>
         </div>
         <input
           v-model="form.passwd"

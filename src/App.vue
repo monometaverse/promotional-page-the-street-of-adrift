@@ -24,6 +24,7 @@ import LoginDialog from './components/login-dialog.vue'
 import MessageBar from './components/message-bar.vue'
 import Orders from './components/Orders/orders.vue'
 import RegisterDialog from './components/Register/register.vue'
+import PasswordResetDialog from './components/PasswordReset/password-reset.vue'
 
 // pinia
 const store = useStore()
@@ -428,6 +429,11 @@ const downloadPic = () => {
 const buttonSize = useItemsPageButtonSize()
 const showLogin = ref(false)
 const showRegister = ref(false)
+const showPasswordReset = ref(false)
+function onPasswordResetClick() {
+  showLogin.value = false
+  setTimeout(() => showPasswordReset.value = true, 250)
+}
 </script>
 <template>
   <transition name="fade">
@@ -724,11 +730,12 @@ const showRegister = ref(false)
         </div>
         <div
           class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
-          :class="[showLogin || showOrder || showRegister ? 'bg-black/50' : 'pointer-events-none']"
+          :class="[showLogin || showOrder || showRegister || showPasswordReset ? 'bg-black/50' : 'pointer-events-none']"
         >
           <LoginDialog
             :show="showLogin"
             @close="showLogin = false"
+            @password-reset="onPasswordResetClick"
           />
           <Orders
             :show="showOrder"
@@ -737,6 +744,10 @@ const showRegister = ref(false)
           <RegisterDialog
             :show="showRegister"
             @close="showRegister=false"
+          />
+          <PasswordResetDialog
+            :show="showPasswordReset"
+            @close="showPasswordReset=false"
           />
         </div>
       </div>

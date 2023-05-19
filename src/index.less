@@ -275,7 +275,9 @@ body {
 }
 
 .page-transition-next-enter-from,
-.page-transition-prev-leave-to {
+.page-transition-prev-leave-to,
+.page-transition-next-reset-enter-from,
+.page-transition-prev-reset-leave-to {
   .delay-1,
   .delay-2,
   .delay-3 {
@@ -285,7 +287,9 @@ body {
 }
 
 .page-transition-next-leave-to,
-.page-transition-prev-enter-from {
+.page-transition-prev-enter-from,
+.page-transition-next-reset-leave-to,
+.page-transition-prev-reset-enter-from {
   .delay-1,
   .delay-2,
   .delay-3 {
@@ -295,7 +299,9 @@ body {
 }
 
 .page-transition-next,
-.page-transition-prev {
+.page-transition-prev,
+.page-transition-next-reset,
+.page-transition-prev-reset {
   &-enter-active,
   &-leave-active {
     transition-duration: 750ms;
@@ -354,7 +360,8 @@ body {
 }
 
 // 注册页面过渡动画
-.page-transition-next {
+.page-transition-next,
+.page-transition-next-reset {
   &-enter-from {
     .step-3 {
       height: 20rem;
@@ -367,6 +374,37 @@ body {
       transition-duration: 250ms;
       transition-timing-function: ease-out;
 
+      .delay-1 {
+        transition-delay: 250ms;
+      }
+
+      .delay-2 {
+        transition-delay: 375ms;
+      }
+
+      .delay-3 {
+        transition-delay: 500ms;
+      }
+    }
+  }
+}
+
+// 重设密码页面动画
+.page-transition-prev-reset {
+  &-enter-from {
+    .step-2 {
+      height: 24rem;
+    }
+  }
+
+  &-enter-active {
+    .step-2 {
+      transition-property: all;
+      transition-duration: 250ms;
+      transition-timing-function: ease-out;
+    }
+
+    .step2 {
       .delay-1 {
         transition-delay: 250ms;
       }

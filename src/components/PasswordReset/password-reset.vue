@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import RegisterStep1 from './register-step1.vue'
-import RegisterStep2 from './register-step2.vue'
-import RegisterStep3 from './register-step3.vue'
+import RegisterStep1 from '../Register/register-step1.vue'
+import RegisterStep2 from '../Register/register-step2.vue'
+import PasswordResetStep3 from './password-reset-step3.vue'
 
 const props = defineProps<{
   show: boolean
@@ -35,27 +35,26 @@ function onStep1Done(emailIn: string) {
     >
       <Transition
         appear
-        :name="next ? 'page-transition-next' : 'page-transition-prev'"
+        :name="next ? 'page-transition-next-reset' : 'page-transition-prev-reset'"
         mode="out-in"
       >
         <RegisterStep1
           v-if="step===0"
           @cancel="next=true;emit('close')"
           @next="onStep1Done"
-          :is-password-reset="false"
+          :is-password-reset="true"
         />
         <RegisterStep2
           v-else-if="step===1"
           @cancel="step--;next=false"
           @next="step++;next=true"
-          :is-password-reset="false"
+          :is-password-reset="true"
           :email="email"
         />
-        <RegisterStep3
+        <PasswordResetStep3
           v-else-if="step===2"
           @cancel="step--;next=false"
           @close="emit('close')"
-          :is-password-reset="false"
           :email="email"
         />
       </Transition>

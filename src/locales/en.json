@@ -14,7 +14,8 @@
     "logoutSuccess": "Logged out",
     "failedToOpenLoginWindow": "Failed to open login window",
     "cancel-login": "Cancel",
-    "orders": "Orders"
+    "orders": "Orders",
+    "password-reset": "Reset Password"
   },
   "home": {
     "gameInfo1": "The Street of Adrift was originally named Adrift's Street, not a street but a commercial building designed by Mr. Adrift. ",
@@ -142,7 +143,9 @@
     "incorrect-pwd": "Incorrect password",
     "other-error": "Failed to login, please try again later",
     "incorrect-pwd-format": "Incorrect password format",
-    "success": "Login success"
+    "success": "Login success",
+    "incorrect-nickname-format": "Incorrect nickname format",
+    "nickname-exists": "Nickname exists"
   },
   "order": {
     "wait-for-payment": "Wait For Payment",
@@ -164,6 +167,27 @@
     "finish": "Finish",
     "cancel": "Cancel",
     "email": "Email",
-    "back": "Back"
+    "back": "Back",
+    "captcha-sent": "Captcha code has sent to your email",
+    "exists": "Account exists",
+    "other-error": "Unexpected error occoured",
+    "sending-captcha": "Sending...",
+    "verifying-captcha": "Verifying...",
+    "verify-success": "Success!",
+    "max-retry-limit-reached": "Max retry limit reached, please back to the first step",
+    "captcha-incorrect": "Captcha code incorrect",
+    "captcha-expired": "Captcha code expired, please back to the first step.",
+    "submitting": "Submitting...",
+    "display-name-empty": "Nickname must not empty",
+    "password-not-equal": "Passowrd not equal",
+    "finished": "Register finished, have fun!",
+    "recaptcha-error": "ReCaptcha verification failed",
+    "continue": "Continue",
+    "extra-verification": "Are you a Bot?"
+  },
+  "password-reset": {
+    "finish": "Finish",
+    "not-exists": "Account not exists",
+    "finished": "Password reseted!"
   }
 }
