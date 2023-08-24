@@ -20,7 +20,7 @@ const store = useStore()
 const {t,locale} = useI18n()
 const msg = useMessage()
 
-const { form, status, reset } = useForm({
+const { form, status } = useForm({
   form: () => ({
     email: '',
     passwd: ''
@@ -77,7 +77,8 @@ async function login() {
 }
 
 function close() {
-  reset()
+  form.email = ''
+  form.passwd = ''
   emit('close')
 }
 </script>
