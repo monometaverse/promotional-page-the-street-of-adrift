@@ -592,7 +592,7 @@ function onPasswordResetClick() {
               </template>
               <template #menuItems>
                 <div>
-                  <menu-item>
+                  <!-- <menu-item>
                     <button
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
                       @click="showOrder = true"
@@ -600,7 +600,7 @@ function onPasswordResetClick() {
                       {{ i18n.t('static.orders') }}
                     </button>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" /> -->
                   <menu-item>
                     <button
                       class="text-1rem leading-1.5rem font-sans text-left clickble"
