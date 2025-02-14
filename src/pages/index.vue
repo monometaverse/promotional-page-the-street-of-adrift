@@ -164,7 +164,7 @@ onMounted(() => {
         :class="{
           'social-btns-hide': !animationStart,
         }"
-        href="https://discord.gg/monoverse"
+        href="https://discord.gg/TUkQzXVDUV"
         target="_blank"
       />
       <a
