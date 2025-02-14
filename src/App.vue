@@ -698,13 +698,13 @@ function onPasswordResetClick() {
               class="object-center object-contain h-1rem w-1rem clickble"
             >
           </a>
-          <img
+          <!-- <img
             src="./assets/static-framework/share.svg"
             class="actions-share clickble"
             width="16"
             height="16"
             @click="isShareDialogShow = true"
-          >
+          > -->
         </div>
 
         <transition
@@ -716,7 +716,7 @@ function onPasswordResetClick() {
         </transition>
         <!-- 分享框 -->
         <div
-          class="flex h-[100vh] transition-colors w-[100vw] z-998 duration-250 justify-center items-center absolute"
+          class=" flex h-[100vh] transition-colors w-[100vw] z-998 duration-250 justify-center items-center absolute"
           :class="{
             'bg-[rgba(0,0,0,0.5)]': isShareDialogShow,
             'pointer-events-none': !isShareDialogShow
