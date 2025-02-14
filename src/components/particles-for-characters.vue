@@ -29,7 +29,7 @@ const pointsGroupOffset = computed(() => {
   if (isOnMobile.value) {
     return {
       x: windowWidth.value - picSize.value / 1.5 - (windowWidth.value / 2 + 20 - 187.5),
-      y:(windowHeight.value / 2) + 64 - 406
+      y: 48
     }
   }
   if (isOnTablet.value) {
