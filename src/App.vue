@@ -531,6 +531,16 @@ function onPasswordResetClick() {
             />
           </div>
         </div>
+        <!-- 手机端导航 -->
+        <nav-on-mobile
+          v-if="isOnMobile"
+          :routes="routes"
+          :animation-active="animationActive"
+          :animation-from="animationFrom"
+          @item-selected="onNavItemSelected"
+          v-model="mobileNavOpen"
+          @update:model-value="onMobileNavChange"
+        />
         <!-- 桌面和平板端导航 -->
         <nav-on-desktop
           v-if="!isOnMobile"
@@ -572,61 +582,50 @@ function onPasswordResetClick() {
             {{ i18n.t(pageName, 1, { locale: 'en' }).toUpperCase() }}
           </div>
         </div>
-        <div class="flex justify-between items-center">
-          <!-- 手机端导航 -->
-          <nav-on-mobile
-            v-if="isOnMobile"
-            :routes="routes"
-            :animation-active="animationActive"
-            :animation-from="animationFrom"
-            @item-selected="onNavItemSelected"
-            v-model="mobileNavOpen"
-            @update:model-value="onMobileNavChange"
-          />
-          <!-- 右上角操作部分 -->
+        <!-- 右上角操作部分 -->
+        <div
+          class="actions <sm:space-x-3 "
+          :class="{
+            'opacity-0': animationFrom && animationActive,
+            'duration-500 delay-500': animationActive
+          }"
+        >
+          <!-- 登录和登录后的用户头像 -->
           <div
-            class="actions"
-            :class="{
-              'opacity-0': animationFrom && animationActive,
-              'duration-500 delay-500': animationActive
-            }"
+            v-if="!userInfo"
+            class="flex items-center justify-center"
           >
-            <!-- 登录和登录后的用户头像 -->
             <div
-              v-if="!userInfo"
-              class="flex items-center justify-center"
+              class="actions-text clickble"
+              @click="showLogin = true"
             >
-              <div
-                class="actions-text clickble"
-                @click="showLogin = true"
-              >
-                {{ i18n.t('static.login') }}
-              </div>
-              <div class="actions-divider" />
-              <div
-                class="actions-text clickble"
-                @click="showRegister = true"
-              >
-                {{ i18n.t('static.register') }}
-              </div>
+              {{ i18n.t('static.login') }}
             </div>
+            <div class="actions-divider" />
             <div
-              v-else
-              class="mr-3rem"
+              class="actions-text clickble"
+              @click="showRegister = true"
             >
-              <dropdown-menu>
-                <template #trigger>
-                  <div
-                    class="bg-cover bg-center bg-no-repeat rounded-full h-2rem w-2rem clickble"
-                    :style="{
-                      backgroundImage: `url(${userInfo.avatar ? ossPath(userInfo.avatar) : defaultProfileAvatar})`,
-                      backgroundColor: 'rgba(255,255,255,0.5)'
-                    }"
-                  />
-                </template>
-                <template #menuItems>
-                  <div>
-                    <!-- <menu-item>
+              {{ i18n.t('static.register') }}
+            </div>
+          </div>
+          <div
+            v-else
+            class="mr-3rem"
+          >
+            <dropdown-menu>
+              <template #trigger>
+                <div
+                  class="bg-cover bg-center bg-no-repeat rounded-full h-2rem w-2rem clickble"
+                  :style="{
+                    backgroundImage: `url(${userInfo.avatar ? ossPath(userInfo.avatar) : defaultProfileAvatar})`,
+                    backgroundColor: 'rgba(255,255,255,0.5)'
+                  }"
+                />
+              </template>
+              <template #menuItems>
+                <div>
+                  <!-- <menu-item>
                     <button
                       class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="showOrder = true"
@@ -635,79 +634,79 @@ function onPasswordResetClick() {
                     </button>
                   </menu-item>
                   <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" /> -->
-                    <menu-item>
-                      <button
-                        class="font-sans text-left text-1rem leading-1.5rem clickble"
-                        @click="logout"
-                      >
-                        {{ i18n.t('static.logout') }}
-                      </button>
-                    </menu-item>
-                  </div>
-                </template>
-              </dropdown-menu>
-            </div>
-            <!-- 语言切换菜单 -->
-            <div>
-              <dropdown-menu>
-                <template #trigger="{ open }">
-                  <div
-                    class="flex actions-text actions-dropdown clickble items-center"
-                    ref="langMenuBtnEl"
-                  >
-                    <span class="clickble block">{{ i18n.locale.value.toUpperCase() }}</span>
-                    <img
-                      src="./assets/static-framework/dropdown.svg"
-                      class="transform transition transition-transform duration-250 actions-dropdown-icon clickble block"
-                      :class="{
-                        'rotate-z-180': open
-                      }"
+                  <menu-item>
+                    <button
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
+                      @click="logout"
                     >
-                  </div>
-                </template>
-                <template #menuItems>
-                  <div>
-                    <menu-item>
-                      <button
-                        class="font-sans text-left text-1rem leading-1.5rem clickble"
-                        @click="setLocale('en')"
-                      >
-                        English
-                      </button>
-                    </menu-item>
-                    <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" />
-                    <menu-item>
-                      <button
-                        class="font-sans text-left text-1rem leading-1rem clickble"
-                        @click="setLocale('zh')"
-                      >
-                        中文
-                      </button>
-                    </menu-item>
-                  </div>
-                </template>
-              </dropdown-menu>
-            </div>
-            <!-- 返回项目详情页 -->
-            <a
-              class="ml-3rem <xl:ml-2rem"
-              href="https://mono.fun/project/03f3e7eb-fa25-485d-b224-b81105feca19"
-              target="_blank"
-            >
-              <img
-                src="./assets/static-framework/back-to-details.svg"
-                class="object-center object-contain h-1rem w-1rem clickble"
-              >
-            </a>
-            <img
-              src="./assets/static-framework/share.svg"
-              class="actions-share clickble"
-              width="16"
-              height="16"
-              @click="isShareDialogShow = true"
-            >
+                      {{ i18n.t('static.logout') }}
+                    </button>
+                  </menu-item>
+                </div>
+              </template>
+            </dropdown-menu>
           </div>
+          <!-- 语言切换菜单 -->
+          <div>
+            <dropdown-menu>
+              <template #trigger="{ open }">
+                <div
+                  class="flex actions-text actions-dropdown clickble items-center"
+                  ref="langMenuBtnEl"
+                >
+                  <span class="clickble block">{{ i18n.locale.value.toUpperCase() }}</span>
+                  <img
+                    src="./assets/static-framework/dropdown.svg"
+                    class="transform transition transition-transform duration-250 actions-dropdown-icon clickble block"
+                    :class="{
+                      'rotate-z-180': open
+                    }"
+                  >
+                </div>
+              </template>
+              <template #menuItems>
+                <div>
+                  <menu-item>
+                    <button
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
+                      @click="setLocale('en')"
+                    >
+                      English
+                    </button>
+                  </menu-item>
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" />
+                  <menu-item>
+                    <button
+                      class="font-sans text-left text-1rem leading-1rem clickble"
+                      @click="setLocale('zh')"
+                    >
+                      中文
+                    </button>
+                  </menu-item>
+                </div>
+              </template>
+            </dropdown-menu>
+          </div>
+          <!-- 返回项目详情页 -->
+          <a
+            class="ml-3rem <xl:ml-2rem"
+            href="https://mono.fun/project/03f3e7eb-fa25-485d-b224-b81105feca19"
+            target="_blank"
+          >
+            <img
+              src="./assets/static-framework/back-to-details.svg"
+              class="object-center object-contain h-1rem w-1rem clickble"
+            >
+          </a>
+          <img
+            src="./assets/static-framework/share.svg"
+            class="actions-share clickble"
+            width="16"
+            height="16"
+            @click="isShareDialogShow = true"
+          >
         </div>
+
         <transition
           :name="getTransitionName(route.path, currentRoutePath)"
         >
@@ -1063,7 +1062,7 @@ function onPasswordResetClick() {
 // 当宽度小于 1080px 时，切换到手机版本
 @media screen and (max-width: 1079px) {
   .actions-text:nth-child(3) {
-    margin-right: 24px;
+    margin-right: 8px;
   }
 
   .actions-share {
@@ -1071,8 +1070,9 @@ function onPasswordResetClick() {
   }
 
   .actions {
-    top: 24px;
-    right: 24px;
+    position:absolute;
+    top: 16px;
+    right: 16px;
   }
 
   .page-title {
