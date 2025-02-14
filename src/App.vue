@@ -28,7 +28,7 @@ import PasswordResetDialog from './components/PasswordReset/password-reset.vue'
 
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
@@ -97,7 +97,7 @@ router.beforeEach((to, from, next) => {
       // 在渐隐完成之后设置新的背景，并渐显
       backgroundCss.value['background-image'] = `url('${(backgroundFound.value as HTMLImageElement).src}')`
       gsap.to(backgroundCss.value, { opacity: 1, duration: 0.25 })
-    }})
+    } })
   } else {
     // 没有设置背景，设置背景，并渐显
     backgroundCss.value['background-image'] = `url('${(backgroundFound.value as HTMLImageElement).src}')`
@@ -113,7 +113,7 @@ router.beforeEach((to, from, next) => {
     pageNumber.value = indexOfRoute(currentRoute.path) + 1
     // 消失之后重新显示
     gsap.fromTo(pageNumberAnimateObj.value, { opacity: 0, transform: pageNumberActualDistance }, { opacity: 1, transform: 0, duration: 0.25 })
-  }})
+  } })
   // 取消左上角标题正在进行的动画
   gsap.killTweensOf('.page-title')
   if (to.path === '/') {
@@ -129,7 +129,7 @@ router.beforeEach((to, from, next) => {
       // 显示标题
       pageName.value = getRouteName(to.path)
       gsap.to('.page-title', { opacity: 1, duration: 0.25 })
-    }})
+    } })
   }
   next()
 })
@@ -179,7 +179,7 @@ const isToNext = (to: string, from: string): 0 | 1 | 2 => {
 const getTranslateDistance = (to: string, from: string): number => {
   // 平移距离 %
   const distance = 50
-  switch(isToNext(to, from)) {
+  switch (isToNext(to, from)) {
     case 0: return 0
     case 1: return -distance
     case 2: return distance
@@ -191,7 +191,7 @@ const getTranslateDistance = (to: string, from: string): number => {
  * 当前往上一个页面时显示向下的动画
  */
 const getTransitionName = (to: string, from: string): 'translate-down-page' | 'translate-up-page' | '' => {
-  switch(isToNext(to, from)) {
+  switch (isToNext(to, from)) {
     case 0: return ''
     case 1: return 'translate-down-page'
     case 2: return 'translate-up-page'
@@ -333,24 +333,24 @@ useEventListener(document, 'wheel', (() => {
   let canScroll = true
   return (event: WheelEvent) => {
     // 如果允许切换，继续切换步骤
-    if(!canScroll && event.deltaY*avgDeltaY<0){
-      avgDeltaY=0
+    if (!canScroll && event.deltaY * avgDeltaY < 0) {
+      avgDeltaY = 0
       canScroll = true
     }
-    if(!canScroll && avgTimes<5){
+    if (!canScroll && avgTimes < 5) {
       avgTimes++
-      if(Math.abs(event.deltaY)>Math.abs(avgDeltaY)){
-        avgDeltaY=event.deltaY
-        avgTimes=0
+      if (Math.abs(event.deltaY) > Math.abs(avgDeltaY)) {
+        avgDeltaY = event.deltaY
+        avgTimes = 0
       }
-      else avgDeltaY=(avgDeltaY+event.deltaY)/2
+      else avgDeltaY = (avgDeltaY + event.deltaY) / 2
     }
-    if (Math.abs(event.deltaY)>Math.abs(avgDeltaY) && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
+    if (Math.abs(event.deltaY) > Math.abs(avgDeltaY) && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
       // 禁止切换
       times++
-      avgTimes= 0
-      avgDeltaY=event.deltaY
-      canScroll =false
+      avgTimes = 0
+      avgDeltaY = event.deltaY
+      canScroll = false
       eldTimeStamp = event.timeStamp
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
@@ -361,13 +361,13 @@ useEventListener(document, 'wheel', (() => {
       else router.push(routes.value[nextIndex].to)
       // 1500 毫秒后再允许切换，防止切换过于频繁
       const tempTimes = times
-      setTimeout(()=>{
-        if(tempTimes==times)
-          canScroll = true
-      },800)
       setTimeout(() => {
-        if(tempTimes==times)
-          avgDeltaY=0
+        if (tempTimes == times)
+          canScroll = true
+      }, 800)
+      setTimeout(() => {
+        if (tempTimes == times)
+          avgDeltaY = 0
       }, 2500)
     }
   }

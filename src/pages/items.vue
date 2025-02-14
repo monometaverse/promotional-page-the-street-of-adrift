@@ -339,7 +339,7 @@ const buttonsSize = useItemsPageButtonSize()
         {{ t(itemsList[currentIndexForAnimation].description) }}
       </div>
       <div
-        class="info-btns flex gap-x-1rem"
+        class="flex gap-x-1rem info-btns"
         :style="reserveBtnAnimationStyle"
       >
         <!-- 前往详情页按钮 -->
@@ -379,7 +379,7 @@ const buttonsSize = useItemsPageButtonSize()
         >
           <div class="models-rotating-border" />
           <!-- 模型查看器 -->
-          <div class="w-full h-full transform -translate-y-[100%]">
+          <div class="h-full w-full transform -translate-y-[100%]">
             <model-viewer
               :items="itemsList"
               :showing-item="currentIndex"
@@ -405,7 +405,7 @@ const buttonsSize = useItemsPageButtonSize()
     </div>
     <!-- 预约成功提示框 -->
     <div
-      class="absolute w-[100%] h-[100%] flex transition-colors justify-center items-center z-998"
+      class="flex h-[100%] transition-colors w-[100%] z-998 absolute justify-center items-center"
       :class="{
         'bg-[rgba(0,0,0,0.5)]': isDialogShow,
         'pointer-events-none': !isDialogShow
@@ -413,7 +413,7 @@ const buttonsSize = useItemsPageButtonSize()
     >
       <!-- 提示框主体 -->
       <div
-        class="w-576px h-480px bg-black flex transition duration-250 <sm:(w-320px h-374px)"
+        class="bg-black flex h-480px transition w-576px duration-250 <sm:(w-320px h-374px) "
         :class="{
           'opacity-0': !isDialogShow,
           '-translate-y-50px transform': !isDialogShow
@@ -421,16 +421,16 @@ const buttonsSize = useItemsPageButtonSize()
       >
         <!-- 占位符 -->
         <div class="flex-1 pt-24px pr-24px" />
-        <div class="flex flex-col justify-between items-center pt-3rem">
-          <span class="font-serif font-900 leading-46px text-2rem <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
+        <div class="flex flex-col pt-3rem justify-between items-center">
+          <span class="font-serif font-900 text-2rem leading-46px <sm:(text-24px leading-34px) ">{{ t('nft.reserveSucceed') }}</span>
           <!-- 预约成功的物品的名称 -->
           <span class="font-sans text-1rem <sm:text-0.75rem">{{ t('nft.reservedItem', { name: t(reservedNftName) }) }}</span>
           <!-- 预约成功图片 -->
-          <div class="success-pic-container p-14px">
-            <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
+          <div class="p-14px success-pic-container">
+            <div class="bg-center bg-no-repeat bg-cover h-130px w-144px success-pic <sm:(w-79px h-71px) " />
           </div>
           <!-- 勾选框，是否接收所有关于彷徨之街的邮件 -->
-          <div class="flex items-center gap-x-0.5rem">
+          <div class="flex gap-x-0.5rem items-center">
             <input
               type="checkbox"
               :checked="isSendAllChecked"
@@ -443,19 +443,19 @@ const buttonsSize = useItemsPageButtonSize()
           </div>
           <!-- 确定按钮 -->
           <div>
-            <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
+            <div class="border-solid border-[rgba(255,255,255,0.5)] border-2px transition-colors duration-250 hover:(bg-[rgba(255,255,255,0.2)])">
               <div
-                class="reserve-success-bg w-192px h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
+                class="bg-contain bg-center bg-no-repeat h-4rem opacity-20 transition-opacity w-192px duration-250 reserve-success-bg clickble <sm:(w-6rem h-2rem) hover:(opacity-50) "
                 @click="closeReserveSuccessDialog(true)"
               />
             </div>
-            <div class="w-192px h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem)">
+            <div class="flex font-serif font-900 h-4rem transform text-24px leading-34px w-192px -translate-y-4rem justify-center items-center pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem) ">
               {{ t('nft.showDetails') }}
             </div>
           </div>
         </div>
         <!-- 关闭按钮 -->
-        <div class="flex justify-end flex-1 pt-24px pr-24px">
+        <div class="flex flex-1 pt-24px pr-24px justify-end">
           <div
             class="close-btn clickble"
             @click="closeReserveSuccessDialog(false)"

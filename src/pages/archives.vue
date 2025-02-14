@@ -74,14 +74,14 @@ const doPicAniamtion = (next: boolean) => {
   // 终止图片的动画
   gsap.killTweensOf(picAnimationArgs.value)
   gsap.killTweensOf(picAnimationArgsNext.value)
-  gsap.fromTo(picAnimationArgs.value,{
+  gsap.fromTo(picAnimationArgs.value, {
     scale: 1
   }, {
     scale: 0,
     origin: next ? 'top left' : 'bottom right',
     duration: 0.75,
   })
-  gsap.fromTo(picAnimationArgsNext.value,{
+  gsap.fromTo(picAnimationArgsNext.value, {
     scale: 0
   }, {
     scale: 1,
@@ -279,11 +279,11 @@ const layer3Style = computed<CSSProperties>(() => {
       class="effect"
       :style="pageStyle"
     >
-      <div class="element-block opacity-50 bg-center bg-contain bg-no-repeat w-24px h-24px absolute top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)] <xl:(top-[calc(478px+50vh-407px)] right-[calc(254px+50vw-597px)]) <sm:hidden" />
+      <div class="bg-center bg-contain bg-no-repeat h-24px opacity-50 top-[calc(614px+50vh-540px)] right-[calc(454px+50vw-960px)] w-24px element-block absolute <sm:hidden <xl:(top-[calc(478px+50vh-407px)] right-[calc(254px+50vw-597px)]) " />
       <!-- 背景 -->
       <div class="background">
         <div class="flex flex-col gap-8px">
-          <div class="background-line ml-178px <xl:ml-139px">
+          <div class="ml-178px background-line <xl:ml-139px">
             <div class="background-item " />
             <div class="background-item" />
             <div class="background-item" />
@@ -293,7 +293,7 @@ const layer3Style = computed<CSSProperties>(() => {
             <div class="background-item" />
             <div class="background-item" />
           </div>
-          <div class="background-line ml-350px <xl:ml-267px">
+          <div class="ml-350px background-line <xl:ml-267px">
             <div class="background-item" />
             <div class="background-item background-item-empty" />
             <div class="background-item background-item-empty" />
@@ -302,12 +302,12 @@ const layer3Style = computed<CSSProperties>(() => {
       </div>
       <!-- 图片左侧矩阵 -->
       <div
-        class="matrix left-[calc(437px+50vw-960px)] bottom-[calc(358px+50vh-540px)] !opacity-100 <xl:(left-[calc(113px+50vw-597px)] bottom-[calc(266px+50vh-407px)]) <sm:hidden"
+        class="bottom-[calc(358px+50vh-540px)] left-[calc(437px+50vw-960px)] matrix <sm:hidden !opacity-100 <xl:(left-[calc(113px+50vw-597px)] bottom-[calc(266px+50vh-407px)]) "
         :style="layer1Style"
       />
       <!-- 图片右侧矩阵 -->
       <div
-        class="matrix right-[calc(422px+50vw-960px)] top-[calc(233px+50vh-540px)] !opacity-100 z-999 <xl:(right-[calc(256px+50vw-597px)] top-[calc(171px+50vh-407px)]) <sm:hidden"
+        class="top-[calc(233px+50vh-540px)] right-[calc(422px+50vw-960px)] z-999 matrix <sm:hidden !opacity-100 <xl:(right-[calc(256px+50vw-597px)] top-[calc(171px+50vh-407px)]) "
         :style="layer3Style"
       />
       <!-- 标题 -->
@@ -338,7 +338,7 @@ const layer3Style = computed<CSSProperties>(() => {
           <a
             :href="getOriginPicLink(picAndNameList[showCurrentNameIndex].pic.src)"
             target="_blank"
-            class="archives-pic bg-contain bg-center bg-no-repeat block clickble"
+            class="bg-contain bg-center bg-no-repeat archives-pic block clickble"
             :style="{
               'background-image': `url(${picAndNameList[currentIndex].pic.src})`,
               transform: layer2Style.transform + ' ' + picAnimationStyleNext.transform,
@@ -349,7 +349,7 @@ const layer3Style = computed<CSSProperties>(() => {
           <a
             :href="getOriginPicLink(picAndNameList[prevPic].pic.src)"
             target="_blank"
-            class="archives-pic bg-contain bg-center bg-no-repeat block clickble"
+            class="bg-contain bg-center bg-no-repeat archives-pic block clickble"
             :style="{
               'background-image': `url(${picAndNameList[prevPic].pic.src})`,
               transform: layer2Style.transform + ' ' + picAnimationStyle.transform,

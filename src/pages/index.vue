@@ -131,7 +131,7 @@ onMounted(() => {
 <template>
   <div class="route-page">
     <div
-      class="logo-copy logo-copy-center cover-no-repeat-center duration-500 delay-0 transition-all"
+      class="transition-all duration-500 delay-0 logo-copy logo-copy-center cover-no-repeat-center"
       :style="logoCopyStyle"
       :class="{
         'logo-copy-position-normal': animationStart,
@@ -139,7 +139,7 @@ onMounted(() => {
       :lang="locale"
     />
     <!-- 左上角跳转按钮 -->
-    <div class="absolute top-4rem left-4rem <sm:hidden flex">
+    <div class="flex top-4rem left-4rem absolute <sm:hidden">
       <a
         class="mr-2.25rem clickble"
         href="https://mono.fun"
@@ -147,12 +147,12 @@ onMounted(() => {
       >
         <img
           src="../assets/home-page/mono.svg"
-          class="w-2rem h-2rem object-center object-contain clickble"
+          class="object-center object-contain h-2rem w-2rem clickble"
         >
       </a>
       <img
         src="../assets/home-page/caramel-mocha.svg"
-        class="w-2rem h-2rem object-center object-contain"
+        class="object-center object-contain h-2rem w-2rem"
       >
     </div>
     <!-- 社交媒体按钮 -->
@@ -160,7 +160,7 @@ onMounted(() => {
       class="community-btns"
     >
       <a
-        class="community-btn community-btn-discord clickble !duration-500 !delay-1000 !transition-all"
+        class="community-btn community-btn-discord clickble !transition-all !duration-500 !delay-1000"
         :class="{
           'social-btns-hide': !animationStart,
         }"
@@ -168,7 +168,7 @@ onMounted(() => {
         target="_blank"
       />
       <a
-        class="community-btn community-btn-twitter clickble !duration-500 !delay-1000 !transition-all"
+        class="community-btn community-btn-twitter clickble !transition-all !duration-500 !delay-1000"
         :class="{
           'social-btns-hide': !animationStart,
         }"
@@ -177,7 +177,7 @@ onMounted(() => {
       />
     </div>
     <div
-      class="logo-and-play duration-500 delay-500 transition-all"
+      class="transition-all duration-500 delay-500 logo-and-play"
       :class="{
         'opacity-0': !animationStart
       }"
@@ -198,7 +198,7 @@ onMounted(() => {
       }"
     >
       <span
-        class="text duration-500 delay-1500 transition-all"
+        class="text transition-all duration-500 delay-1500"
         :class="{
           'text-hide': !animationStart,
           '!inline': locale === 'en'
@@ -206,7 +206,7 @@ onMounted(() => {
       >{{ t('home.gameInfo1') }}</span>
       <span
         @transitionend="onSecondDescTransitionEnd"
-        class="text duration-500 delay-1750 transition-all"
+        class="text transition-all duration-500 delay-1750"
         :class="{
           'text-hide': !animationStart,
           '!inline': locale === 'en'
@@ -215,12 +215,12 @@ onMounted(() => {
     </div>
     <!-- 神秘文字 -->
     <div
-      class="absolute bottom-4rem left-4rem <sm:hidden <xl:(bottom-2rem left-2rem)"
+      class="bottom-4rem left-4rem absolute <sm:hidden <xl:(bottom-2rem left-2rem) "
       ref="secretMsg"
     >
       <!-- 鼠标光圈 -->
       <div
-        class="absolute w-4rem h-4rem transform -translate-x-2rem -translate-y-2rem flex justify-center items-center rounded-full pointer-events-none"
+        class="rounded-full flex h-4rem transform w-4rem -translate-x-2rem -translate-y-2rem absolute justify-center items-center pointer-events-none"
         :style="{
           background: 'rgba(255, 255, 255, 0.25)',
           filter: 'blur(8px)',
@@ -230,7 +230,7 @@ onMounted(() => {
         }"
       >
         <div
-          class="w-2rem h-2rem filter-[blur(6px)] bg-[rgba(255, 255, 255, 0.5)] rounded-full pointer-events-none"
+          class="bg-[rgba(255, h-2rem w-2rem filter-[blur(6px)] 255, 0.5 "
         />
       </div>
       <span
@@ -250,14 +250,14 @@ onMounted(() => {
     />
     <!-- 视频容器 -->
     <div
-      class="position absolute w-[100vw] h-[100vh] flex justify-center items-center duration-250 transition-colors"
+      class="flex h-[100vh] transition-colors w-[100vw] duration-250 position absolute justify-center items-center"
       :class="{
         'pointer-events-none': !isVideoShow,
         'bg-[rgba(0,0,0,0.5)]': isVideoShow
       }"
     >
       <div
-        class="transition duration-250 flex flex-col"
+        class="flex flex-col transition duration-250"
         :class="{
           'opacity-0 transform -translate-y-1.5rem': !isVideoShow,
         }"
