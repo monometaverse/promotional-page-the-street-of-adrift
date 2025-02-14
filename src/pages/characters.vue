@@ -587,6 +587,7 @@ watchEffect(() => {
   }
 
   .element-x {
+    opacity: 0;
     width: 2rem;
     height: 2rem;
     top: calc(50vh + 153px - 406px);
