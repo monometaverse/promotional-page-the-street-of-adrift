@@ -328,7 +328,7 @@ const buttonsSize = useItemsPageButtonSize()
         {{ t(itemsList[currentIndexForAnimation].name, 1, { locale: 'en' }).toUpperCase() }}
       </div>
       <div
-        class="info-divider"
+        class="info-divider <sm:hidden"
         :style="infoAnimationStyle"
       />
       <!-- NFT 描述 -->
@@ -804,7 +804,7 @@ const buttonsSize = useItemsPageButtonSize()
   .info {
     width: 100%;
     top: unset;
-    bottom: 60px;
+    bottom: 5rem;
     left: 0;
     padding: 20px 20px 0 20px;
 

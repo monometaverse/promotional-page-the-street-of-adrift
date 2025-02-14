@@ -229,7 +229,7 @@ watchEffect(() => {
         class="info-title"
         :style="nameStyle"
         :class="{
-          '!text-3rem !<xl:text-2rem! <sm:1.5rem': locale === 'en'
+          '!text-3rem !<xl:text-2rem !<sm:text-1.5rem': locale === 'en'
         }"
       >
         {{ t(`characters.${ characters[currentShow] }.name`) }}
@@ -539,9 +539,9 @@ watchEffect(() => {
 
   .info {
     right: unset;
-    bottom: 4rem;
+    bottom: 5rem;
     width: 100%;
-    padding: 24px 8px 0 24px;
+    padding: 24px 16px 0 24px;
 
     &-title {
       font-size: 2rem;
@@ -580,7 +580,7 @@ watchEffect(() => {
       font-size: 12px;
       line-height: 24px;
       margin-top: 8px;
-      max-height: 220px;
+      max-height: 19vh;
       overflow-y: scroll;
       overflow-x: clip;
     }

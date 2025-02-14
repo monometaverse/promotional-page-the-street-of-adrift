@@ -14,7 +14,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: 'close'): void,
   (e: 'next'): void, // 下一张
-  (e: 'prev'): void  // 上一张
+  (e: 'prev'): void // 上一张
 }>()
 // 动画从开始到结束图片和描述会移动的距离
 const transitionDistance = 200
@@ -70,9 +70,9 @@ const prevOrNext = (next: boolean) => {
 <template>
   <div class="details">
     <!-- 图片上方矩阵 -->
-    <div class="matrix top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999 <xl:(top-[calc(210px+50vh-417px)] right-[calc(352px+50vw-597px)]) <sm:hidden" />
+    <div class="top-[calc(261px+50vh-540px)] right-[calc(515px+50vw-960px)] z-999 matrix <sm:hidden <xl:(top-[calc(210px+50vh-417px)] right-[calc(352px+50vw-597px)]) " />
     <!-- 图片下方矩阵 -->
-    <div class="matrix bottom-[calc(250px+50vh-540px)] right-[calc(378px+50vw-960px)] z-999 <xl:(bottom-[calc(225px+50vh-417px)] right-[calc(243px+50vw-597px)]) <sm:hidden" />
+    <div class="right-[calc(378px+50vw-960px)] bottom-[calc(250px+50vh-540px)] z-999 matrix <sm:hidden <xl:(bottom-[calc(225px+50vh-417px)] right-[calc(243px+50vw-597px)]) " />
     <!-- 图片 -->
     <div
       class="details-pic cover-no-repeat-center"
@@ -86,7 +86,7 @@ const prevOrNext = (next: boolean) => {
         {{ t(`settings.${items[modelValue].name}.name`) }}
       </div>
       <div class="details-desc-divider" />
-      <div class="details-desc-text max-w-40rem max-h-30rem overflow-y-scroll <xl:(max-w-30rem max-h-20rem)">
+      <div class="max-w-40rem max-h-30rem details-desc-text overflow-y-scroll <xl:(max-w-30rem max-h-20rem) ">
         {{ t(`settings.${items[modelValue].name}.info`) }}
       </div>
     </div>
@@ -240,10 +240,10 @@ const prevOrNext = (next: boolean) => {
       width: 100%;
       top: unset;
       left: unset;
-      bottom: 4rem;
+      bottom: 5rem;
 
       &-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
         line-height: 49px;
       }
 
@@ -255,7 +255,7 @@ const prevOrNext = (next: boolean) => {
         margin-top: 8px;
         font-size: 12px;
         line-height: 20px;
-        max-height: 16.25em;
+        max-height: 19vh;
         overflow-y: scroll;
       }
     }
