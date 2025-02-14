@@ -288,6 +288,7 @@ watch(store.mousePos, (val) => {
 })
 // 监听鼠标点击事件
 useEventListener(window, 'click', (event) => {
+  console.log('click')
   mouseClickStyleArgs.left = event.x - 24
   mouseClickStyleArgs.top = event.y - 24
   gsap.killTweensOf(mouseClickStyleArgs)
@@ -302,12 +303,14 @@ useEventListener(window, 'click', (event) => {
 })
 // 监听鼠标移入事件
 useEventListener(window, 'mouseover', (event) => {
+  console.log('mouseover')
   const target = event.target as HTMLElement
   isMouseOverClickable.value = target.classList.contains('clickble')
   isMouseOverScrollble.value = window.getComputedStyle(target).overflowY === 'scroll'
 })
 // 监听触摸移动事件
 useEventListener(window, 'touchmove', (event) => {
+  console.log('touchmove')
   const target = event.target as HTMLElement
   isTouchOverScrollbleOrDragble.value = window.getComputedStyle(target).overflowY === 'scroll' || target.classList.contains('dragble')
 })
@@ -317,25 +320,51 @@ const showOrder = ref(false)
 // 是否锁定鼠标滚动
 const scrollLock = computed(() => showLogin.value || showOrder.value)
 // 监听鼠标滚动事件以切换页面
+// useEventListener(document,'',(()=>{
+//   return(event)=>{
+//     console.log(event)
+//   }
+// }))
 useEventListener(document, 'wheel', (() => {
+  let times = 0
+  let avgTimes = 0
+  let avgDeltaY = 0
+  let eldTimeStamp = 0
   let canScroll = true
   return (event: WheelEvent) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
+    if(!canScroll && avgTimes<5){
+      avgTimes++
+      if(Math.abs(event.deltaY)>Math.abs(avgDeltaY)){
+        avgDeltaY=event.deltaY
+        avgTimes=0
+      }
+      else avgDeltaY=(avgDeltaY+event.deltaY)/2
+    }
+    if (Math.abs(event.deltaY)>Math.abs(avgDeltaY) && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
+      // 禁止切换
+      times++
+      avgTimes=0
+      avgDeltaY=event.deltaY
+      canScroll = false
+      eldTimeStamp = event.timeStamp
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
       const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
       // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
-      if (event.deltaY < 0) {
-        router.push(routes.value[prevIndex].to)
-      } else {
-        router.push(routes.value[nextIndex].to)
-      }
-      // 禁止切换
-      canScroll = false
-      // 500 毫秒后再允许切换，防止切换过于频繁
-      setTimeout(() => canScroll = true, 500)
+      if (event.deltaY < 0) router.push(routes.value[prevIndex].to)
+      else router.push(routes.value[nextIndex].to)
+      // 1500 毫秒后再允许切换，防止切换过于频繁
+      const tempTimes = times
+      setTimeout(()=>{
+        if(tempTimes==times)
+          canScroll = true
+      },800)
+      setTimeout(() => {
+        if(tempTimes==times)
+          avgDeltaY=0
+      }, 2500)
     }
   }
 })())
@@ -386,11 +415,11 @@ const logout = async () => {
 // 静态框架的引用
 const staticFramworkEl = ref<HTMLDivElement | null>(null)
 // 检测是否在静态框架上滑动
+let canScroll_swipe = true
 useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
-  let canScroll = true
   return (e, direction) => {
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
+    if (canScroll_swipe && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -402,9 +431,9 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
         router.push(routes.value[nextIndex].to)
       }
       // 禁止切换
-      canScroll = false
+      canScroll_swipe = false
       // 500 毫秒后再允许切换，防止切换过于频繁
-      setTimeout(() => canScroll = true, 500)
+      setTimeout(() => canScroll_swipe = true, 500)
     }
   }
 })() })
@@ -583,7 +612,7 @@ function onPasswordResetClick() {
             <dropdown-menu>
               <template #trigger>
                 <div
-                  class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
+                  class="bg-cover bg-center bg-no-repeat rounded-full h-2rem w-2rem clickble"
                   :style="{
                     backgroundImage: `url(${userInfo.avatar ? ossPath(userInfo.avatar) : defaultProfileAvatar})`,
                     backgroundColor: 'rgba(255,255,255,0.5)'
@@ -594,16 +623,16 @@ function onPasswordResetClick() {
                 <div>
                   <!-- <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="showOrder = true"
                     >
                       {{ i18n.t('static.orders') }}
                     </button>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" /> -->
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" /> -->
                   <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="logout"
                     >
                       {{ i18n.t('static.logout') }}
@@ -618,13 +647,13 @@ function onPasswordResetClick() {
             <dropdown-menu>
               <template #trigger="{ open }">
                 <div
-                  class="actions-text actions-dropdown clickble flex items-center"
+                  class="flex actions-text actions-dropdown clickble items-center"
                   ref="langMenuBtnEl"
                 >
                   <span class="clickble block">{{ i18n.locale.value.toUpperCase() }}</span>
                   <img
                     src="./assets/static-framework/dropdown.svg"
-                    class="actions-dropdown-icon transition transform transition-transform duration-250 clickble block"
+                    class="transform transition transition-transform duration-250 actions-dropdown-icon clickble block"
                     :class="{
                       'rotate-z-180': open
                     }"
@@ -635,16 +664,16 @@ function onPasswordResetClick() {
                 <div>
                   <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="setLocale('en')"
                     >
                       English
                     </button>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" />
                   <menu-item>
                     <button
-                      class="text-1rem leading-1rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1rem clickble"
                       @click="setLocale('zh')"
                     >
                       中文
@@ -662,7 +691,7 @@ function onPasswordResetClick() {
           >
             <img
               src="./assets/static-framework/back-to-details.svg"
-              class="clickble object-center object-contain w-1rem h-1rem"
+              class="object-center object-contain h-1rem w-1rem clickble"
             >
           </a>
           <img
@@ -682,7 +711,7 @@ function onPasswordResetClick() {
         </transition>
         <!-- 分享框 -->
         <div
-          class="w-[100vw] h-[100vh] flex justify-center items-center absolute transition-colors duration-250 z-998"
+          class="flex h-[100vh] transition-colors w-[100vw] z-998 duration-250 justify-center items-center absolute"
           :class="{
             'bg-[rgba(0,0,0,0.5)]': isShareDialogShow,
             'pointer-events-none': !isShareDialogShow
@@ -695,7 +724,7 @@ function onPasswordResetClick() {
             enter-from-class="transform -translate-y-1.5rem opacity-0"
           >
             <div
-              class="w-36rem h-40.5rem bg-[#0f0f0f] flex flex-col justify-between items-center <sm:(w-20rem h-34.25rem)"
+              class="flex flex-col bg-[#0f0f0f] h-40.5rem w-36rem justify-between items-center <sm:(w-20rem h-34.25rem) "
               v-if="isShareDialogShow"
             >
               <div class="pt-1.5rem pr-1.5rem w-[100%]">
@@ -704,11 +733,11 @@ function onPasswordResetClick() {
                   @click="isShareDialogShow = false"
                 />
               </div>
-              <span class="leading-2.875rem text-2rem font-serif <sm:(leading-2.125rem text-1.5rem)">
+              <span class="font-serif text-2rem leading-2.875rem <sm:(leading-2.125rem text-1.5rem) ">
                 {{ i18n.t('static.shareTheGame') }}
               </span>
               <!-- 分享图片预览 -->
-              <div class="w-17rem h-23.125rem overflow-y-scroll custom-scrollbar">
+              <div class="h-23.125rem w-17rem overflow-y-scroll custom-scrollbar">
                 <img
                   class="w-[100%]"
                   :src="sharePic"
@@ -729,7 +758,7 @@ function onPasswordResetClick() {
           </transition>
         </div>
         <div
-          class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
+          class="flex h-[100vh] transition-colors top-0 left-0 w-[100vw] duration-250 absolute justify-center items-center"
           :class="[showLogin || showOrder || showRegister || showPasswordReset ? 'bg-black/50' : 'pointer-events-none']"
         >
           <LoginDialog
@@ -752,7 +781,7 @@ function onPasswordResetClick() {
         </div>
       </div>
     </transition>
-    <div class="absolute top-0 left-0 w-[100vw] h-[100vh] pointer-events-none z-1000">
+    <div class="h-[100vh] top-0 left-0 w-[100vw] z-1000 absolute pointer-events-none">
       <TransitionGroup
         leave-to-class="transform -translate-y-20px opacity-0"
         enter-from-class="transform -translate-y-20px opacity-0"
