@@ -333,6 +333,10 @@ useEventListener(document, 'wheel', (() => {
   let canScroll = true
   return (event: WheelEvent) => {
     // 如果允许切换，继续切换步骤
+    if(!canScroll && event.deltaY*avgDeltaY<0){
+      avgDeltaY=0
+      canScroll = true
+    }
     if(!canScroll && avgTimes<5){
       avgTimes++
       if(Math.abs(event.deltaY)>Math.abs(avgDeltaY)){
@@ -344,9 +348,9 @@ useEventListener(document, 'wheel', (() => {
     if (Math.abs(event.deltaY)>Math.abs(avgDeltaY) && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
       // 禁止切换
       times++
-      avgTimes=0
+      avgTimes= 0
       avgDeltaY=event.deltaY
-      canScroll = false
+      canScroll =false
       eldTimeStamp = event.timeStamp
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
