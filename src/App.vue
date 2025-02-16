@@ -26,6 +26,40 @@ import Orders from './components/Orders/orders.vue'
 import RegisterDialog from './components/Register/register.vue'
 import PasswordResetDialog from './components/PasswordReset/password-reset.vue'
 
+import { createAppKit, useAppKitState } from '@reown/appkit/vue'
+import { base, type AppKitNetwork } from '@reown/appkit/networks'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+
+// wallet
+const projectId = '37a3d6d8d0a6ad1274edddf3cda691cd'
+const metadata = {
+  name: 'mono',
+  description: 'AppKit Example',
+  url: 'http://localhost:5173',
+  icons: ['https://assets.reown.com/reown-profile-pic.png']
+}
+const networks: [AppKitNetwork] = [base]
+const wagmiAdapter = new WagmiAdapter({
+  networks,
+  projectId
+})
+const modal = createAppKit({
+  adapters: [wagmiAdapter],
+  networks,
+  projectId,
+  metadata,
+  features: {
+    analytics: true
+  },
+  themeMode: 'dark',
+  themeVariables: {
+    '--w3m-z-index': 1000,
+    '--w3m-accent': 'hsla(0, 0, 0, 0)',
+    // '--w3m-border-radius-master': '0px'
+  }
+})
+const stateData = useAppKitState()
+
 // pinia
 const store = useStore()
 const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
@@ -325,6 +359,8 @@ useEventListener(document, 'wheel', (() => {
   let eldTimeStamp = 0
   let canScroll = true
   return (event: WheelEvent) => {
+    // 如果打开了钱包选择框，则不滚动
+    if (stateData.open) return
     // 如果允许切换，继续切换步骤
     if (!canScroll && event.deltaY * avgDeltaY < 0) {
       avgDeltaY = 0
@@ -415,6 +451,8 @@ const staticFramworkEl = ref<HTMLDivElement | null>(null)
 let canScroll_swipe = true
 useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
   return (e, direction) => {
+    // 如果打开了钱包选择框，则不滚动
+    if (stateData.open) return
     // 如果允许切换，继续切换步骤
     if (canScroll_swipe && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
@@ -438,7 +476,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
 const staticFramwork = useElementSize(staticFramworkEl)
 const hideCursorStyle = computed(() => {
   // 如果静态框架的宽度小于窗口宽度，表示可能是开发者工具打开了
-  return window.outerWidth > staticFramwork.width.value ? '' : '* { cursor: none!important; }'
+  return (window.outerWidth > staticFramwork.width.value || stateData.open === true) ? '' : '* { cursor: none!important; }'
 })
 // 移动端导航是否已打开
 const mobileNavOpen = ref(false)
@@ -588,19 +626,27 @@ function onPasswordResetClick() {
             v-if="!userInfo"
             class="flex items-center justify-center"
           >
-            <div
+            <appkit-button class="bg-transparent" />
+            <!-- <div
+              class="actions-text clickble"
+              @click="connnectWallet"
+            >
+              {{ i18n.t('static.connect') }}
+            </div> -->
+
+            <!-- <div
               class="actions-text clickble"
               @click="showLogin = true"
             >
               {{ i18n.t('static.login') }}
-            </div>
+            </div> -->
             <div class="actions-divider" />
-            <div
+            <!-- <div
               class="actions-text clickble"
               @click="showRegister = true"
             >
               {{ i18n.t('static.register') }}
-            </div>
+            </div> -->
           </div>
           <div
             v-else

@@ -2,6 +2,7 @@
   "static": {
     "login": "Login",
     "register": "Register",
+    "connect":"Connect Wallet",
     "home": "Homepage",
     "item": "Item",
     "character": "Character",

@@ -2,6 +2,7 @@
   "static": {
     "login": "登录",
     "register": "注册",
+    "connect":"连接钱包",
     "home": "首页",
     "item": "物品",
     "character": "角色",
