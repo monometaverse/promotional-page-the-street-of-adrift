@@ -134,8 +134,9 @@ router.beforeEach((to, from, next) => {
   next()
 })
 // 当导航中的某一项被点击
-const onNavItemSelected = (to: string) => {
-  router.push(to)
+const onNavItemSelected = async (to: string) => {
+  if (!to) return
+  await router.push(to)
 }
 // 获取路由的索引
 const indexOfRoute = (to: string): number => {
@@ -288,7 +289,6 @@ watch(store.mousePos, (val) => {
 })
 // 监听鼠标点击事件
 useEventListener(window, 'click', (event) => {
-  console.log('click')
   mouseClickStyleArgs.left = event.x - 24
   mouseClickStyleArgs.top = event.y - 24
   gsap.killTweensOf(mouseClickStyleArgs)
@@ -303,14 +303,12 @@ useEventListener(window, 'click', (event) => {
 })
 // 监听鼠标移入事件
 useEventListener(window, 'mouseover', (event) => {
-  console.log('mouseover')
   const target = event.target as HTMLElement
   isMouseOverClickable.value = target.classList.contains('clickble')
   isMouseOverScrollble.value = window.getComputedStyle(target).overflowY === 'scroll'
 })
 // 监听触摸移动事件
 useEventListener(window, 'touchmove', (event) => {
-  console.log('touchmove')
   const target = event.target as HTMLElement
   isTouchOverScrollbleOrDragble.value = window.getComputedStyle(target).overflowY === 'scroll' || target.classList.contains('dragble')
 })
@@ -320,11 +318,6 @@ const showOrder = ref(false)
 // 是否锁定鼠标滚动
 const scrollLock = computed(() => showLogin.value || showOrder.value)
 // 监听鼠标滚动事件以切换页面
-// useEventListener(document,'',(()=>{
-//   return(event)=>{
-//     console.log(event)
-//   }
-// }))
 useEventListener(document, 'wheel', (() => {
   let times = 0
   let avgTimes = 0
@@ -359,7 +352,7 @@ useEventListener(document, 'wheel', (() => {
       // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
       if (event.deltaY < 0) router.push(routes.value[prevIndex].to)
       else router.push(routes.value[nextIndex].to)
-      // 1500 毫秒后再允许切换，防止切换过于频繁
+      // 800 / 2500 毫秒后再允许切换，防止切换过于频繁
       const tempTimes = times
       setTimeout(() => {
         if (tempTimes == times)
