@@ -273,7 +273,7 @@ onMounted(() => {
         >
           <video
             ref="videoEl"
-            src="../assets/home-page/game-video.mp4"
+            src="../assets/home-page/movie_max_vp9.webm"
             class="w-[100%]"
             type="video/mp4"
             preload="metadata"
