@@ -345,7 +345,7 @@ useEventListener(document, 'wheel', (() => {
       }
       else avgDeltaY = (avgDeltaY + event.deltaY) / 2
     }
-    if (Math.abs(event.deltaY) > Math.abs(avgDeltaY) && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
+    if (Math.abs(event.deltaY) >= Math.abs(avgDeltaY) * 0.9 && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
       // 禁止切换
       times++
       avgTimes = 0
