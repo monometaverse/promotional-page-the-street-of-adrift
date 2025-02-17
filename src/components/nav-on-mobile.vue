@@ -78,7 +78,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
       <div class="flex top-4.5rem right-3rem absolute">
         <a
           class="mr-2.25rem clickble"
-          href="https://mono.fun"
+          href=""
           target="_blank"
         >
           <img

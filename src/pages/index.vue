@@ -142,7 +142,7 @@ onMounted(() => {
     <div class="flex top-4rem left-4rem absolute <sm:hidden">
       <a
         class="mr-2.25rem clickble"
-        href="https://mono.fun"
+        href=""
         target="_blank"
       >
         <img

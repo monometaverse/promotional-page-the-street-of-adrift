@@ -28,9 +28,8 @@ const picAndNameList = ref([
 ])
 // 获取原图链接
 const getOriginPicLink = (src: string): string => {
-  let fileName = src.substring(src.lastIndexOf('/'))
-  fileName = fileName.substring(0, fileName.indexOf('.')) + '.jpg'
-  return 'https://tsoa.projects.mono.fun' + fileName
+  const srcLarge = src.substring(0, src.lastIndexOf('.')) + '.jpg'
+  return srcLarge
 }
 // 用来显示的名字索引
 const showCurrentNameIndex = ref(0)

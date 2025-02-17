@@ -55,7 +55,7 @@ const itemsList = ref<NFTItem[]>([
     url: "cfeb8d91-4865-456a-b400-ad6b72b60ca1",
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
-    canBeReserved: true,
+    canBeReserved: false,
     customData: {
       childName: 'YX_Gold',
       scale: 4,
@@ -243,20 +243,20 @@ const doReserve = async (index: number) => {
 const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
   if (!itemsList.value[index].canBeReserved) return
-  // 如果活动还没开始，就拒绝
-  if (!activityDate.started()) {
-    msg.show(t('nft.activityNotStart'))
-    return
-  }
-  if (!userInfo.value) {
-    msg.show(t('nft.needLogin'))
-    // 保存要在登录完成后预约的项目
-    shouldReserveAfterLogin.value = index
-    // 跳转到登录页
-    goLoginPageAndWaitForMessage()
-    return
-  }
-  doReserve(index)
+  // // 如果活动还没开始，就拒绝
+  // if (!activityDate.started()) {
+  //   msg.show(t('nft.activityNotStart'))
+  //   return
+  // }
+  // if (!userInfo.value) {
+  //   msg.show(t('nft.needLogin'))
+  //   // 保存要在登录完成后预约的项目
+  //   shouldReserveAfterLogin.value = index
+  //   // 跳转到登录页
+  //   goLoginPageAndWaitForMessage()
+  //   return
+  // }
+  // doReserve(index)
 }
 // 前往详情页按钮事件处理器
 const onShowDetailBtnClick = async (index: number) => {
