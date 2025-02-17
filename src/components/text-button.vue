@@ -17,14 +17,14 @@ const props = defineProps<{
     }"
   >
     <div
-      class="transition-colors duration-250 h-full w-full border-2px"
+      class="h-full border-2px w-full transition-colors duration-250"
       :class="{
         'border-white btn-primary': type === 'primary',
         'border-white/50 btn-secondary': type === 'secondary',
       }"
     >
       <div
-        class="h-full w-full duration-250 transition-opacity clickble bg"
+        class="bg h-full w-full transition-opacity duration-250 clickble"
         :class="{
           'btn-primary-inner': type == 'primary',
           'btn-secondary-inner': type == 'secondary'
@@ -37,8 +37,8 @@ const props = defineProps<{
         width: width,
         height: height
       }"
-      class="font-900 flex items-center font-serif justify-center transform -translate-y-[100%] pointer-events-none"
-      :class="[isEn ? 'text-[1.25rem] sm:text-[0.75rem]' : 'text-[1.5rem] <sm:text-[1rem]', type === 'primary' ? 'text-black' : 'text-white']"
+      class="flex font-serif font-900 transform -translate-y-[100%] items-center justify-center pointer-events-none"
+      :class="[isEn ? 'text-[1.25rem] <sm:text-[0.75rem]' : 'text-[1.5rem] <sm:text-[1rem]', type === 'primary' ? 'text-black' : 'text-white']"
     >
       <slot />
     </div>

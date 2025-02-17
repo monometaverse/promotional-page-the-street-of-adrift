@@ -34,17 +34,17 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
 })()
 </script>
 <template>
-  <div class="absolute w-[100%] h-[100%] z-999 overflow-hidden pointer-events-none">
+  <div class="h-[100%] w-[100%] z-999 absolute overflow-hidden pointer-events-none">
     <!-- 菜单主体 -->
     <div
-      class="absolute w-[100vw] h-[100vh] transform bg-[rgba(0,0,0,0.9)] duration-250 top-0 left-0 pointer-events-auto"
+      class="bg-[rgba(0,0,0,0.9)] h-[100vh] transform top-0 left-0 w-[100vw] duration-250 absolute pointer-events-auto"
       :class="{
         '-translate-y-[100%]': !modelValue
       }"
       @transitionend="onMenuTransitionEnd"
     >
       <!-- 游戏 logo -->
-      <div class="game-logo mt-72px ml-20px h-2rem bg-cover bg-center bg-no-repeat" />
+      <div class="bg-cover bg-center bg-no-repeat h-2rem mt-72px ml-20px game-logo" />
       <!-- 复用桌面端的导航 -->
       <nav-on-desktop
         :animation-active="animationActive"
@@ -53,11 +53,11 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
         @item-selected="onItemSelected"
       />
       <!-- 社交网络图标 -->
-      <div class="absolute top-524px right-3rem z-50">
-        <div class="font-monsterrat text-15px opacity-50 font-12px font-700 text-right">
+      <div class="top-524px right-3rem z-50 absolute">
+        <div class="font-monsterrat font-12px font-700 text-right opacity-50 text-15px">
           SHARE
         </div>
-        <div class="flex gap-x-24px mt-24px">
+        <div class="flex mt-24px gap-x-24px">
           <a
             href="https://twitter.com/adriftstreet"
             target="_blank"
@@ -66,7 +66,7 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
             <div class="icon icon-twitter" />
           </a>
           <a
-            href="https://discord.gg/monoverse"
+            href="https://discord.gg/TUkQzXVDUV"
             target="_blank"
             class="block"
           >
@@ -75,44 +75,44 @@ const { onItemSelected, onMenuTransitionEnd } = (() => {
         </div>
       </div>
       <!-- 左上角跳转按钮 -->
-      <div class="absolute top-4.5rem right-3rem flex">
+      <div class="flex top-4.5rem right-3rem absolute">
         <a
           class="mr-2.25rem clickble"
-          href="https://mono.fun"
+          href=""
           target="_blank"
         >
           <img
             src="../assets/home-page/mono.svg"
-            class="w-2rem h-2rem object-center object-contain clickble"
+            class="object-center object-contain h-2rem w-2rem clickble"
           >
         </a>
         <img
           src="../assets/home-page/caramel-mocha.svg"
-          class="w-2rem h-2rem object-center object-contain"
+          class="object-center object-contain h-2rem w-2rem"
         >
       </div>
       <!-- 背景格子 -->
-      <div class="background w-453px h-313px bg-left bg-no-repeat bg-contain bottom-24px absolute" />
+      <div class="bg-left bg-no-repeat bg-contain h-313px bottom-24px w-453px background absolute" />
     </div>
     <!-- 左上角菜单图标 -->
     <div
-      class="absolute top-24px left-24px pointer-events-auto"
+      class="top-24px left-24px absolute pointer-events-auto"
       @click="emits('update:modelValue', !modelValue)"
     >
       <div
-        class="mb-5px h-3px w-24px bg-white transition-transform duration-250 origin-top-left"
+        class="bg-white h-3px mb-5px origin-top-left transition-transform w-24px duration-250"
         :class="{
           'transform rotate-z-45': modelValue
         }"
       />
       <div
-        class="mb-5px h-3px w-24px bg-white transition-transform duration-250 origin-left"
+        class="bg-white h-3px mb-5px origin-left transition-transform w-24px duration-250"
         :class="{
           'transform scale-x-0': modelValue
         }"
       />
       <div
-        class="h-3px w-24px bg-white transition-transform duration-250 origin-bottom-left"
+        class="bg-white h-3px origin-bottom-left transition-transform w-24px duration-250"
         :class="{
           'transform -rotate-z-45': modelValue
         }"

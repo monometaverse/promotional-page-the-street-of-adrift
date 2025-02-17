@@ -1,6 +1,6 @@
 <!--角色页面-->
 <script lang="ts" setup>
-import { computed, CSSProperties,  onActivated,  onDeactivated, onMounted, ref, watchEffect } from 'vue'
+import { computed, CSSProperties, onActivated, onDeactivated, onMounted, ref, watchEffect } from 'vue'
 import { gsap } from 'gsap'
 
 import { useStore } from '../store'
@@ -160,7 +160,7 @@ const swtichTo = (index: number) => {
   doPaintingAnimation(false)
   nameLeaveTimeout = window.setTimeout(doNameAnimation, delay.name, false)
   infoItemLeaveTimeout = window.setTimeout(doInfoItemAnimation, delay.infoItem, false)
-  infoDescLeaveTimeout =  window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
+  infoDescLeaveTimeout = window.setTimeout(doInfoDescAnimation, delay.infoDesc, false, index)
 }
 onMounted(() => {
   // 切换到第一个角色的阵营
@@ -219,7 +219,7 @@ watchEffect(() => {
       }"
     />
     <!-- 手机端才有的遮罩 -->
-    <div class="w-[100vw] h-30rem absolute bottom-0 hidden <sm:block mask-on-mobile" />
+    <div class="h-30rem bottom-0 w-[100vw] absolute hidden mask-on-mobile <sm:block" />
     <!-- 角色介绍 -->
     <div
       class="info"
@@ -229,7 +229,7 @@ watchEffect(() => {
         class="info-title"
         :style="nameStyle"
         :class="{
-          '!text-3rem !<xl:text-2rem! <sm:1.5rem': locale === 'en'
+          '!text-3rem !<xl:text-2rem !<sm:text-1.5rem': locale === 'en'
         }"
       >
         {{ t(`characters.${ characters[currentShow] }.name`) }}
@@ -273,11 +273,11 @@ watchEffect(() => {
     <scroll-hint class="!sm:hidden" />
     <!-- 页面切换器，仅在手机端显示 -->
     <div
-      class="prev-btn sm:hidden absolute left-20px top-[calc(50vh+296px-406px)]"
+      class="top-[calc(50vh+296px-406px)] left-20px prev-btn absolute sm:hidden"
       @click="prev"
     />
     <div
-      class="next-btn sm:hidden absolute right-20px top-[calc(50vh+296px-406px)]"
+      class="top-[calc(50vh+296px-406px)] right-20px next-btn absolute sm:hidden"
       @click="next"
     />
   </div>
@@ -539,9 +539,9 @@ watchEffect(() => {
 
   .info {
     right: unset;
-    bottom: 4rem;
+    bottom: 5rem;
     width: 100%;
-    padding: 24px 8px 0 24px;
+    padding: 24px 16px 0 24px;
 
     &-title {
       font-size: 2rem;
@@ -580,13 +580,14 @@ watchEffect(() => {
       font-size: 12px;
       line-height: 24px;
       margin-top: 8px;
-      max-height: 220px;
+      max-height: 19vh;
       overflow-y: scroll;
       overflow-x: clip;
     }
   }
 
   .element-x {
+    opacity: 0;
     width: 2rem;
     height: 2rem;
     top: calc(50vh + 153px - 406px);

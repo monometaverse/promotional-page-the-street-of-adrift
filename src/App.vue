@@ -26,9 +26,43 @@ import Orders from './components/Orders/orders.vue'
 import RegisterDialog from './components/Register/register.vue'
 import PasswordResetDialog from './components/PasswordReset/password-reset.vue'
 
+import { createAppKit, useAppKitState } from '@reown/appkit/vue'
+import { base, type AppKitNetwork } from '@reown/appkit/networks'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+
+// wallet
+const projectId = '37a3d6d8d0a6ad1274edddf3cda691cd'
+const metadata = {
+  name: 'mono',
+  description: 'AppKit Example',
+  url: 'http://localhost:5173',
+  icons: ['https://assets.reown.com/reown-profile-pic.png']
+}
+const networks: [AppKitNetwork] = [base]
+const wagmiAdapter = new WagmiAdapter({
+  networks,
+  projectId
+})
+const modal = createAppKit({
+  adapters: [wagmiAdapter],
+  networks,
+  projectId,
+  metadata,
+  features: {
+    analytics: true
+  },
+  themeMode: 'dark',
+  themeVariables: {
+    '--w3m-z-index': 1000,
+    '--w3m-accent': 'hsla(0, 0, 0, 0)',
+    // '--w3m-border-radius-master': '0px'
+  }
+})
+const stateData = useAppKitState()
+
 // pinia
 const store = useStore()
-const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart , allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
+const { firstEnter, staticFrameworkAnimationStart, scrollHintAnimationStart, allowScroll, windowWidth, windowHeight, res: loadedRes, isOnMobile, isOnMobileByUserAgent, userInfo } = storeToRefs(store)
 // 当资源加载完成时
 const onResourceLoadComplete = (res: LoadedResources) => {
   loadedRes.value = res
@@ -97,7 +131,7 @@ router.beforeEach((to, from, next) => {
       // 在渐隐完成之后设置新的背景，并渐显
       backgroundCss.value['background-image'] = `url('${(backgroundFound.value as HTMLImageElement).src}')`
       gsap.to(backgroundCss.value, { opacity: 1, duration: 0.25 })
-    }})
+    } })
   } else {
     // 没有设置背景，设置背景，并渐显
     backgroundCss.value['background-image'] = `url('${(backgroundFound.value as HTMLImageElement).src}')`
@@ -113,7 +147,7 @@ router.beforeEach((to, from, next) => {
     pageNumber.value = indexOfRoute(currentRoute.path) + 1
     // 消失之后重新显示
     gsap.fromTo(pageNumberAnimateObj.value, { opacity: 0, transform: pageNumberActualDistance }, { opacity: 1, transform: 0, duration: 0.25 })
-  }})
+  } })
   // 取消左上角标题正在进行的动画
   gsap.killTweensOf('.page-title')
   if (to.path === '/') {
@@ -129,13 +163,14 @@ router.beforeEach((to, from, next) => {
       // 显示标题
       pageName.value = getRouteName(to.path)
       gsap.to('.page-title', { opacity: 1, duration: 0.25 })
-    }})
+    } })
   }
   next()
 })
 // 当导航中的某一项被点击
-const onNavItemSelected = (to: string) => {
-  router.push(to)
+const onNavItemSelected = async (to: string) => {
+  if (!to) return
+  await router.push(to)
 }
 // 获取路由的索引
 const indexOfRoute = (to: string): number => {
@@ -179,7 +214,7 @@ const isToNext = (to: string, from: string): 0 | 1 | 2 => {
 const getTranslateDistance = (to: string, from: string): number => {
   // 平移距离 %
   const distance = 50
-  switch(isToNext(to, from)) {
+  switch (isToNext(to, from)) {
     case 0: return 0
     case 1: return -distance
     case 2: return distance
@@ -191,7 +226,7 @@ const getTranslateDistance = (to: string, from: string): number => {
  * 当前往上一个页面时显示向下的动画
  */
 const getTransitionName = (to: string, from: string): 'translate-down-page' | 'translate-up-page' | '' => {
-  switch(isToNext(to, from)) {
+  switch (isToNext(to, from)) {
     case 0: return ''
     case 1: return 'translate-down-page'
     case 2: return 'translate-up-page'
@@ -318,24 +353,51 @@ const showOrder = ref(false)
 const scrollLock = computed(() => showLogin.value || showOrder.value)
 // 监听鼠标滚动事件以切换页面
 useEventListener(document, 'wheel', (() => {
+  let times = 0
+  let avgTimes = 0
+  let avgDeltaY = 0
+  let eldTimeStamp = 0
   let canScroll = true
   return (event: WheelEvent) => {
+    // 如果打开了钱包选择框，则不滚动
+    if (stateData.open) return
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
+    if (!canScroll && event.deltaY * avgDeltaY < 0) {
+      avgDeltaY = 0
+      canScroll = true
+    }
+    if (!canScroll && avgTimes < 5) {
+      avgTimes++
+      if (Math.abs(event.deltaY) > Math.abs(avgDeltaY)) {
+        avgDeltaY = event.deltaY
+        avgTimes = 0
+      }
+      else avgDeltaY = (avgDeltaY + event.deltaY) / 2
+    }
+    if (Math.abs(event.deltaY) >= Math.abs(avgDeltaY) * 0.9 && canScroll && allowScroll.value && !isShareDialogShow.value && !isMouseOverScrollble.value && !scrollLock.value) {
+      // 禁止切换
+      times++
+      avgTimes = 0
+      avgDeltaY = event.deltaY
+      canScroll = false
+      eldTimeStamp = event.timeStamp
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
       const nextIndex = currentRouteIndex + 1 <= routes.value.length - 1 ? currentRouteIndex + 1 : routes.value.length - 1
       // 如果向下滚动，就切换到下一个页面，否则切换到上一个页面
-      if (event.deltaY < 0) {
-        router.push(routes.value[prevIndex].to)
-      } else {
-        router.push(routes.value[nextIndex].to)
-      }
-      // 禁止切换
-      canScroll = false
-      // 500 毫秒后再允许切换，防止切换过于频繁
-      setTimeout(() => canScroll = true, 500)
+      if (event.deltaY < 0) router.push(routes.value[prevIndex].to)
+      else router.push(routes.value[nextIndex].to)
+      // 800 / 2500 毫秒后再允许切换，防止切换过于频繁
+      const tempTimes = times
+      setTimeout(() => {
+        if (tempTimes == times)
+          canScroll = true
+      }, 800)
+      setTimeout(() => {
+        if (tempTimes == times)
+          avgDeltaY = 0
+      }, 2500)
     }
   }
 })())
@@ -386,11 +448,13 @@ const logout = async () => {
 // 静态框架的引用
 const staticFramworkEl = ref<HTMLDivElement | null>(null)
 // 检测是否在静态框架上滑动
+let canScroll_swipe = true
 useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
-  let canScroll = true
   return (e, direction) => {
+    // 如果打开了钱包选择框，则不滚动
+    if (stateData.open) return
     // 如果允许切换，继续切换步骤
-    if (canScroll && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
+    if (canScroll_swipe && allowScroll.value && !isTouchOverScrollbleOrDragble.value && !isShareDialogShow.value && !mobileNavOpen.value) {
       const currentRouteIndex = indexOfRoute(currentRoute.path)
       // 避免获取到的上一页或下一页的索引超出边界
       const prevIndex = currentRouteIndex - 1 >= 0 ? currentRouteIndex - 1 : 0
@@ -402,9 +466,9 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
         router.push(routes.value[nextIndex].to)
       }
       // 禁止切换
-      canScroll = false
+      canScroll_swipe = false
       // 500 毫秒后再允许切换，防止切换过于频繁
-      setTimeout(() => canScroll = true, 500)
+      setTimeout(() => canScroll_swipe = true, 500)
     }
   }
 })() })
@@ -412,7 +476,7 @@ useSwipe(staticFramworkEl, { onSwipeEnd: (() => {
 const staticFramwork = useElementSize(staticFramworkEl)
 const hideCursorStyle = computed(() => {
   // 如果静态框架的宽度小于窗口宽度，表示可能是开发者工具打开了
-  return window.outerWidth > staticFramwork.width.value ? '' : '* { cursor: none!important; }'
+  return (window.outerWidth > staticFramwork.width.value || stateData.open === true) ? '' : '* { cursor: none!important; }'
 })
 // 移动端导航是否已打开
 const mobileNavOpen = ref(false)
@@ -510,11 +574,11 @@ function onPasswordResetClick() {
         />
         <!-- 桌面和平板端导航 -->
         <nav-on-desktop
+          v-if="!isOnMobile"
           :routes="routes"
           :animation-active="animationActive"
           :animation-from="animationFrom"
           @item-selected="onNavItemSelected"
-          v-else
         />
         <!-- 页码 -->
         <div
@@ -551,7 +615,7 @@ function onPasswordResetClick() {
         </div>
         <!-- 右上角操作部分 -->
         <div
-          class="actions"
+          class="actions <sm:space-x-3 "
           :class="{
             'opacity-0': animationFrom && animationActive,
             'duration-500 delay-500': animationActive
@@ -562,19 +626,27 @@ function onPasswordResetClick() {
             v-if="!userInfo"
             class="flex items-center justify-center"
           >
-            <div
+            <appkit-button class="bg-transparent" />
+            <!-- <div
+              class="actions-text clickble"
+              @click="connnectWallet"
+            >
+              {{ i18n.t('static.connect') }}
+            </div> -->
+
+            <!-- <div
               class="actions-text clickble"
               @click="showLogin = true"
             >
               {{ i18n.t('static.login') }}
-            </div>
+            </div> -->
             <div class="actions-divider" />
-            <div
+            <!-- <div
               class="actions-text clickble"
               @click="showRegister = true"
             >
               {{ i18n.t('static.register') }}
-            </div>
+            </div> -->
           </div>
           <div
             v-else
@@ -583,7 +655,7 @@ function onPasswordResetClick() {
             <dropdown-menu>
               <template #trigger>
                 <div
-                  class="rounded-full w-2rem h-2rem bg-cover bg-center bg-no-repeat clickble"
+                  class="bg-cover bg-center bg-no-repeat rounded-full h-2rem w-2rem clickble"
                   :style="{
                     backgroundImage: `url(${userInfo.avatar ? ossPath(userInfo.avatar) : defaultProfileAvatar})`,
                     backgroundColor: 'rgba(255,255,255,0.5)'
@@ -594,16 +666,16 @@ function onPasswordResetClick() {
                 <div>
                   <!-- <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="showOrder = true"
                     >
                       {{ i18n.t('static.orders') }}
                     </button>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" /> -->
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" /> -->
                   <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="logout"
                     >
                       {{ i18n.t('static.logout') }}
@@ -618,13 +690,13 @@ function onPasswordResetClick() {
             <dropdown-menu>
               <template #trigger="{ open }">
                 <div
-                  class="actions-text actions-dropdown clickble flex items-center"
+                  class="flex actions-text actions-dropdown clickble items-center"
                   ref="langMenuBtnEl"
                 >
                   <span class="clickble block">{{ i18n.locale.value.toUpperCase() }}</span>
                   <img
                     src="./assets/static-framework/dropdown.svg"
-                    class="actions-dropdown-icon transition transform transition-transform duration-250 clickble block"
+                    class="transform transition transition-transform duration-250 actions-dropdown-icon clickble block"
                     :class="{
                       'rotate-z-180': open
                     }"
@@ -635,16 +707,16 @@ function onPasswordResetClick() {
                 <div>
                   <menu-item>
                     <button
-                      class="text-1rem leading-1.5rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1.5rem clickble"
                       @click="setLocale('en')"
                     >
                       English
                     </button>
                   </menu-item>
-                  <div class="w-106px h-1px mt-12px mb-12px bg-[#c4c4c4] opacity-50" />
+                  <div class="bg-[#c4c4c4] h-1px mt-12px mb-12px opacity-50 w-106px" />
                   <menu-item>
                     <button
-                      class="text-1rem leading-1rem font-sans text-left clickble"
+                      class="font-sans text-left text-1rem leading-1rem clickble"
                       @click="setLocale('zh')"
                     >
                       中文
@@ -655,24 +727,25 @@ function onPasswordResetClick() {
             </dropdown-menu>
           </div>
           <!-- 返回项目详情页 -->
-          <a
+          <!-- <a
             class="ml-3rem <xl:ml-2rem"
             href="https://mono.fun/project/03f3e7eb-fa25-485d-b224-b81105feca19"
             target="_blank"
           >
             <img
               src="./assets/static-framework/back-to-details.svg"
-              class="clickble object-center object-contain w-1rem h-1rem"
+              class="object-center object-contain h-1rem w-1rem clickble"
             >
-          </a>
-          <img
+          </a> -->
+          <!-- <img
             src="./assets/static-framework/share.svg"
             class="actions-share clickble"
             width="16"
             height="16"
             @click="isShareDialogShow = true"
-          >
+          > -->
         </div>
+
         <transition
           :name="getTransitionName(route.path, currentRoutePath)"
         >
@@ -682,7 +755,7 @@ function onPasswordResetClick() {
         </transition>
         <!-- 分享框 -->
         <div
-          class="w-[100vw] h-[100vh] flex justify-center items-center absolute transition-colors duration-250 z-998"
+          class=" flex h-[100vh] transition-colors w-[100vw] z-998 duration-250 justify-center items-center absolute"
           :class="{
             'bg-[rgba(0,0,0,0.5)]': isShareDialogShow,
             'pointer-events-none': !isShareDialogShow
@@ -695,7 +768,7 @@ function onPasswordResetClick() {
             enter-from-class="transform -translate-y-1.5rem opacity-0"
           >
             <div
-              class="w-36rem h-40.5rem bg-[#0f0f0f] flex flex-col justify-between items-center <sm:(w-20rem h-34.25rem)"
+              class="flex flex-col bg-[#0f0f0f] h-40.5rem w-36rem justify-between items-center <sm:(w-20rem h-34.25rem) "
               v-if="isShareDialogShow"
             >
               <div class="pt-1.5rem pr-1.5rem w-[100%]">
@@ -704,11 +777,11 @@ function onPasswordResetClick() {
                   @click="isShareDialogShow = false"
                 />
               </div>
-              <span class="leading-2.875rem text-2rem font-serif <sm:(leading-2.125rem text-1.5rem)">
+              <span class="font-serif text-2rem leading-2.875rem <sm:(leading-2.125rem text-1.5rem) ">
                 {{ i18n.t('static.shareTheGame') }}
               </span>
               <!-- 分享图片预览 -->
-              <div class="w-17rem h-23.125rem overflow-y-scroll custom-scrollbar">
+              <div class="h-23.125rem w-17rem overflow-y-scroll custom-scrollbar">
                 <img
                   class="w-[100%]"
                   :src="sharePic"
@@ -729,7 +802,7 @@ function onPasswordResetClick() {
           </transition>
         </div>
         <div
-          class="absolute top-0 left-0 transition-colors duration-250 w-[100vw] h-[100vh] flex justify-center items-center"
+          class="flex h-[100vh] transition-colors top-0 left-0 w-[100vw] duration-250 absolute justify-center items-center"
           :class="[showLogin || showOrder || showRegister || showPasswordReset ? 'bg-black/50' : 'pointer-events-none']"
         >
           <LoginDialog
@@ -752,7 +825,7 @@ function onPasswordResetClick() {
         </div>
       </div>
     </transition>
-    <div class="absolute top-0 left-0 w-[100vw] h-[100vh] pointer-events-none z-1000">
+    <div class="h-[100vh] top-0 left-0 w-[100vw] z-1000 absolute pointer-events-none">
       <TransitionGroup
         leave-to-class="transform -translate-y-20px opacity-0"
         enter-from-class="transform -translate-y-20px opacity-0"
@@ -1028,7 +1101,7 @@ function onPasswordResetClick() {
 // 当宽度小于 1080px 时，切换到手机版本
 @media screen and (max-width: 1079px) {
   .actions-text:nth-child(3) {
-    margin-right: 24px;
+    margin-right: 8px;
   }
 
   .actions-share {
@@ -1036,8 +1109,9 @@ function onPasswordResetClick() {
   }
 
   .actions {
-    top: 24px;
-    right: 24px;
+    position:absolute;
+    top: 16px;
+    right: 16px;
   }
 
   .page-title {

@@ -193,7 +193,7 @@ export const useLoginAndMessage = () => {
   return () => {
     // 区分环境
     childWindow = window.open(apiBase + '/login', '_blank')
-    if(!childWindow) { // 如果没有获取到跳转后的窗口
+    if (!childWindow) { // 如果没有获取到跳转后的窗口
       message.show(i18n.t('static.failedToOpenLoginWindow'))
       return
     }
@@ -203,7 +203,7 @@ export const useLoginAndMessage = () => {
 }
 
 export const useItemsPageButtonSize = (() => {
-  const {width: windowW} = useWindowSize()
+  const { width: windowW } = useWindowSize()
   const buttonsSize = computed(() => {
     return windowW.value > 1080 ? {
       width: '12rem',

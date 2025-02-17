@@ -2,6 +2,7 @@
   "static": {
     "login": "Login",
     "register": "Register",
+    "connect": "Connect Wallet",
     "home": "Homepage",
     "item": "Item",
     "character": "Character",
@@ -27,19 +28,20 @@
     "umsSuperName": "UMS SUPER 5 \"ALICIA\"",
     "storyBookName": "<THE STORY of MOON PRINCESS>",
     "storyBookPress": "Fujing Children's Literature Press",
-    "reserveBtnText": "Reserve Now",
+    "reserveBtnText": "Reserve",
     "reserveBtnTextReserved": "Reserved",
     "reserveSucceed": "Reserve Succeed",
-    "commingSoon": "Comming soon",
+    "commingSoon": "Coming Soon",
     "reservedItem": "「{name}」Reserved",
     "needLogin": "Login required",
-    "showDetails": "Detail page",
+    "showDetails": "Detail",
     "receiveEmailCheckboxText": "I'd like to receive emails from The Street of Adrift",
     "reserveSuccessBtnText": "Acknowledged",
     "goldCoinInfo": "Kusyou has its own currency system called \"the Kusyou Coins\". These coins can be obtained in two ways: either by exchanging enormous amounts of Fujing Yuan through the Service Center in Kusyou, or by completing \"special requests\" offered by Kusyou. Owners of Kusyou Gold Coins can play the story DLC of The Street of Adrift for free in the future, participate in the voting of external stories and exchange for limited digital or physical peripherals.",
     "sliverCoinInfo": "Kusyou has its own currency system called \"the Kusyou Coins\". These coins can be obtained in two ways: either by exchanging enormous amounts of Fujing Yuan through the Service Center in Kusyou, or by completing \"special requests\" offered by Kusyou. Owners of Kusyou Silver Coins can participate in the voting of external stories and exchange for limited digital or physical peripherals.",
     "umsSuperInfo": "This small electric submachine gun produced by the Shiraishi group is an ideal weapon. It can emit an electric arc within a limited distance, making most criminals lose their mobility instantly, and suppress electronic equipments in a certain level.\nOf course, it could be switch to the fatal mode in emergency.\nAt present, this weapon has become the default weapon of FJIT quick response team, a special law enforcement force under FJPD.",
-    "activityNotStart": "Activity will start at 2022-06-25 11:00 UTC"
+    "activityNotStart": "Activity will start at 2022-06-25 11:00 UTC",
+    "showAiDialog": "Get White List"
   },
   "characters": {
     "shiraishi": {

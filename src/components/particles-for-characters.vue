@@ -19,7 +19,7 @@ let points: {
   x: number, // 目前的位置 x
   y: number, // 目前的位置 y
   targetX: number, // 将要移动到的位置 x
-  targetY: number  // 将要移动到的位置 y
+  targetY: number // 将要移动到的位置 y
 }[] = []
 // 图片大小
 const picSize = computed(() => isOnMobile.value ? 120 * 1.5 : (isOnTablet.value ? 240 * 1.5 : 360 * 1.5))
@@ -29,7 +29,7 @@ const pointsGroupOffset = computed(() => {
   if (isOnMobile.value) {
     return {
       x: windowWidth.value - picSize.value / 1.5 - (windowWidth.value / 2 + 20 - 187.5),
-      y:(windowHeight.value / 2) + 64 - 406
+      y: 48
     }
   }
   if (isOnTablet.value) {
@@ -86,11 +86,11 @@ watchEffect(() => {
     pointsPos = []
     // 开始锁住画布，停止绘制
     pausePointRender.value = true
-    ctx.clearRect(0,0,canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
+    ctx.clearRect(0, 0, canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
     ctx.globalAlpha = 1
     ctx.drawImage(newVal, 0, 0, newVal.width, newVal.height)
     // 获取到图片的信息
-    const imageData = ctx.getImageData(0,0,newVal.width, newVal.height).data
+    const imageData = ctx.getImageData(0, 0, newVal.width, newVal.height).data
     // 清除图片
     ctx.globalAlpha = 0
     ctx.clearRect(0, 0, canvasEl.value!.width, canvasEl.value!.height)
@@ -117,7 +117,7 @@ watchEffect(() => {
   // 手机端额外判断，移动到右上角
   const offsetX = pointsGroupOffset.value.x
   const offsetY = pointsGroupOffset.value.y
-  for (let i = 0; i < pointsPos.length ;i ++) {
+  for (let i = 0; i < pointsPos.length; i ++) {
     if (i < points.length) {
       // 把已经存在的点移动到相应位置
       points[i].targetX = offsetX + (pointsPos[i].x + Math.random() - 0.5) / 1.5
@@ -162,7 +162,7 @@ const render = () => {
   if (!pausePointRender.value) {
     ctx.globalAlpha += (targetAlpha - ctx.globalAlpha) / (targetAlpha > ctx.globalAlpha ? 60 : 10)
     // 清除整个画布
-    ctx.clearRect(0,0, canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
+    ctx.clearRect(0, 0, canvasEl.value?.width ?? 0, canvasEl.value?.height ?? 0)
     points.forEach((it) => {
       if (isOnMobileByUserAgent.value || pointsNotAffectByMouse) {
         // 在手机端，不受鼠标位置影响

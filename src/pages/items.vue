@@ -30,7 +30,7 @@ const itemsList = ref<NFTItem[]>([
     url: "d9baa6d4-f37b-4fe0-9164-21780b5e8b40",
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
-    canBeReserved: true,
+    canBeReserved: false,
     customData: {
       childName: 'YX_Gold',
       scale: 4,
@@ -55,7 +55,7 @@ const itemsList = ref<NFTItem[]>([
     url: "cfeb8d91-4865-456a-b400-ad6b72b60ca1",
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene.clone(),
-    canBeReserved: true,
+    canBeReserved: false,
     customData: {
       childName: 'YX_Gold',
       scale: 4,
@@ -192,6 +192,51 @@ const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 const apiBase = import.meta.env.VITE_APP_API_URL_BASE
 // MonoFun 前端基础路径
 const monoFeBase = import.meta.env.VITE_APP_MONO_FE
+
+// AI agnet 问答框
+const { showAiDialog, closeAiDialog, isAiDialogShow } = (() => {
+  const show = ref(false)
+  const showDialog = () => {
+    show.value = true
+  }
+  const closeDialog = () => {
+    show.value = false
+  }
+  // const sendMsg =
+  return {
+    showAiDialog:showDialog,
+    closeAiDialog:closeDialog,
+    isAiDialogShow:show,
+  }
+})()
+
+const chat = async (text: string) => {
+  const agentId = "f43a79df-d424-05a8-a56f-99967c2caaf6"
+  const response = await fetch(`http://localhost:3000/${agentId}/message`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body:
+      `text=${encodeURIComponent(text)}` +
+      `&name=${'Player'}` +
+      `&userName=${'Player'}` +
+      `&agentName=${'Sender'}`,
+  })
+    .then(async (response) => {
+      const reader = response.body?.getReader()
+      if (!reader) return
+      reader.read().then(({ done, value }) => {
+        if (done) return
+        const enc = new TextDecoder("utf-8")
+        const textJson = enc.decode(value, { stream: true })
+        const text = JSON.parse(textJson)[0]
+        const content = text.text.toLocaleLowerCase()
+      })
+    })
+    .catch((e) => console.log(e))
+}
+
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog, reservedNftId } = (() => {
   const show = ref(false)
@@ -243,24 +288,25 @@ const doReserve = async (index: number) => {
 const onReserveBtnClick = async (index: number) => {
   if (itemsList.value[index].reserved) return
   if (!itemsList.value[index].canBeReserved) return
-  // 如果活动还没开始，就拒绝
-  if (!activityDate.started()) {
-    msg.show(t('nft.activityNotStart'))
-    return
-  }
-  if (!userInfo.value) {
-    msg.show(t('nft.needLogin'))
-    // 保存要在登录完成后预约的项目
-    shouldReserveAfterLogin.value = index
-    // 跳转到登录页
-    goLoginPageAndWaitForMessage()
-    return
-  }
-  doReserve(index)
+  // // 如果活动还没开始，就拒绝
+  // if (!activityDate.started()) {
+  //   msg.show(t('nft.activityNotStart'))
+  //   return
+  // }
+  // if (!userInfo.value) {
+  //   msg.show(t('nft.needLogin'))
+  //   // 保存要在登录完成后预约的项目
+  //   shouldReserveAfterLogin.value = index
+  //   // 跳转到登录页
+  //   goLoginPageAndWaitForMessage()
+  //   return
+  // }
+  // doReserve(index)
 }
 // 前往详情页按钮事件处理器
 const onShowDetailBtnClick = async (index: number) => {
-  window.open(`${monoFeBase}/items/${itemsList.value[index].url}`, '_blank')
+  // window.open(`${monoFeBase}/items/${itemsList.value[index].url}`, '_blank')
+  showAiDialog()
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)
@@ -328,7 +374,7 @@ const buttonsSize = useItemsPageButtonSize()
         {{ t(itemsList[currentIndexForAnimation].name, 1, { locale: 'en' }).toUpperCase() }}
       </div>
       <div
-        class="info-divider"
+        class="info-divider <sm:hidden"
         :style="infoAnimationStyle"
       />
       <!-- NFT 描述 -->
@@ -339,7 +385,7 @@ const buttonsSize = useItemsPageButtonSize()
         {{ t(itemsList[currentIndexForAnimation].description) }}
       </div>
       <div
-        class="info-btns flex gap-x-1rem"
+        class="flex gap-x-1rem info-btns"
         :style="reserveBtnAnimationStyle"
       >
         <!-- 前往详情页按钮 -->
@@ -350,7 +396,7 @@ const buttonsSize = useItemsPageButtonSize()
           :height="buttonsSize.height"
           :is-en="locale === 'en'"
         >
-          {{ t('nft.showDetails') }}
+          {{ t('nft.showAiDialog') }}
         </TextButton>
         <!-- 预约按钮 -->
         <TextButton
@@ -379,7 +425,7 @@ const buttonsSize = useItemsPageButtonSize()
         >
           <div class="models-rotating-border" />
           <!-- 模型查看器 -->
-          <div class="w-full h-full transform -translate-y-[100%]">
+          <div class="h-full w-full transform -translate-y-[100%]">
             <model-viewer
               :items="itemsList"
               :showing-item="currentIndex"
@@ -403,9 +449,50 @@ const buttonsSize = useItemsPageButtonSize()
         />
       </div>
     </div>
+    <!-- AI 问答框 -->
+    <div
+      class="flex h-[100%] transition-colors w-[100%] z-998 absolute justify-center items-center"
+      :class="{
+        'bg-[rgba(0,0,0,0.5)]': isAiDialogShow,
+        'pointer-events-none': !isAiDialogShow
+      }"
+    >
+      <div
+        class="bg-black flex h-480px transition w-576px duration-250 <sm:(w-320px h-374px) "
+        :class="{
+          'opacity-0': !isAiDialogShow,
+          '-translate-y-50px transform': !isAiDialogShow
+        }"
+      >
+        <div class="flex-1 pt-24px pr-24px" />
+        <div class="flex flex-col pt-3rem justify-between items-center">
+          <span class="font-serif font-900 text-2rem leading-46px <sm:(text-24px leading-34px) ">Get White List</span>
+          Can you answer a few questions for me, I will use the Q&A to determine if I can whitelist you.
+          <!-- 确定按钮 -->
+          <div>
+            <div class="border-solid border-[rgba(255,255,255,0.5)] border-2px transition-colors duration-250 hover:(bg-[rgba(255,255,255,0.2)])">
+              <div
+                class="bg-contain bg-center bg-no-repeat h-4rem opacity-20 transition-opacity w-192px duration-250 reserve-success-bg clickble <sm:(w-6rem h-2rem) hover:(opacity-50) "
+                @click="closeReserveSuccessDialog(true)"
+              />
+            </div>
+            <div class="flex font-serif font-900 h-4rem transform text-24px leading-34px w-192px -translate-y-4rem justify-center items-center pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem) ">
+              Send Message
+            </div>
+          </div>
+        </div>
+        <!-- 关闭按钮 -->
+        <div class="flex flex-1 pt-24px pr-24px justify-end">
+          <div
+            class="close-btn clickble"
+            @click="closeAiDialog()"
+          />
+        </div>
+      </div>
+    </div>
     <!-- 预约成功提示框 -->
     <div
-      class="absolute w-[100%] h-[100%] flex transition-colors justify-center items-center z-998"
+      class="flex h-[100%] transition-colors w-[100%] z-998 absolute justify-center items-center"
       :class="{
         'bg-[rgba(0,0,0,0.5)]': isDialogShow,
         'pointer-events-none': !isDialogShow
@@ -413,7 +500,7 @@ const buttonsSize = useItemsPageButtonSize()
     >
       <!-- 提示框主体 -->
       <div
-        class="w-576px h-480px bg-black flex transition duration-250 <sm:(w-320px h-374px)"
+        class="bg-black flex h-480px transition w-576px duration-250 <sm:(w-320px h-374px) "
         :class="{
           'opacity-0': !isDialogShow,
           '-translate-y-50px transform': !isDialogShow
@@ -421,16 +508,16 @@ const buttonsSize = useItemsPageButtonSize()
       >
         <!-- 占位符 -->
         <div class="flex-1 pt-24px pr-24px" />
-        <div class="flex flex-col justify-between items-center pt-3rem">
-          <span class="font-serif font-900 leading-46px text-2rem <sm:(text-24px leading-34px)">{{ t('nft.reserveSucceed') }}</span>
+        <div class="flex flex-col pt-3rem justify-between items-center">
+          <span class="font-serif font-900 text-2rem leading-46px <sm:(text-24px leading-34px) ">{{ t('nft.reserveSucceed') }}</span>
           <!-- 预约成功的物品的名称 -->
           <span class="font-sans text-1rem <sm:text-0.75rem">{{ t('nft.reservedItem', { name: t(reservedNftName) }) }}</span>
           <!-- 预约成功图片 -->
-          <div class="success-pic-container p-14px">
-            <div class="success-pic w-144px h-130px bg-center bg-no-repeat bg-cover <sm:(w-79px h-71px)" />
+          <div class="p-14px success-pic-container">
+            <div class="bg-center bg-no-repeat bg-cover h-130px w-144px success-pic <sm:(w-79px h-71px) " />
           </div>
           <!-- 勾选框，是否接收所有关于彷徨之街的邮件 -->
-          <div class="flex items-center gap-x-0.5rem">
+          <div class="flex gap-x-0.5rem items-center">
             <input
               type="checkbox"
               :checked="isSendAllChecked"
@@ -443,19 +530,19 @@ const buttonsSize = useItemsPageButtonSize()
           </div>
           <!-- 确定按钮 -->
           <div>
-            <div class="border-[rgba(255,255,255,0.5)] border-2px border-solid hover:(bg-[rgba(255,255,255,0.2)]) transition-colors duration-250">
+            <div class="border-solid border-[rgba(255,255,255,0.5)] border-2px transition-colors duration-250 hover:(bg-[rgba(255,255,255,0.2)])">
               <div
-                class="reserve-success-bg w-192px h-4rem bg-contain bg-center bg-no-repeat opacity-20 hover:(opacity-50) transition-opacity duration-250 clickble <sm:(w-6rem h-2rem)"
+                class="bg-contain bg-center bg-no-repeat h-4rem opacity-20 transition-opacity w-192px duration-250 reserve-success-bg clickble <sm:(w-6rem h-2rem) hover:(opacity-50) "
                 @click="closeReserveSuccessDialog(true)"
               />
             </div>
-            <div class="w-192px h-4rem -translate-y-4rem flex justify-center items-center leading-34px text-24px font-serif font-900 transform pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem)">
+            <div class="flex font-serif font-900 h-4rem transform text-24px leading-34px w-192px -translate-y-4rem justify-center items-center pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem) ">
               {{ t('nft.showDetails') }}
             </div>
           </div>
         </div>
         <!-- 关闭按钮 -->
-        <div class="flex justify-end flex-1 pt-24px pr-24px">
+        <div class="flex flex-1 pt-24px pr-24px justify-end">
           <div
             class="close-btn clickble"
             @click="closeReserveSuccessDialog(false)"
@@ -804,7 +891,7 @@ const buttonsSize = useItemsPageButtonSize()
   .info {
     width: 100%;
     top: unset;
-    bottom: 60px;
+    bottom: 5rem;
     left: 0;
     padding: 20px 20px 0 20px;
 
