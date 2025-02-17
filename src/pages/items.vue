@@ -30,7 +30,7 @@ const itemsList = ref<NFTItem[]>([
     url: "d9baa6d4-f37b-4fe0-9164-21780b5e8b40",
     reserved: false,
     model: (store.getRes('kusyouCoin', 'NFT').value as GLTF).scene,
-    canBeReserved: true,
+    canBeReserved: false,
     customData: {
       childName: 'YX_Gold',
       scale: 4,
@@ -192,6 +192,51 @@ const modelContainerElBounding = reactive(useElementBounding(modelContainerEl))
 const apiBase = import.meta.env.VITE_APP_API_URL_BASE
 // MonoFun 前端基础路径
 const monoFeBase = import.meta.env.VITE_APP_MONO_FE
+
+// AI agnet 问答框
+const { showAiDialog, closeAiDialog, isAiDialogShow } = (() => {
+  const show = ref(false)
+  const showDialog = () => {
+    show.value = true
+  }
+  const closeDialog = () => {
+    show.value = false
+  }
+  // const sendMsg =
+  return {
+    showAiDialog:showDialog,
+    closeAiDialog:closeDialog,
+    isAiDialogShow:show,
+  }
+})()
+
+const chat = async (text: string) => {
+  const agentId = "f43a79df-d424-05a8-a56f-99967c2caaf6"
+  const response = await fetch(`http://localhost:3000/${agentId}/message`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body:
+      `text=${encodeURIComponent(text)}` +
+      `&name=${'Player'}` +
+      `&userName=${'Player'}` +
+      `&agentName=${'Sender'}`,
+  })
+    .then(async (response) => {
+      const reader = response.body?.getReader()
+      if (!reader) return
+      reader.read().then(({ done, value }) => {
+        if (done) return
+        const enc = new TextDecoder("utf-8")
+        const textJson = enc.decode(value, { stream: true })
+        const text = JSON.parse(textJson)[0]
+        const content = text.text.toLocaleLowerCase()
+      })
+    })
+    .catch((e) => console.log(e))
+}
+
 // 预约成功框
 const { showReserveSuccessDialog, isDialogShow, reservedNftName, closeReserveSuccessDialog, reservedNftId } = (() => {
   const show = ref(false)
@@ -260,7 +305,8 @@ const onReserveBtnClick = async (index: number) => {
 }
 // 前往详情页按钮事件处理器
 const onShowDetailBtnClick = async (index: number) => {
-  window.open(`${monoFeBase}/items/${itemsList.value[index].url}`, '_blank')
+  // window.open(`${monoFeBase}/items/${itemsList.value[index].url}`, '_blank')
+  showAiDialog()
 }
 // 预约按钮文字元素
 const infoEl = ref<HTMLDivElement | null>(null)
@@ -350,7 +396,7 @@ const buttonsSize = useItemsPageButtonSize()
           :height="buttonsSize.height"
           :is-en="locale === 'en'"
         >
-          {{ t('nft.showDetails') }}
+          {{ t('nft.showAiDialog') }}
         </TextButton>
         <!-- 预约按钮 -->
         <TextButton
@@ -401,6 +447,47 @@ const buttonsSize = useItemsPageButtonSize()
           :class="currentIndex === (index - 1) ? 'models-indicator-item-active' : ''"
           @click="prevOrNextLocal(undefined, index - 1)"
         />
+      </div>
+    </div>
+    <!-- AI 问答框 -->
+    <div
+      class="flex h-[100%] transition-colors w-[100%] z-998 absolute justify-center items-center"
+      :class="{
+        'bg-[rgba(0,0,0,0.5)]': isAiDialogShow,
+        'pointer-events-none': !isAiDialogShow
+      }"
+    >
+      <div
+        class="bg-black flex h-480px transition w-576px duration-250 <sm:(w-320px h-374px) "
+        :class="{
+          'opacity-0': !isAiDialogShow,
+          '-translate-y-50px transform': !isAiDialogShow
+        }"
+      >
+        <div class="flex-1 pt-24px pr-24px" />
+        <div class="flex flex-col pt-3rem justify-between items-center">
+          <span class="font-serif font-900 text-2rem leading-46px <sm:(text-24px leading-34px) ">Get White List</span>
+          Can you answer a few questions for me, I will use the Q&A to determine if I can whitelist you.
+          <!-- 确定按钮 -->
+          <div>
+            <div class="border-solid border-[rgba(255,255,255,0.5)] border-2px transition-colors duration-250 hover:(bg-[rgba(255,255,255,0.2)])">
+              <div
+                class="bg-contain bg-center bg-no-repeat h-4rem opacity-20 transition-opacity w-192px duration-250 reserve-success-bg clickble <sm:(w-6rem h-2rem) hover:(opacity-50) "
+                @click="closeReserveSuccessDialog(true)"
+              />
+            </div>
+            <div class="flex font-serif font-900 h-4rem transform text-24px leading-34px w-192px -translate-y-4rem justify-center items-center pointer-events-none <sm:(w-6rem h-2rem text-16px leading-23px -translate-y-2rem) ">
+              Send Message
+            </div>
+          </div>
+        </div>
+        <!-- 关闭按钮 -->
+        <div class="flex flex-1 pt-24px pr-24px justify-end">
+          <div
+            class="close-btn clickble"
+            @click="closeAiDialog()"
+          />
+        </div>
       </div>
     </div>
     <!-- 预约成功提示框 -->
